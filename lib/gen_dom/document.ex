@@ -55,7 +55,7 @@ defmodule GenDOM.Document do
 
   @impl true
   def handle_call({:query_selector, selector}, _from, document) do
-    if GenDOM.Node.matches_selector?(document, selector) do
+    if matches_selector?(document, selector) do
       {:reply, {:ok, document}, document}
     else
       case query_children_for_first_match(document, selector) do
@@ -67,7 +67,7 @@ defmodule GenDOM.Document do
 
   @impl true
   def handle_call({:query_selector_all, selector}, _from, document) do
-    matches = if GenDOM.Node.matches_selector?(document, selector), do: [document], else: []
+    matches = if matches_selector?(document, selector), do: [document], else: []
 
     case query_children_for_all_matches(document, selector) do
       {:ok, child_matches} -> {:reply, {:ok, matches ++ child_matches}, document}
@@ -84,7 +84,7 @@ defmodule GenDOM.Document do
       Enum.reduce_while(child_nodes, {:error, :not_found}, fn child_name, acc ->
         child = GenServer.call(child_name, :get)
 
-        if GenDOM.Node.matches_selector?(child, selector) do
+        if matches_selector?(child, selector) do
           {:halt, {:ok, child}}
         else
           case query_children_for_first_match(child, selector) do
@@ -105,7 +105,7 @@ defmodule GenDOM.Document do
       child_matches = Enum.flat_map(child_nodes, fn child_name ->
         child = GenServer.call(child_name, :get)
 
-        direct_matches = if GenDOM.Node.matches_selector?(child, selector), do: [child], else: []
+        direct_matches = if matches_selector?(child, selector), do: [child], else: []
 
         child_children_matches = case query_children_for_all_matches(child, selector) do
           {:ok, matching_nodes} when is_list(matching_nodes) -> matching_nodes
@@ -271,13 +271,12 @@ defmodule GenDOM.Document do
   end
 
   def query_selector(%__MODULE__{} = document, selector_string) when is_binary(selector_string) do
-    GenServer.call(document.name, {:query_selector, selector_string})
+    GenServer.call(document.pid, {:query_selector, selector_string})
   end
 
   def query_selector_all(%__MODULE__{} = document, selector_string) when is_binary(selector_string) do
-    GenServer.call(document.name, {:query_selector_all, selector_string})
+    GenServer.call(document.pid, {:query_selector_all, selector_string})
   end
-
 
   def request_storage_access(%__MODULE__{} = document, types \\ %{all: true}) do
 

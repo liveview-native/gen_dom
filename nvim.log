@@ -1,0 +1,1233 @@
+
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/ftplugin.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/ftplugin.vim
+sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/indent.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/indent.vim
+could not source "/opt/homebrew/etc/xdg/nvim/sysinit.vim"
+could not source "/etc/xdg/nvim/sysinit.vim"
+could not source "$VIM/sysinit.vim"
+sourcing "/Users/bcardarella/.config/nvim/init.lua"
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/filetype.lua"
+line 0: sourcing "nvim_exec2() called at /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/filetype.lua:0"
+not found in runtime path: "ftdetect/*.{vim,lua}"
+finished sourcing nvim_exec2() called at /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/filetype.lua:0
+continuing in /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/filetype.lua
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/filetype.lua
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/snacks.nvim/plugin/snacks.lua"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/snacks.nvim/plugin/snacks.lua
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/nvim-dap/plugin/dap.lua"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/nvim-dap/plugin/dap.lua
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/plenary.nvim/plugin/plenary.vim"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/plenary.nvim/plugin/plenary.vim
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/editorconfig.lua"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/editorconfig.lua
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/man.lua"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/man.lua
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/matchit.vim"
+not found in 'packpath': "pack/*/start/matchit"
+line 3: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/pack/dist/opt/matchit/plugin/matchit.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/pack/dist/opt/matchit/plugin/matchit.vim
+continuing in /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/matchit.vim
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/matchit.vim
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/matchparen.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/matchparen.vim
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/netrwPlugin.vim"
+not found in 'packpath': "pack/*/start/netrw"
+line 7: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/pack/dist/opt/netrw/plugin/netrwPlugin.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/pack/dist/opt/netrw/plugin/netrwPlugin.vim
+continuing in /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/netrwPlugin.vim
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/netrwPlugin.vim
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/osc52.lua"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/osc52.lua
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/rplugin.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/rplugin.vim
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/shada.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/shada.vim
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+line 0: sourcing "nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0"
+line 1: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/spellfile.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/plugin/spellfile.vim
+continuing in nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+finished sourcing nvim_exec2() called at /Users/bcardarella/.config/nvim/init.lua:0
+continuing in /Users/bcardarella/.config/nvim/init.lua
+finished sourcing /Users/bcardarella/.config/nvim/init.lua
+sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/filetype.lua"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/filetype.lua
+sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/syntax/syntax.vim"
+line 20: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/syntax/synload.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/syntax/synload.vim
+continuing in /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/syntax/syntax.vim
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/syntax/syntax.vim
+Reading ShaDa file "/Users/bcardarella/.local/state/nvim/shada/main.shada" info marks oldfiles
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/nvim-treesitter/plugin/nvim-treesitter.lua"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/nvim-treesitter/plugin/nvim-treesitter.lua
+continuing in nvim_exec2() called at User Autocommands for "VeryLazy":0
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+not found in runtime path: "parser/snacks_dashboard.*"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/nvim-treesitter-textobjects/plugin/nvim-treesitter-textobjects.vim"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/nvim-treesitter-textobjects/plugin/nvim-treesitter-textobjects.vim
+continuing in nvim_exec2() called at User Autocommands for "VeryLazy":0
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+--- Autocommands ---
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/which-key.nvim/plugin/which-key.lua"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/which-key.nvim/plugin/which-key.lua
+continuing in nvim_exec2() called at User Autocommands for "VeryLazy":0
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+line 0: sourcing "nvim_exec2() called at User Autocommands for "VeryLazy":0"
+finished sourcing nvim_exec2() called at User Autocommands for "VeryLazy":0
+continuing in User Autocommands for "VeryLazy"
+
+
+--- Terminal info --- {{{
+&term: xterm-ghostty
+Description: Ghostty
+Aliases: xterm-ghostty | 
+ghostty
+Boolean capabilities:
+  auto_left_margin          bw         = false
+  auto_right_margin         am         = true
+  no_esc_ctlc               xsb        = false
+  ceol_standout_glitch      xhp        = false
+  eat_newline_glitch        xenl       = true
+  erase_overstrike          eo         = false
+  generic_type              gn         = false
+  hard_copy                 hc         = false
+  has_meta_key              km         = true
+  has_status_line           hs         = true
+  insert_null_glitch        in         = false
+  memory_above              da         = false
+  memory_below              db         = false
+  move_insert_mode          mir        = true
+  move_standout_mode        msgr       = true
+  over_strike               os         = false
+  status_line_esc_ok        eslok      = false
+  dest_tabs_magic_smso      xt         = false
+  tilde_glitch              hz         = false
+  transparent_underline     ul         = false
+  xon_xoff                  xon        = false
+  needs_xon_xoff            nxon       = false
+  prtr_silent               mc5i       = true
+  hard_cursor               chts       = false
+  non_rev_rmcup             nrrmc      = false
+  no_pad_char               npc        = true
+  non_dest_scroll_region    ndscr      = false
+  can_change                ccc        = true
+  back_color_erase          bce        = true
+  hue_lightness_saturation  hls        = false
+  col_addr_glitch           xhpa       = false
+  cr_cancels_micro_mode     crxm       = false
+  has_print_wheel           daisy      = false
+  row_addr_glitch           xvpa       = false
+  semi_auto_right_margin    sam        = false
+  cpi_changes_res           cpix       = false
+  lpi_changes_res           lpix       = false
+  backspaces_with_bs        OTbs       = false
+  crt_no_scrolling          OTns       = false
+  no_correctly_working_cr   OTnc       = false
+  gnu_has_meta_key          OTMT       = false
+  linefeed_is_newline       OTNL       = false
+  has_hardware_tabs         OTpt       = false
+  return_does_clr_eol       OTxr       = false
+Numeric capabilities:
+  columns                   cols       = 80
+  init_tabs                 it         = 8
+  lines                     lines      = 24
+  lines_of_memory           lm         = -1
+  magic_cookie_glitch       xmc        = -1
+  padding_baud_rate         pb         = -1
+  virtual_terminal          vt         = -1
+  width_status_line         wsl        = -1
+  num_labels                nlab       = -1
+  label_height              lh         = -1
+  label_width               lw         = -1
+  max_attributes            ma         = -1
+  maximum_windows           wnum       = -1
+  max_colors                colors     = 256
+  max_pairs                 pairs      = 32767
+  no_color_video            ncv        = -1
+  buffer_capacity           bufsz      = -1
+  dot_vert_spacing          spinv      = -1
+  dot_horz_spacing          spinh      = -1
+  max_micro_address         maddr      = -1
+  max_micro_jump            mjump      = -1
+  micro_col_size            mcs        = -1
+  micro_line_size           mls        = -1
+  number_of_pins            npins      = -1
+  output_res_char           orc        = -1
+  output_res_line           orl        = -1
+  output_res_horz_inch      orhi       = -1
+  output_res_vert_inch      orvi       = -1
+  print_rate                cps        = -1
+  wide_char_size            widcs      = -1
+  buttons                   btns       = -1
+  bit_image_entwining       bitwin     = -1
+  bit_image_type            bitype     = -1
+  magic_cookie_glitch_ul    OTug       = -1
+  carriage_return_delay     OTdC       = -1
+  new_line_delay            OTdN       = -1
+  backspace_delay           OTdB       = -1
+  horizontal_tab_delay      OTdT       = -1
+  number_of_function_keys   OTkn       = -1
+String capabilities:
+  back_tab                  cbt        = ^[[Z
+  bell                      bel        = ^G
+  carriage_return           cr         = ^M
+  change_scroll_region      csr        = ^[[%i%p1%d;%p2%dr
+  clear_all_tabs            tbc        = ^[[3g
+  clear_screen              clear      = ^[[H^[[2J
+  clr_eol                   el         = ^[[K
+  clr_eos                   ed         = ^[[J
+  column_address            hpa        = ^[[%i%p1%dG
+  cursor_address            cup        = ^[[%i%p1%d;%p2%dH
+  cursor_down               cud1       = ^@
+  cursor_home               home       = ^[[H
+  cursor_invisible          civis      = ^[[?25l
+  cursor_left               cub1       = ^H
+  cursor_normal             cnorm      = ^[[?25h
+  cursor_right              cuf1       = ^[[C
+  cursor_up                 cuu1       = ^[[A
+  cursor_visible            cvvis      = ^[[?12;25h
+  delete_character          dch1       = ^[[P
+  delete_line               dl1        = ^[[M
+  dis_status_line           dsl        = ^[]2;^G
+  enter_alt_charset_mode    smacs      = ^[(0
+  enter_blink_mode          blink      = ^[[5m
+  enter_bold_mode           bold       = ^[[1m
+  enter_ca_mode             smcup      = ^[[?1049h
+  enter_dim_mode            dim        = ^[[2m
+  enter_insert_mode         smir       = ^[[4h
+  enter_secure_mode         invis      = ^[[8m
+  enter_reverse_mode        rev        = ^[[7m
+  enter_standout_mode       smso       = ^[[7m
+  enter_underline_mode      smul       = ^[[4m
+  erase_chars               ech        = ^[[%p1%dX
+  exit_alt_charset_mode     rmacs      = ^[(B
+  exit_attribute_mode       sgr0       = ^[(B^[[m
+  exit_ca_mode              rmcup      = ^[[?1049l
+  exit_insert_mode          rmir       = ^[[4l
+  exit_standout_mode        rmso       = ^[[27m
+  exit_underline_mode       rmul       = ^[[24m
+  flash_screen              flash      = ^[[?5h$<100/>^[[?5l
+  from_status_line          fsl        = ^G
+  insert_character          ich1       = ^[[@
+  insert_line               il1        = ^[[L
+  key_backspace             kbs        = ^?
+  key_dc                    kdch1      = ^[[3~
+  key_down                  kcud1      = ^[OB
+  key_f1                    kf1        = ^[OP
+  key_f10                   kf10       = ^[[21~
+  key_f2                    kf2        = ^[OQ
+  key_f3                    kf3        = ^[OR
+  key_f4                    kf4        = ^[OS
+  key_f5                    kf5        = ^[[15~
+  key_f6                    kf6        = ^[[17~
+  key_f7                    kf7        = ^[[18~
+  key_f8                    kf8        = ^[[19~
+  key_f9                    kf9        = ^[[20~
+  key_home                  khome      = ^[OH
+  key_ic                    kich1      = ^[[2~
+  key_left                  kcub1      = ^[OD
+  key_npage                 knp        = ^[[6~
+  key_ppage                 kpp        = ^[[5~
+  key_right                 kcuf1      = ^[OC
+  key_sf                    kind       = ^[[1;2B
+  key_sr                    kri        = ^[[1;2A
+  key_up                    kcuu1      = ^[OA
+  keypad_local              rmkx       = ^[[?1l^[>
+  keypad_xmit               smkx       = ^[[?1h^[=
+  parm_dch                  dch        = ^[[%p1%dP
+  parm_delete_line          dl         = ^[[%p1%dM
+  parm_down_cursor          cud        = ^[[%p1%dB
+  parm_ich                  ich        = ^[[%p1%d@
+  parm_index                indn       = ^[[%p1%dS
+  parm_insert_line          il         = ^[[%p1%dL
+  parm_left_cursor          cub        = ^[[%p1%dD
+  parm_right_cursor         cuf        = ^[[%p1%dC
+  parm_rindex               rin        = ^[[%p1%dT
+  parm_up_cursor            cuu        = ^[[%p1%dA
+  repeat_char               rep        = %p1%c^[[%p2%{1}%-%db
+  reset_1string             rs1        = ^[]^[\^[c
+  restore_cursor            rc         = ^[8
+  row_address               vpa        = ^[[%i%p1%dd
+  save_cursor               sc         = ^[7
+  scroll_forward            ind        = ^@
+  scroll_reverse            ri         = ^[M
+  set_attributes            sgr        = %?%p9%t^[(0%e^[(B%;^[[0%?%p6%t;1%;%?%p2%t;4%;%?%p1%p3%|%t;7%;%?%p4%t;5%;%?%p7%t;8%;m
+  set_tab                   hts        = ^[H
+  tab                       ht         = 	
+  to_status_line            tsl        = ^[]2;
+  acs_chars                 acsc       = ++,,--..00``aaffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz{{||}}~~
+  key_btab                  kcbt       = ^[[Z
+  enter_am_mode             smam       = ^[[?7h
+  exit_am_mode              rmam       = ^[[?7l
+  key_end                   kend       = ^[OF
+  key_enter                 kent       = ^[OM
+  key_sdc                   kDC        = ^[[3;2~
+  key_send                  kEND       = ^[[1;2F
+  key_shome                 kHOM       = ^[[1;2H
+  key_sic                   kIC        = ^[[2;2~
+  key_sleft                 kLFT       = ^[[1;2D
+  key_snext                 kNXT       = ^[[6;2~
+  key_sprevious             kPRV       = ^[[5;2~
+  key_sright                kRIT       = ^[[1;2C
+  key_f11                   kf11       = ^[[23~
+  key_f12                   kf12       = ^[[24~
+  key_f13                   kf13       = ^[[1;2P
+  key_f14                   kf14       = ^[[1;2Q
+  key_f15                   kf15       = ^[[1;2R
+  key_f16                   kf16       = ^[[1;2S
+  key_f17                   kf17       = ^[[15;2~
+  key_f18                   kf18       = ^[[17;2~
+  key_f19                   kf19       = ^[[18;2~
+  key_f20                   kf20       = ^[[19;2~
+  key_f21                   kf21       = ^[[20;2~
+  key_f22                   kf22       = ^[[21;2~
+  key_f23                   kf23       = ^[[23;2~
+  key_f24                   kf24       = ^[[24;2~
+  key_f25                   kf25       = ^[[1;5P
+  key_f26                   kf26       = ^[[1;5Q
+  key_f27                   kf27       = ^[[1;5R
+  key_f28                   kf28       = ^[[1;5S
+  key_f29                   kf29       = ^[[15;5~
+  key_f30                   kf30       = ^[[17;5~
+  key_f31                   kf31       = ^[[18;5~
+  key_f32                   kf32       = ^[[19;5~
+  key_f33                   kf33       = ^[[20;5~
+  key_f34                   kf34       = ^[[21;5~
+  key_f35                   kf35       = ^[[23;5~
+  key_f36                   kf36       = ^[[24;5~
+  key_f37                   kf37       = ^[[1;6P
+  key_f38                   kf38       = ^[[1;6Q
+  key_f39                   kf39       = ^[[1;6R
+  key_f40                   kf40       = ^[[1;6S
+  key_f41                   kf41       = ^[[15;6~
+  key_f42                   kf42       = ^[[17;6~
+  key_f43                   kf43       = ^[[18;6~
+  key_f44                   kf44       = ^[[19;6~
+  key_f45                   kf45       = ^[[20;6~
+  key_f46                   kf46       = ^[[21;6~
+  key_f47                   kf47       = ^[[23;6~
+  key_f48                   kf48       = ^[[24;6~
+  key_f49                   kf49       = ^[[1;3P
+  key_f50                   kf50       = ^[[1;3Q
+  key_f51                   kf51       = ^[[1;3R
+  key_f52                   kf52       = ^[[1;3S
+  key_f53                   kf53       = ^[[15;3~
+  key_f54                   kf54       = ^[[17;3~
+  key_f55                   kf55       = ^[[18;3~
+  key_f56                   kf56       = ^[[19;3~
+  key_f57                   kf57       = ^[[20;3~
+  key_f58                   kf58       = ^[[21;3~
+  key_f59                   kf59       = ^[[23;3~
+  key_f60                   kf60       = ^[[24;3~
+  key_f61                   kf61       = ^[[1;4P
+  key_f62                   kf62       = ^[[1;4Q
+  key_f63                   kf63       = ^[[1;4R
+  clr_bol                   el1        = ^[[1K
+  user6                     u6         = ^[[%i%d;%dR
+  user7                     u7         = ^[[6n
+  user8                     u8         = ^[[?%[;0123456789]c
+  user9                     u9         = ^[[c
+  orig_pair                 op         = ^[[39;49m
+  orig_colors               oc         = ^[]104^G
+  initialize_color          initc      = ^[]4;%p1%d;rgb:%p2%{255}%*%{1000}%/%2.2X/%p3%{255}%*%{1000}%/%2.2X/%p4%{255}%*%{1000}%/%2.2X^[\
+  enter_italics_mode        sitm       = ^[[3m
+  exit_italics_mode         ritm       = ^[[23m
+  key_mouse                 kmous      = ^[[<
+  set_a_foreground          setaf      = ^[[%?%p1%{8}%<%t3%p1%d%e%p1%{16}%<%t9%p1%{8}%-%d%e38;5;%p1%d%;m
+  set_a_background          setab      = ^[[%?%p1%{8}%<%t4%p1%d%e%p1%{16}%<%t10%p1%{8}%-%d%e48;5;%p1%d%;m
+  set_tb_margin             smgtb      = ^[[%i%p1%d;%p2%dr
+Extended boolean capabilities:
+  AX                        = true
+  Su                        = true
+  Tc                        = true
+  XT                        = true
+  fullkbd                   = true
+Extended string capabilities:
+  BD                        = ^[[?2004l
+  BE                        = ^[[?2004h
+  Clmg                      = ^[[s
+  Cmg                       = ^[[%i%p1%d;%p2%ds
+  Dsmg                      = ^[[?69l
+  E3                        = ^[[3J
+  Enmg                      = ^[[?69h
+  Ms                        = ^[]52;%p1%s;%p2%s^G
+  PE                        = ^[[201~
+  PS                        = ^[[200~
+  RV                        = ^[[>c
+  Se                        = ^[[2 q
+  Setulc                    = ^[[58:2::%p1%{65536}%/%d:%p1%{256}%/%{255}%&%d:%p1%{255}%&%d%;m
+  Smulx                     = ^[[4:%p1%dm
+  Ss                        = ^[[%p1%d q
+  Sync                      = ^[[?2026%?%p1%{1}%-%tl%eh%;
+  XM                        = ^[[?1006;1000%?%p1%{1}%=%th%el%;
+  XR                        = ^[[>0q
+  fd                        = ^[[?1004l
+  fe                        = ^[[?1004h
+  kDC3                      = ^[[3;3~
+  kDC4                      = ^[[3;4~
+  kDC5                      = ^[[3;5~
+  kDC6                      = ^[[3;6~
+  kDC7                      = ^[[3;7~
+  kDN                       = ^[[1;2B
+  kDN3                      = ^[[1;3B
+  kDN4                      = ^[[1;4B
+  kDN5                      = ^[[1;5B
+  kDN6                      = ^[[1;6B
+  kDN7                      = ^[[1;7B
+  kEND3                     = ^[[1;3F
+  kEND4                     = ^[[1;4F
+  kEND5                     = ^[[1;5F
+  kEND6                     = ^[[1;6F
+  kEND7                     = ^[[1;7F
+  kHOM3                     = ^[[1;3H
+  kHOM4                     = ^[[1;4H
+  kHOM5                     = ^[[1;5H
+  kHOM6                     = ^[[1;6H
+  kHOM7                     = ^[[1;7H
+  kIC3                      = ^[[2;3~
+  kIC4                      = ^[[2;4~
+  kIC5                      = ^[[2;5~
+  kIC6                      = ^[[2;6~
+  kIC7                      = ^[[2;7~
+  kLFT3                     = ^[[1;3D
+  kLFT4                     = ^[[1;4D
+  kLFT5                     = ^[[1;5D
+  kLFT6                     = ^[[1;6D
+  kLFT7                     = ^[[1;7D
+  kNXT3                     = ^[[6;3~
+  kNXT4                     = ^[[6;4~
+  kNXT5                     = ^[[6;5~
+  kNXT6                     = ^[[6;6~
+  kNXT7                     = ^[[6;7~
+  kPRV3                     = ^[[5;3~
+  kPRV4                     = ^[[5;4~
+  kPRV5                     = ^[[5;5~
+  kPRV6                     = ^[[5;6~
+  kPRV7                     = ^[[5;7~
+  kRIT3                     = ^[[1;3C
+  kRIT4                     = ^[[1;4C
+  kRIT5                     = ^[[1;5C
+  kRIT6                     = ^[[1;6C
+  kRIT7                     = ^[[1;7C
+  kUP                       = ^[[1;2A
+  kUP3                      = ^[[1;3A
+  kUP4                      = ^[[1;4A
+  kUP5                      = ^[[1;5A
+  kUP6                      = ^[[1;6A
+  kUP7                      = ^[[1;7A
+  kxIN                      = ^[[I
+  kxOUT                     = ^[[O
+  rmxx                      = ^[[29m
+  rv                        = ^[\[[0-9]+;[0-9]+;[0-9]+c
+  setrgbb                   = ^[[48:2:%p1%d:%p2%d:%p3%dm
+  setrgbf                   = ^[[38:2:%p1%d:%p2%d:%p3%dm
+  smxx                      = ^[[9m
+  xm                        = ^[[<%i%p3%d;%p1%d;%p2%d;%?%p4%tM%em%;
+  xr                        = ^[P>\|[ -~]+a^[\
+  ext.resize_screen         = ^[[8;%p1%d;%p2%dt
+  ext.reset_scroll_region   = ^[[r
+  ext.enter_altfont_mode    = ^[[11m
+  ext.set_cursor_color      = ^[]12;%p1%s^G
+  ext.reset_cursor_color    = ^[]112^G
+  ext.save_title            = ^[[22;0t
+  ext.restore_title         = ^[[23;0t
+  ext.set_title             = ^[]2;%p2%s^G
+  ext.enable_lr_margin      = ^[[?69h
+  ext.disable_lr_margin     = ^[[?69l
+  ext.enable_bpaste         = ^[[?2004h
+  ext.disable_bpaste        = ^[[?2004l
+  ext.enable_focus          = ^[[?1004h
+  ext.disable_focus         = ^[[?1004l
+  ext.enable_mouse          = ^[[?1002h^[[?1006h
+  ext.disable_mouse         = ^[[?1002l^[[?1006l
+  ext.enable_mouse_move     = ^[[?1003h
+  ext.disable_mouse_move    = ^[[?1003l
+  ext.set_underline_color   = ^[[58:2::%p1%d:%p2%d:%p3%dm
+  Sync                      = ^[[?2026%?%p1%{1}%-%tl%eh%;
+}}}
+
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/autoload/provider/clipboard.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/autoload/provider/clipboard.vim
+not found in runtime path: "ftplugin/snacks_layout_box[.]{vim,lua} ftplugin/snacks_layout_box_*.{vim,lua} ftplugin/snacks_layout_box/*.{vim,lua}"
+not found in runtime path: "indent/snacks_layout_box[.]{vim,lua}"
+not found in runtime path: "parser/snacks_layout_box.*"
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+not found in runtime path: "parser/snacks_layout_box.*"
+not found in runtime path: "ftplugin/snacks_picker_input[.]{vim,lua} ftplugin/snacks_picker_input_*.{vim,lua} ftplugin/snacks_picker_input/*.{vim,lua}"
+not found in runtime path: "indent/snacks_picker_input[.]{vim,lua}"
+not found in runtime path: "parser/snacks_picker_input.*"
+not found in runtime path: "parser/snacks_picker_input.*"
+not found in runtime path: "queries/regex/injections.scm"
+not found in runtime path: "ftplugin/snacks_picker_list[.]{vim,lua} ftplugin/snacks_picker_list_*.{vim,lua} ftplugin/snacks_picker_list/*.{vim,lua}"
+not found in runtime path: "indent/snacks_picker_list[.]{vim,lua}"
+not found in runtime path: "parser/snacks_picker_list.*"
+not found in runtime path: "parser/snacks_picker_list.*"
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+line 0: sourcing "nvim_exec2() called at BufReadPre Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPre Autocommands for "*":0
+continuing in BufReadPre Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPre Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPre Autocommands for "*":0
+continuing in BufReadPre Autocommands for "*"
+Reading ShaDa file "/Users/bcardarella/.local/state/nvim/shada/main.shada" marks
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/gitsigns.nvim/plugin/gitsigns.lua"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/gitsigns.nvim/plugin/gitsigns.lua
+continuing in nvim_exec2() called at BufReadPost Autocommands for "*":0
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/nvim-ts-autotag/plugin/nvim-ts-autotag.lua"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/nvim-ts-autotag/plugin/nvim-ts-autotag.lua
+continuing in nvim_exec2() called at BufReadPost Autocommands for "*":0
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/todo-comments.nvim/plugin/todo.vim"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/todo-comments.nvim/plugin/todo.vim
+continuing in nvim_exec2() called at BufReadPost Autocommands for "*":0
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/nvim-lspconfig/plugin/lspconfig.lua"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/nvim-lspconfig/plugin/lspconfig.lua
+continuing in nvim_exec2() called at BufReadPost Autocommands for "*":0
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+line 1: sourcing "/Users/bcardarella/.local/share/nvim/lazy/blink.cmp/plugin/blink-cmp.lua"
+finished sourcing /Users/bcardarella/.local/share/nvim/lazy/blink.cmp/plugin/blink-cmp.lua
+continuing in nvim_exec2() called at BufReadPost Autocommands for "*":0
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 0: sourcing "nvim_exec2() called at BufReadPost Autocommands for "*":0"
+finished sourcing nvim_exec2() called at BufReadPost Autocommands for "*":0
+continuing in BufReadPost Autocommands for "*"
+line 20: sourcing "/opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/ftplugin/elixir.vim"
+finished sourcing /opt/homebrew/Cellar/neovim/0.11.2/share/nvim/runtime/ftplugin/elixir.vim
+continuing in <SNR>2_LoadFTPlugin
+not found in runtime path: "indent/elixir[.]{vim,lua}"
+not found in runtime path: "parser/comment.*"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+not found in runtime path: "parser/wk.*"
+not found in runtime path: "parser/wk.*"
+not found in runtime path: "ftplugin/snacks_layout_box[.]{vim,lua} ftplugin/snacks_layout_box_*.{vim,lua} ftplugin/snacks_layout_box/*.{vim,lua}"
+not found in runtime path: "indent/snacks_layout_box[.]{vim,lua}"
+not found in runtime path: "parser/snacks_layout_box.*"
+not found in runtime path: "ftplugin/snacks_picker_input[.]{vim,lua} ftplugin/snacks_picker_input_*.{vim,lua} ftplugin/snacks_picker_input/*.{vim,lua}"
+not found in runtime path: "indent/snacks_picker_input[.]{vim,lua}"
+not found in runtime path: "parser/snacks_picker_input.*"
+not found in runtime path: "queries/regex/injections.scm"
+not found in runtime path: "ftplugin/snacks_picker_list[.]{vim,lua} ftplugin/snacks_picker_list_*.{vim,lua} ftplugin/snacks_picker_list/*.{vim,lua}"
+not found in runtime path: "indent/snacks_picker_list[.]{vim,lua}"
+not found in runtime path: "parser/snacks_picker_list.*"
+line 0: sourcing "nvim_exec2() called at BufEnter Autocommands for "<buffer=15>":0"
+finished sourcing nvim_exec2() called at BufEnter Autocommands for "<buffer=15>":0
+continuing in BufEnter Autocommands for "<buffer=15>"
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+sourcing "nvim_exec2()"
+finished sourcing nvim_exec2()
+not found in runtime path: "ftplugin/dap-repl[.]{vim,lua} ftplugin/dap-repl_*.{vim,lua} ftplugin/dap-repl/*.{vim,lua}"
+not found in runtime path: "indent/dap-repl[.]{vim,lua}"
+not found in runtime path: "parser/dap-repl.*"

@@ -2,10 +2,9 @@ defmodule GenDOM.Node do
   use GenServer
 
   @properties [
-    name: nil,
-    all_child_names: MapSet.new([]),
     assigns: %{},
-    refs: %{},
+    pid: nil,
+    root_pid: nil,
 
     base_uri: nil,
     child_nodes: [],
@@ -30,13 +29,16 @@ defmodule GenDOM.Node do
       defstruct Keyword.merge(unquote(Macro.escape(@properties)), unquote(Macro.escape(fields)))
 
       def start_link(opts) do
-        name = GenDOM.generate_name(__MODULE__)
-        GenServer.start_link(__MODULE__, Keyword.put(opts, :name, name), name: name)
+        GenServer.start_link(__MODULE__, opts)
       end
 
       @impl true
       def init(opts) do
-        {:ok, struct(%__MODULE__{}, opts)}
+        pid = self()
+        :pg.start_link()
+        :pg.monitor(pid)
+
+        {:ok, struct(%__MODULE__{}, Keyword.put(opts, :pid, pid))}
       end
 
       defdelegate append_child(node, child), to: GenDOM.Node
@@ -71,6 +73,9 @@ defmodule GenDOM.Node do
       def handle_cast({:put, field, value}, node), do: GenDOM.Node.handle_cast({:put, field, value}, node)
       def handle_cast({:track, child}, node), do: GenDOM.Node.handle_cast({:track, child}, node)
       def handle_cast({:untrack, child}, node), do: GenDOM.Node.handle_cast({:untrack, child}, node)
+
+      @impl true
+      def handle_info({ref, msg, group, children}, node), do: GenDOM.Node.handle_info({ref, msg, group, children}, node)
     end
   end
 
@@ -100,7 +105,11 @@ defmodule GenDOM.Node do
 
   @impl true
   def init(opts) do
-    {:ok, struct(%__MODULE__{}, opts)}
+    pid = self()
+    :pg.start_link()
+    :pg.monitor(pid)
+
+    {:ok, struct(%__MODULE__{}, Keyword.put(opts, :pid, pid))}
   end
 
   @impl true
@@ -144,89 +153,54 @@ defmodule GenDOM.Node do
     {:noreply, node}
   end
 
-  def handle_cast({:track, child}, node) do
-    all_child_names = MapSet.union(node.all_child_names, MapSet.put(child.all_child_names, child.name))
-    refs = monitor(node, child)
-    if node.parent_element, do: GenServer.cast(node.parent_element, {:track, child})
-    handle_cast({:merge, %{all_child_names: all_child_names, refs: refs}}, node)
+  def handle_cast({:track, child_pid_or_children_pids}, node) do
+    if node.parent_element, do: GenServer.cast(node.parent_element, {:track, child_pid_or_children_pids})
+    :pg.join(node.pid, child_pid_or_children_pids)
+
+    {:noreply, node}
   end
 
-  def handle_cast({:untrack, child}, node) do
-    all_child_names = MapSet.delete(node.all_child_names, child.name)
+  def handle_cast({:untrack, child_pid_or_children_pids}, node) do
+    if node.parent_element, do: GenServer.cast(node.parent_element, {:untrack, child_pid_or_children_pids})
+    :pg.leave(node.pid, child_pid_or_children_pids)
 
-    refs = demonitor(node, child)
-    if node.parent_element, do: GenServer.cast(node.parent_element, {:untrack, child})
-    handle_cast({:merge, %{all_child_names: all_child_names, refs: refs}}, node)
+    {:noreply, node}
   end
 
-  def handle_cast({:DOWN, ref, :process, _object, _reason}, %{refs: refs} = node) when is_map_key(refs, ref) do
-    Process.demonitor(ref)
-
-    {child_name, refs} = Map.pop(node.refs, ref)
-
-    child_nodes = Enum.reduce(node.child_nodes, [], fn
-      ^child_name, child_nodes -> child_nodes
-      child_name, child_nodes -> [child_name | child_nodes]
-    end)
-
-    handle_cast({:merge, %{child_nodes: child_nodes, refs: refs}}, node)
+  @impl true
+  def handle_info({_ref, :leave, pid, _children}, %{pid: pid} = node) do
+    {:noreply, node}
   end
 
-  def get(name) when is_binary(name),
-    do: name |> String.to_atom() |> get()
-  def get(name) when is_atom(name) do
-    GenServer.call(name, :get)
+  def handle_info({_ref, _msg, pid, _children}, %{pid: pid} = node) do
+    {:noreply, node}
   end
+
+  def get(pid) when is_pid(pid),
+    do: GenServer.call(pid, :get)
+  def get(%{pid: pid}),
+    do: get(pid)
 
   def assign(node, key, value) when is_atom(key),
     do: assign(node, %{key => value})
   def assign(node, assigns) do
-    GenServer.call(node.name, {:assign, assigns})
+    GenServer.call(node.pid, {:assign, assigns})
   end
 
   def put(node, key, value) do
-    GenServer.call(node.name, {:put, key, value})
+    GenServer.call(node.pid, {:put, key, value})
   end
 
   def merge(node, fields) do
-    GenServer.call(node.name, {:merge, fields})
+    GenServer.call(node.pid, {:merge, fields})
   end
 
-  def append_child(node, child) do
-    track(node, child)
-    child_nodes = List.insert_at(node.child_nodes, -1, child.name)
+  def append_child(node, %{pid: child_pid}) do
+    GenServer.cast(node.pid, {:track, [child_pid | :pg.get_members(child_pid)]})
+    child_nodes = List.insert_at(node.child_nodes, -1, child_pid)
 
-    GenServer.cast(child.name, {:put, :parent_element, node.name})
-    GenServer.call(node.name, {:put, :child_nodes, child_nodes})
-  end
-
-  defp track(node, child) do
-    GenServer.cast(node.name, {:track, child})
-    node
-  end
-
-  defp untrack(node, child) do
-    GenServer.cast(node.name, {:untrack, child})
-    node
-  end
-
-  defp monitor(node, child) do
-    pid = Process.whereis(child.name)
-    ref = Process.monitor(pid)
-
-    Map.put(node.refs, ref, child.name)
-  end
-
-  defp demonitor(node, child) do
-    ref_entry = Enum.find(node.refs, fn {_ref, name} -> name == child.name end)
-
-    case ref_entry do
-      {ref, _child_name} ->
-        Process.demonitor(ref)
-        Map.delete(node.refs, ref)
-      nil ->
-        node.refs
-    end
+    GenServer.cast(child_pid, {:put, :parent_element, node.pid})
+    GenServer.call(node.pid, {:put, :child_nodes, child_nodes})
   end
 
   def clone_node(_node) do
@@ -245,16 +219,16 @@ defmodule GenDOM.Node do
 
   end
 
-  def insert_before(node, new_node, %{name: reference_name}) do
-    node = track(node, new_node)
+  def insert_before(node, %{pid: new_node_pid}, %{pid: reference_pid}) do
+    GenServer.cast(node.pid, {:track, [new_node_pid | :pg.get_members(new_node_pid)]})
     child_nodes = Enum.reduce(node.child_nodes, [], fn
-      ^reference_name, child_nodes -> [reference_name, new_node.name | child_nodes]
+      ^reference_pid, child_nodes -> [reference_pid, new_node_pid | child_nodes]
       child_name, child_nodes -> [child_name | child_nodes]
     end)
     |> Enum.reverse()
 
-    GenServer.cast(new_node.name, {:put, :parent_element, node.name})
-    GenServer.call(node.name, {:put, :child_nodes, child_nodes})
+    GenServer.cast(new_node_pid, {:put, :parent_element, node.pid})
+    GenServer.call(node.pid, {:put, :child_nodes, child_nodes})
   end
 
   def is_default_namespace?(_node, _uri) do
@@ -265,40 +239,38 @@ defmodule GenDOM.Node do
   end
 
   def is_same_node?(node, other_node) do
-    node.name == other_node.name
+    node.pid == other_node.pid
   end
 
   def lookup_namespace_uri(node, prefix) do
-    GenServer.call(node.name, {:lookup_namespace_uri, prefix})
+    GenServer.call(node.pid, {:lookup_namespace_uri, prefix})
   end
 
   def lookup_prefix(node, namespace) do
-    GenServer.call(node.name, {:lookup_prefix, namespace})
+    GenServer.call(node.pid, {:lookup_prefix, namespace})
   end
 
   def normalize(_node) do
 
   end
 
-  def remove_child(node, child) do
-    node = untrack(node, child)
-    child_nodes = Enum.reject(node.child_nodes, &(&1 == child.name))
+  def remove_child(node, %{pid: child_pid}) do
+    GenServer.cast(node.pid, {:untrack, [child_pid | :pg.get_members(child_pid)]})
+    child_nodes = Enum.reject(node.child_nodes, &(&1 == child_pid))
 
-    GenServer.call(node.name, {:put, :child_nodes, child_nodes})
+    GenServer.call(node.pid, {:put, :child_nodes, child_nodes})
   end
 
-  def replace_child(node, new_child, old_child) do
-    node =
-      node
-      |> untrack(old_child)
-      |> track(new_child)
+  def replace_child(node, %{pid: new_child_pid}, %{pid: old_child_pid}) do
+    GenServer.cast(node.pid, {:untrack, [old_child_pid | :pg.get_members(old_child_pid)]})
+    GenServer.cast(node.pid, {:track, [new_child_pid | :pg.get_members(new_child_pid)]})
 
     child_nodes = Enum.map(node.child_nodes, fn
-      name when name == old_child.name -> new_child.name
-      name -> name
+      pid when pid == old_child_pid -> new_child_pid
+      pid -> pid
     end)
 
-    GenServer.cast(new_child.name, {:put, :parent_element, node.name})
-    GenServer.call(node.name, {:put, :child_nodes, child_nodes})
+    GenServer.cast(new_child_pid, {:put, :parent_element, node.pid})
+    GenServer.call(node.pid, {:put, :child_nodes, child_nodes})
   end
 end
