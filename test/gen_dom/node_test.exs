@@ -76,53 +76,97 @@ defmodule GenDOM.NodeTest do
     test "appending a child node onto a child will tell all parents" do
       parent = Node.new([])
 
-      child1 = Node.new([])
-      child2 = Node.new([])
-      child3 = Node.new([])
+      child_1 = Node.new([])
+      child_2 = Node.new([])
+      child_3 = Node.new([])
 
-      child2 = Node.append_child(child2, child3)
-      child1 = Node.append_child(child1, child2)
-      parent = Node.append_child(parent, child1)
+      child_2 = Node.append_child(child_2, child_3)
+      child_1 = Node.append_child(child_1, child_2)
+      parent = Node.append_child(parent, child_1, receiver: self())
 
-      assert Enum.member?(:pg.get_members(parent.pid), child1.pid)
-      assert Enum.member?(:pg.get_members(parent.pid), child2.pid)
-      assert Enum.member?(:pg.get_members(parent.pid), child3.pid)
+      assert_received {:append_child, [parent_pid, %{
+        pid: child_1_pid,
+        child_nodes: [
+          %{
+            pid: child_2_pid,
+            child_nodes: [%{
+              pid: child_3_pid,
+              child_nodes: [],
+              owner_document: nil,
+              parent_element: child_2_pid
+            }],
+            owner_document: nil,
+            parent_element: child_1_pid
+          }
+        ],
+        owner_document: nil,
+        parent_element: parent_pid
+      }]}
 
-      assert Enum.member?(:pg.get_members(child1.pid), child2.pid)
-      assert Enum.member?(:pg.get_members(child1.pid), child3.pid)
+      assert parent_pid == parent.pid
+      assert child_1_pid == child_1.pid
+      assert child_2_pid == child_2.pid
+      assert child_3_pid == child_3.pid
 
-      assert Enum.member?(:pg.get_members(child2.pid), child3.pid)
+      assert Enum.member?(:pg.get_members(parent.pid), child_1.pid)
+      assert Enum.member?(:pg.get_members(parent.pid), child_2.pid)
+      assert Enum.member?(:pg.get_members(parent.pid), child_3.pid)
 
-      child4 = Node.new([])
-      child3 = Node.append_child(child3, child4)
+      assert Enum.member?(:pg.get_members(child_1.pid), child_2.pid)
+      assert Enum.member?(:pg.get_members(child_1.pid), child_3.pid)
 
-      child2 = Node.get(child2.pid)
-      child1 = Node.get(child1.pid)
+      assert Enum.member?(:pg.get_members(child_2.pid), child_3.pid)
+
+      child_4 = Node.new([])
+      child_3 = Node.append_child(child_3, child_4, receiver: self())
+
+      assert_received {:append_child, [^child_3_pid, %{
+        pid: child_4_pid,
+        child_nodes: [],
+        parent_element: ^child_3_pid,
+        owner_document: nil
+      }]}
+
+      assert child_4_pid == child_4.pid
+
+      child_2 = Node.get(child_2.pid)
+      child_1 = Node.get(child_1.pid)
       parent = Node.get(parent.pid)
 
-      assert Enum.member?(:pg.get_members(child3.pid), child4.pid)
-      assert Enum.member?(:pg.get_members(child2.pid), child4.pid)
-      assert Enum.member?(:pg.get_members(child1.pid), child4.pid)
-      assert Enum.member?(:pg.get_members(parent.pid), child4.pid)
+      assert Enum.member?(:pg.get_members(child_3.pid), child_4.pid)
+      assert Enum.member?(:pg.get_members(child_2.pid), child_4.pid)
+      assert Enum.member?(:pg.get_members(child_1.pid), child_4.pid)
+      assert Enum.member?(:pg.get_members(parent.pid), child_4.pid)
     end
 
     test "inserting a child node before another child" do
       parent = Node.new([])
 
-      first_child = Node.new([])
+      child_1 = Node.new([])
 
-      parent_with_first = Node.append_child(parent, first_child)
+      parent = Node.append_child(parent, child_1)
 
-      second_child = Node.new([])
+      child_2 = Node.new([])
 
-      updated_parent = Node.insert_before(parent_with_first, second_child, first_child)
+      parent = Node.insert_before(parent, child_2, child_1, receiver: self())
 
-      assert Enum.member?(updated_parent.child_nodes, first_child.pid)
-      assert Enum.member?(updated_parent.child_nodes, second_child.pid)
-      assert Enum.member?(:pg.get_members(updated_parent.pid), second_child.pid)
+      assert_received {:insert_before, [parent_pid, %{
+        pid: child_2_pid,
+        child_nodes: [],
+        owner_document: nil,
+        parent_element: parent_pid
+      }, child_1_pid]}
 
-      first_index = Enum.find_index(updated_parent.child_nodes, fn child -> child == first_child.pid end)
-      second_index = Enum.find_index(updated_parent.child_nodes, fn child -> child == second_child.pid end)
+      assert parent_pid == parent.pid
+      assert child_1_pid == child_1.pid
+      assert child_2_pid == child_2.pid
+
+      assert Enum.member?(parent.child_nodes, child_1.pid)
+      assert Enum.member?(parent.child_nodes, child_2.pid)
+      assert Enum.member?(:pg.get_members(parent.pid), child_2.pid)
+
+      first_index = Enum.find_index(parent.child_nodes, fn child -> child == child_1.pid end)
+      second_index = Enum.find_index(parent.child_nodes, fn child -> child == child_2.pid end)
       assert second_index < first_index
     end
 
@@ -135,7 +179,13 @@ defmodule GenDOM.NodeTest do
       assert Enum.member?(parent.child_nodes, child.pid)
 
       # Remove child
-      parent = Node.remove_child(parent, child)
+      parent = Node.remove_child(parent, child, receiver: self())
+
+      assert_received {:remove_child, [parent_pid, child_pid]}
+
+      assert parent_pid == parent.pid
+      assert child_pid == child.pid
+
       refute Enum.member?(parent.child_nodes, child.pid)
       refute Enum.member?(:pg.get_members(parent.pid), child.pid)
     end
@@ -143,43 +193,52 @@ defmodule GenDOM.NodeTest do
     test "removing a child node from a child will tell all parents" do
       parent = Node.new([])
 
-      child1 = Node.new([])
-      child2 = Node.new([])
+      child_1 = Node.new([])
+      child_2 = Node.new([])
 
-      child1 = Node.append_child(child1, child2)
-      parent = Node.append_child(parent, child1)
+      child_1 = Node.append_child(child_1, child_2)
+      parent = Node.append_child(parent, child_1)
 
-      child1 = Node.remove_child(child1, child2)
+      child_1 = Node.remove_child(child_1, child_2)
 
       :timer.sleep(1)
 
-      refute Enum.member?(:pg.get_members(child1.pid), child2.pid)
-      refute Enum.member?(:pg.get_members(parent.pid), child2.pid)
+      refute Enum.member?(:pg.get_members(child_1.pid), child_2.pid)
+      refute Enum.member?(:pg.get_members(parent.pid), child_2.pid)
     end
 
     test "replacing a child node" do
       parent = Node.new([])
 
-      child1 = Node.new([])
+      child_1 = Node.new([])
 
       old_child = Node.new([])
 
-      parent = Node.append_child(parent, child1)
-      child1 = Node.append_child(child1, old_child)
+      parent = Node.append_child(parent, child_1)
+      child_1 = Node.append_child(child_1, old_child)
 
       new_child = Node.new([])
 
-      child1 = Node.replace_child(child1, new_child, old_child)
+      child_1 = Node.replace_child(child_1, new_child, old_child, receiver: self())
 
-      :timer.sleep(1)
+      assert_received {:replace_child, [child_1_pid, %{
+        pid: new_child_pid,
+        child_nodes: [],
+        owner_document: nil,
+        parent_element: child_1_pid 
+      }, old_child_pid]}
 
-      refute Enum.member?(child1.child_nodes, old_child.pid)
-      assert Enum.member?(child1.child_nodes, new_child.pid)
+      assert child_1_pid == child_1.pid
+      assert new_child_pid == new_child.pid
+      assert old_child_pid == old_child.pid
 
-      refute Enum.member?(:pg.get_members(child1.pid), old_child.pid)
+      refute Enum.member?(child_1.child_nodes, old_child.pid)
+      assert Enum.member?(child_1.child_nodes, new_child.pid)
+
+      refute Enum.member?(:pg.get_members(child_1.pid), old_child.pid)
       refute Enum.member?(:pg.get_members(parent.pid), old_child.pid)
 
-      assert Enum.member?(:pg.get_members(child1.pid), new_child.pid)
+      assert Enum.member?(:pg.get_members(child_1.pid), new_child.pid)
       assert Enum.member?(:pg.get_members(parent.pid), new_child.pid)
     end
   end

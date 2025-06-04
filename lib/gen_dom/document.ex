@@ -96,6 +96,10 @@ defmodule GenDOM.Document do
     end
   end
 
+  defp matches_selector?(child, selector) do
+    false
+  end
+
   defp query_children_for_all_matches(node, selector) do
     child_nodes = node.child_nodes || []
 

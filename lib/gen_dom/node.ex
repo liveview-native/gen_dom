@@ -4,7 +4,7 @@ defmodule GenDOM.Node do
   @properties [
     assigns: %{},
     pid: nil,
-    root_pid: nil,
+    receiver: nil,
 
     base_uri: nil,
     child_nodes: [],
@@ -40,6 +40,9 @@ defmodule GenDOM.Node do
 
         {:ok, struct(%__MODULE__{}, Keyword.put(opts, :pid, pid))}
       end
+
+      defdelegate encode(node), to: GenDOM.Node
+      defoverridable encode: 1
 
       defdelegate append_child(node, child), to: GenDOM.Node
       defdelegate clone_node(node), to: GenDOM.Node
@@ -106,6 +109,7 @@ defmodule GenDOM.Node do
   @impl true
   def init(opts) do
     pid = self()
+
     :pg.start_link()
     :pg.monitor(pid)
 
@@ -195,12 +199,35 @@ defmodule GenDOM.Node do
     GenServer.call(node.pid, {:merge, fields})
   end
 
-  def append_child(node, %{pid: child_pid}) do
-    GenServer.cast(node.pid, {:track, [child_pid | :pg.get_members(child_pid)]})
-    child_nodes = List.insert_at(node.child_nodes, -1, child_pid)
+  def append_child(parent, child, opts \\ []) do
+    all_descendants = [child.pid | :pg.get_members(child.pid)]
+    GenServer.cast(parent.pid, {:track, all_descendants})
+    child_nodes = List.insert_at(parent.child_nodes, -1, child.pid)
 
-    GenServer.cast(child_pid, {:put, :parent_element, node.pid})
-    GenServer.call(node.pid, {:put, :child_nodes, child_nodes})
+    child = GenServer.call(child.pid, {:put, :parent_element, parent.pid})
+    Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
+    parent = GenServer.call(parent.pid, {:put, :child_nodes, child_nodes})
+
+    if opts[:receiver] do
+      send(opts[:receiver], {:append_child, [parent.pid, apply(child.__struct__, :encode, [child])]})
+    end
+
+    parent
+  end
+
+  def encode(pid) when is_pid(pid) do
+    pid
+    |> GenServer.call(:get)
+    |> encode()
+  end
+
+  def encode(node) do
+    %{
+      pid: node.pid,
+      parent_element: node.parent_element,
+      owner_document: node.owner_document,
+      child_nodes: Enum.map(node.child_nodes, &encode(&1))
+    }
   end
 
   def clone_node(_node) do
@@ -219,16 +246,28 @@ defmodule GenDOM.Node do
 
   end
 
-  def insert_before(node, %{pid: new_node_pid}, %{pid: reference_pid}) do
-    GenServer.cast(node.pid, {:track, [new_node_pid | :pg.get_members(new_node_pid)]})
-    child_nodes = Enum.reduce(node.child_nodes, [], fn
-      ^reference_pid, child_nodes -> [reference_pid, new_node_pid | child_nodes]
+  def insert_before(parent, new_node, %{pid: reference_pid}, opts \\ []) do
+    all_descendants = [new_node.pid | :pg.get_members(new_node.pid)]
+    GenServer.cast(parent.pid, {:track, all_descendants})
+    child_nodes = Enum.reduce(parent.child_nodes, [], fn
+      ^reference_pid, child_nodes -> [reference_pid, new_node.pid | child_nodes]
       child_name, child_nodes -> [child_name | child_nodes]
     end)
     |> Enum.reverse()
 
-    GenServer.cast(new_node_pid, {:put, :parent_element, node.pid})
-    GenServer.call(node.pid, {:put, :child_nodes, child_nodes})
+    new_node = GenServer.call(new_node.pid, {:put, :parent_element, parent.pid})
+    Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
+    parent = GenServer.call(parent.pid, {:put, :child_nodes, child_nodes})
+
+    if opts[:receiver] do
+      send(opts[:receiver], {:insert_before, [
+        parent.pid,
+        apply(new_node.__struct__, :encode, [new_node]),
+        reference_pid
+      ]})
+    end
+
+    parent
   end
 
   def is_default_namespace?(_node, _uri) do
@@ -254,23 +293,40 @@ defmodule GenDOM.Node do
 
   end
 
-  def remove_child(node, %{pid: child_pid}) do
-    GenServer.cast(node.pid, {:untrack, [child_pid | :pg.get_members(child_pid)]})
-    child_nodes = Enum.reject(node.child_nodes, &(&1 == child_pid))
+  def remove_child(parent, %{pid: child_pid}, opts \\ []) do
+    all_descendants = [child_pid | :pg.get_members(child_pid)]
+    GenServer.cast(parent.pid, {:untrack, all_descendants})
+    child_nodes = Enum.reject(parent.child_nodes, &(&1 == child_pid))
 
-    GenServer.call(node.pid, {:put, :child_nodes, child_nodes})
+    if opts[:receiver] do
+      send(opts[:receiver], {:remove_child, [parent.pid, child_pid]})
+    end
+
+    GenServer.call(parent.pid, {:put, :child_nodes, child_nodes})
   end
 
-  def replace_child(node, %{pid: new_child_pid}, %{pid: old_child_pid}) do
-    GenServer.cast(node.pid, {:untrack, [old_child_pid | :pg.get_members(old_child_pid)]})
-    GenServer.cast(node.pid, {:track, [new_child_pid | :pg.get_members(new_child_pid)]})
+  def replace_child(parent, new_child, %{pid: old_child_pid}, opts \\ []) do
+    all_descendants = [new_child.pid | :pg.get_members(new_child.pid)]
+    GenServer.cast(parent.pid, {:untrack, [old_child_pid | :pg.get_members(old_child_pid)]})
+    GenServer.cast(parent.pid, {:track, all_descendants})
 
-    child_nodes = Enum.map(node.child_nodes, fn
-      pid when pid == old_child_pid -> new_child_pid
+    child_nodes = Enum.map(parent.child_nodes, fn
+      pid when pid == old_child_pid -> new_child.pid
       pid -> pid
     end)
 
-    GenServer.cast(new_child_pid, {:put, :parent_element, node.pid})
-    GenServer.call(node.pid, {:put, :child_nodes, child_nodes})
+    new_child = GenServer.call(new_child.pid, {:put, :parent_element, parent.pid})
+    Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
+    parent = GenServer.call(parent.pid, {:put, :child_nodes, child_nodes})
+
+    if opts[:receiver] do
+      send(opts[:receiver], {:replace_child, [
+        parent.pid,
+        apply(new_child.__struct__, :encode, [new_child]),
+        old_child_pid
+      ]})
+    end
+
+    parent
   end
 end

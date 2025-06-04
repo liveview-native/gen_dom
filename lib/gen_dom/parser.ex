@@ -5,7 +5,7 @@ defmodule GenDOM.Parser do
     Text
   }
 
-  def parse_from_string(string, _mime_type \\ nil) do
+  def parse_from_string(string, _mime_type \\ nil, receiver \\ nil) do
     {:ok, children} =
       LiveViewNative.Template.Parser.parse_document(string,
         attributes_as_maps: true,
