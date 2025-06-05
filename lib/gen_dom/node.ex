@@ -46,7 +46,7 @@ defmodule GenDOM.Node do
       defdelegate encode(node), to: GenDOM.Node
       defoverridable encode: 1
 
-      def new(opts) when is_list(opts) do
+      def new(opts \\ []) when is_list(opts) do
         case start_link(opts) do
           {:ok, pid} -> GenServer.call(pid, :get)
           _other -> {:error, "could not start"}
@@ -109,7 +109,7 @@ defmodule GenDOM.Node do
       iex> {:ok, node} = GenDOM.Node.new([])
       iex> %GenDOM.Node{} = node
   """
-  def new(opts) when is_list(opts) do
+  def new(opts \\ []) when is_list(opts) do
     case start_link(opts) do
       {:ok, pid} -> GenServer.call(pid, :get)
       _other -> {:error, "could not start"}
