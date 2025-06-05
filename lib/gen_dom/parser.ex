@@ -16,6 +16,10 @@ defmodule GenDOM.Parser do
 
     children = create_elements_from_children(children, [])
 
+    if receiver = opts[:receiver] do
+      send(receiver, {:document, Document.encode(document)})
+    end
+
     Enum.reduce(children, document, &Document.append_child(&2, &1, receiver: opts[:receiver]))
   end
 
