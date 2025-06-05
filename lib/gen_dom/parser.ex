@@ -17,6 +17,7 @@ defmodule GenDOM.Parser do
     children = create_elements_from_children(children, [])
 
     if receiver = opts[:receiver] do
+      document = Document.put(document, :receiver, receiver)
       send(receiver, {:document, Document.encode(document)})
     end
 

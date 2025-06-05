@@ -152,11 +152,29 @@ defmodule GenDOM.Node do
 
   def handle_call({:merge, fields}, _from, node) do
     node = struct(node, fields)
+
+    if node.owner_document do
+      owner_document = GenServer.call(node.owner_document, :get)
+
+      if receiver = owner_document.receiver do
+        send(receiver, {:merge, self(), fields})
+      end
+    end
+
     {:reply, node, node}
   end
 
   def handle_call({:put, field, value}, _from, node) do
     node = struct(node, %{field => value})
+
+    if node.owner_document do
+      owner_document = GenServer.call(node.owner_document, :get)
+
+      if receiver = owner_document.receiver do
+        send(receiver, {:put, self(), field, value})
+      end
+    end
+
     {:reply, node, node}
   end
 
@@ -167,7 +185,14 @@ defmodule GenDOM.Node do
     child_nodes = List.insert_at(parent.child_nodes, -1, child.pid)
 
     child = GenServer.call(child.pid, {:put, :parent_element, parent.pid})
-    Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
+    
+    if parent.node_type == 10 do
+      Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.pid}))
+    end
+
+    if parent.owner_document do
+      Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
+    end
 
     parent = struct(parent, child_nodes: child_nodes)
 
