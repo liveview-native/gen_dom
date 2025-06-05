@@ -38,11 +38,21 @@ defmodule GenDOM.Node do
         :pg.start_link()
         :pg.monitor(pid)
 
+        mod = __MODULE__
+
         {:ok, struct(%__MODULE__{}, Keyword.put(opts, :pid, pid))}
       end
 
       defdelegate encode(node), to: GenDOM.Node
       defoverridable encode: 1
+
+      def new(opts) when is_list(opts) do
+        case start_link(opts) do
+          {:ok, pid} -> GenServer.call(pid, :get)
+          _other -> {:error, "could not start"}
+        end
+      end
+      defoverridable new: 1
 
       defdelegate append_child(node, child), to: GenDOM.Node
       defdelegate clone_node(node), to: GenDOM.Node
@@ -216,9 +226,8 @@ defmodule GenDOM.Node do
   end
 
   def encode(pid) when is_pid(pid) do
-    pid
-    |> GenServer.call(:get)
-    |> encode()
+    node = GenServer.call(pid, :get)
+    apply(node.__struct__, :encode, [node])
   end
 
   def encode(node) do
@@ -226,7 +235,7 @@ defmodule GenDOM.Node do
       pid: node.pid,
       parent_element: node.parent_element,
       owner_document: node.owner_document,
-      child_nodes: Enum.map(node.child_nodes, &encode(&1))
+      child_nodes: Enum.map(node.child_nodes, &encode(&1)),
     }
   end
 

@@ -89,11 +89,12 @@ defmodule GenDOM.Element do
     tag_name: nil
   ]
 
-  def new(opts) when is_list(opts) do
-    case start_link(opts) do
-      {:ok, pid} -> GenServer.call(pid, :get)
-      _other -> {:error, "could not start"}
-    end
+  def encode(element) do
+    Map.merge(super(element), %{
+      class_list: element.class_list,
+      id: element.id,
+      tag_name: element.tag_name
+    })
   end
 
   # Elixir has `after` as a reserved keyword so this must be called `do_after`

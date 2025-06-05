@@ -46,13 +46,6 @@ defmodule GenDOM.Document do
     visibility_state: nil
   ]
 
-  def new(opts) when is_list(opts) do
-    case start_link(opts) do
-      {:ok, pid} -> GenServer.call(pid, :get)
-      _other -> {:error, "could not start"}
-    end
-  end
-
   @impl true
   def handle_call({:query_selector, selector}, _from, document) do
     if matches_selector?(document, selector) do

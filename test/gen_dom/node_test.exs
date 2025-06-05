@@ -8,6 +8,12 @@ defmodule GenDOM.NodeTest do
     use GenDOM.Node, [
       test_property: "test value"
     ]
+
+    def encode(test_node) do
+      Map.merge(super(test_node), %{
+        test_property: test_node.test_property
+      })
+    end
   end
 
   describe "Node" do
@@ -240,6 +246,58 @@ defmodule GenDOM.NodeTest do
 
       assert Enum.member?(:pg.get_members(child_1.pid), new_child.pid)
       assert Enum.member?(:pg.get_members(parent.pid), new_child.pid)
+    end
+  end
+
+  describe "encoding" do
+    test "encoding from pid will fetch the state and encode" do
+      node = Node.new([])
+
+      encoded_node = Node.encode(node.pid)
+
+      assert encoded_node == %{
+        pid: node.pid,
+        owner_document: nil,
+        parent_element: nil,
+        child_nodes: []
+      }
+    end
+
+    test "will encode from struct" do
+      node = Node.new([])
+
+      encoded_node = Node.encode(node)
+
+      assert encoded_node == %{
+        pid: node.pid,
+        owner_document: nil,
+        parent_element: nil,
+        child_nodes: []
+      }
+    end
+
+    test "will recursively encode children" do
+      node = Node.new([])
+      child = TestNode.new(test_property: "other")
+
+      node = Node.append_child(node, child)
+
+      encoded_node = Node.encode(node)
+
+      assert encoded_node == %{
+        pid: node.pid,
+        owner_document: nil,
+        parent_element: nil,
+        child_nodes: [
+          %{
+            pid: child.pid,
+            owner_document: nil,
+            parent_element: node.pid,
+            test_property: "other",
+            child_nodes: []
+          }
+        ]
+      }
     end
   end
 end
