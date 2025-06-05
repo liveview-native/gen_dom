@@ -98,6 +98,7 @@ defmodule GenDOM.Node do
       def handle_cast({:put, field, value}, node), do: GenDOM.Node.handle_cast({:put, field, value}, node)
       def handle_cast({:track, child}, node), do: GenDOM.Node.handle_cast({:track, child}, node)
       def handle_cast({:untrack, child}, node), do: GenDOM.Node.handle_cast({:untrack, child}, node)
+      def handle_cast({:send_to_receiver, msg}, node), do: GenDOM.Node.handle_cast({:send_to_receiver, msg}, node)
 
       @impl true
       def handle_info({ref, msg, group, children}, node), do: GenDOM.Node.handle_info({ref, msg, group, children}, node)
@@ -154,11 +155,7 @@ defmodule GenDOM.Node do
     node = struct(node, fields)
 
     if node.owner_document do
-      owner_document = GenServer.call(node.owner_document, :get)
-
-      if receiver = owner_document.receiver do
-        send(receiver, {:merge, self(), fields})
-      end
+      GenServer.cast(node.owner_document, {:send_to_receiver, {:merge, self(), fields}})
     end
 
     {:reply, node, node}
@@ -168,11 +165,7 @@ defmodule GenDOM.Node do
     node = struct(node, %{field => value})
 
     if node.owner_document do
-      owner_document = GenServer.call(node.owner_document, :get)
-
-      if receiver = owner_document.receiver do
-        send(receiver, {:put, self(), field, value})
-      end
+      GenServer.cast(node.owner_document, {:send_to_receiver, {:put, self(), field, value}})
     end
 
     {:reply, node, node}
@@ -296,11 +289,7 @@ defmodule GenDOM.Node do
     node = struct(node, fields)
 
     if node.owner_document do
-      owner_document = GenServer.call(node.owner_document, :get)
-
-      if receiver = owner_document.receiver do
-        send(receiver, {:merge, self(), fields})
-      end
+      GenServer.cast(node.owner_document, {:send_to_receiver, {:merge, self(), fields}})
     end
 
     {:noreply, node}
@@ -310,11 +299,7 @@ defmodule GenDOM.Node do
     node = struct(node, %{field => value})
 
     if node.owner_document do
-      owner_document = GenServer.call(node.owner_document, :get)
-
-      if receiver = owner_document.receiver do
-        send(receiver, {:put, self(), field, value})
-      end
+      GenServer.cast(node.owner_document, {:send_to_receiver, {:put, self(), field, value}})
     end
 
     {:noreply, node}
@@ -330,6 +315,13 @@ defmodule GenDOM.Node do
   def handle_cast({:untrack, child_pid_or_children_pids}, node) do
     if node.parent_element, do: GenServer.cast(node.parent_element, {:untrack, child_pid_or_children_pids})
     :pg.leave(node.pid, child_pid_or_children_pids)
+
+    {:noreply, node}
+  end
+
+  def handle_cast({:send_to_receiver, msg}, node) do
+    if receiver = node.receiver,
+      do: send(receiver, msg)
 
     {:noreply, node}
   end
