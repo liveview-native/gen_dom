@@ -5,7 +5,7 @@ defmodule GenDOM.Parser do
     Text
   }
 
-  def parse_from_string(string, _mime_type \\ nil, receiver \\ nil) do
+  def parse_from_string(string, _mime_type \\ nil, opts) do
     {:ok, children} =
       LiveViewNative.Template.Parser.parse_document(string,
         attributes_as_maps: true,
@@ -16,7 +16,7 @@ defmodule GenDOM.Parser do
 
     children = create_elements_from_children(children, [])
 
-    Enum.reduce(children, document, &Document.append_child(&2, &1))
+    Enum.reduce(children, document, &Document.append_child(&2, &1, receiver: opts[:receiver]))
   end
 
   defp create_elements_from_children([], elements), do: Enum.reverse(elements)
