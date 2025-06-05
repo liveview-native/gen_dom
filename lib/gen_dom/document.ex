@@ -46,6 +46,16 @@ defmodule GenDOM.Document do
     visibility_state: nil
   ]
 
+  def encode(document) do
+    Map.merge(super(document), %{
+      style_sheets: document.style_sheets,
+      title: document.title,
+      url: document.url,
+      body: document.body,
+      head: document.head,
+    })
+  end
+
   @impl true
   def handle_call({:query_selector, selector}, _from, document) do
     if matches_selector?(document, selector) do

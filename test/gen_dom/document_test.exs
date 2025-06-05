@@ -3,6 +3,30 @@ defmodule GenDOM.DocumentTest do
 
   alias GenDOM.{Document, Element, Node}
 
+  describe "Encoding" do
+    test "will inherit form Node and extend" do
+      parent = Node.new()
+      document = Document.new()
+
+      parent = Node.append_child(parent, document)
+      document = Document.get(document)
+
+      encoded_document = Document.encode(document)
+
+      assert encoded_document == %{
+        pid: document.pid,
+        owner_document: nil,
+        parent_element: parent.pid,
+        child_nodes: [],
+        style_sheets: [],
+        title: nil,
+        url: nil,
+        body: nil,
+        head: nil
+      }
+    end
+  end
+
   describe "query_selector/2" do
     test "finds the first element that matches a tag selector" do
       document = Document.new([])

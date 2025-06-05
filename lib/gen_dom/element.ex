@@ -93,6 +93,7 @@ defmodule GenDOM.Element do
     Map.merge(super(element), %{
       class_list: element.class_list,
       id: element.id,
+      attributes: element.attributes,
       tag_name: element.tag_name
     })
   end
