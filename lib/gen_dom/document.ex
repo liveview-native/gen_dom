@@ -1,5 +1,6 @@
 defmodule GenDOM.Document do
   use GenDOM.Node, [
+    node_type: 10,
     active_element: nil,
     adopted_style_sheets: nil,
     body: nil,

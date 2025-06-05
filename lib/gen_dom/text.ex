@@ -2,14 +2,14 @@ defmodule GenDOM.Text do
   @derive {Inspect, only: [:whole_text]}
 
   use GenDOM.Node, [
+    node_type: 3,
     assigned_slot: nil,
     whole_text: nil
   ]
 
-  def new(opts) when is_list(opts) do
-    case start_link(opts) do
-      {:ok, pid} -> GenServer.call(pid, :get)
-      _other -> {:error, "could not start"}
-    end
+  def encode(text) do
+    Map.merge(super(text), %{
+      whole_text: text.whole_text
+    })
   end
 end

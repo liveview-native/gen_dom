@@ -23,6 +23,7 @@ defmodule GenDOM.ElementTest do
 
       assert encoded_element == %{
         pid: element.pid,
+        node_type: 1,
         owner_document: nil,
         parent_element: parent.pid,
         child_nodes: [],

@@ -15,6 +15,7 @@ defmodule GenDOM.DocumentTest do
 
       assert encoded_document == %{
         pid: document.pid,
+        node_type: 10,
         owner_document: nil,
         parent_element: parent.pid,
         child_nodes: [],

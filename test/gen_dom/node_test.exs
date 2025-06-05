@@ -255,6 +255,7 @@ defmodule GenDOM.NodeTest do
 
       assert encoded_node == %{
         pid: node.pid,
+        node_type: 0,
         owner_document: nil,
         parent_element: nil,
         child_nodes: []
@@ -268,6 +269,7 @@ defmodule GenDOM.NodeTest do
 
       assert encoded_node == %{
         pid: node.pid,
+        node_type: 0,
         owner_document: nil,
         parent_element: nil,
         child_nodes: []
@@ -284,11 +286,13 @@ defmodule GenDOM.NodeTest do
 
       assert encoded_node == %{
         pid: node.pid,
+        node_type: 0,
         owner_document: nil,
         parent_element: nil,
         child_nodes: [
           %{
             pid: child.pid,
+            node_type: 0,
             owner_document: nil,
             parent_element: node.pid,
             test_property: "other",

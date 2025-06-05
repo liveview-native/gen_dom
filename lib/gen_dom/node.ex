@@ -13,7 +13,7 @@ defmodule GenDOM.Node do
     last_child: nil,
     next_sibling: nil,
     node_name: nil,
-    node_type: nil,
+    node_type: 0,
     node_value: nil,
     owner_document: nil,
     parent_element: nil,
@@ -88,6 +88,9 @@ defmodule GenDOM.Node do
       def handle_call({:insert_before, new_node, reference_node, opts}, from, node), do: GenDOM.Node.handle_call({:insert_before, new_node, reference_node, opts}, from, node)
       def handle_call({:remove_child, child, opts}, from, node), do: GenDOM.Node.handle_call({:remove_child, child, opts}, from, node)
       def handle_call({:replace_child, new_child, old_child, opts}, from, node), do: GenDOM.Node.handle_call({:replace_child, new_child, old_child, opts}, from, node)
+
+      def handle_call({:track, child_pid_or_pids}, from, node), do: GenDOM.Node.handle_call({:track, child_pid_or_pids}, from, node)
+      def handle_call({:untrack, child_pid_or_pids}, from, node), do: GenDOM.Node.handle_call({:untrack, child_pid_or_pids}, from, node)
 
       @impl true
       def handle_cast({:assign, assigns}, node), do: GenDOM.Node.handle_cast({:assign, assigns}, node)
@@ -328,6 +331,7 @@ defmodule GenDOM.Node do
   def encode(node) do
     %{
       pid: node.pid,
+      node_type: node.node_type,
       parent_element: node.parent_element,
       owner_document: node.owner_document,
       child_nodes: Enum.map(node.child_nodes, &encode(&1)),

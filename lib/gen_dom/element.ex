@@ -4,6 +4,7 @@ defmodule GenDOM.Element do
   use GenDOM.Node, [
     active_element: nil,
     adopted_style_sheets: nil,
+    node_type: 1,
 
     aria_active_descendant_element: nil,
     aria_atomic: nil,
