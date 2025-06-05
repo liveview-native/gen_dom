@@ -12,4 +12,7 @@ defmodule GenDOM.Text do
       whole_text: text.whole_text
     })
   end
+
+  def allowed_fields,
+    do: super() ++ [:whole_text] 
 end

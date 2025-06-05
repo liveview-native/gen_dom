@@ -46,6 +46,9 @@ defmodule GenDOM.Node do
       defdelegate encode(node), to: GenDOM.Node
       defoverridable encode: 1
 
+      defdelegate allowed_fields(), to: GenDOM.Node
+      defoverridable allowed_fields: 0
+
       def new(opts \\ []) when is_list(opts) do
         case start_link(opts) do
           {:ok, pid} -> GenServer.call(pid, :get)
@@ -155,7 +158,12 @@ defmodule GenDOM.Node do
     node = struct(node, fields)
 
     if node.owner_document do
-      GenServer.cast(node.owner_document, {:send_to_receiver, {:merge, self(), fields}})
+      allowed_fields = apply(node.__struct__, :allowed_fields, [])
+      fields = Map.drop(fields, allowed_fields)
+
+      if !Enum.empty?(fields) do
+        GenServer.cast(node.owner_document, {:send_to_receiver, {:merge, self(), fields}})
+      end
     end
 
     {:reply, node, node}
@@ -164,7 +172,9 @@ defmodule GenDOM.Node do
   def handle_call({:put, field, value}, _from, node) do
     node = struct(node, %{field => value})
 
-    if node.owner_document do
+    allowed_fields = apply(node.__struct__, :allowed_fields, [])
+
+    if field in allowed_fields  && node.owner_document do
       GenServer.cast(node.owner_document, {:send_to_receiver, {:put, self(), field, value}})
     end
 
@@ -289,7 +299,12 @@ defmodule GenDOM.Node do
     node = struct(node, fields)
 
     if node.owner_document do
-      GenServer.cast(node.owner_document, {:send_to_receiver, {:merge, self(), fields}})
+      allowed_fields = apply(node.__struct__, :allowed_fields, [])
+      fields = Map.drop(fields, allowed_fields)
+
+      if !Enum.empty?(fields) do
+        GenServer.cast(node.owner_document, {:send_to_receiver, {:merge, self(), fields}})
+      end
     end
 
     {:noreply, node}
@@ -298,7 +313,9 @@ defmodule GenDOM.Node do
   def handle_cast({:put, field, value}, node) do
     node = struct(node, %{field => value})
 
-    if node.owner_document do
+    allowed_fields = apply(node.__struct__, :allowed_fields, [])
+
+    if field in allowed_fields && node.owner_document do
       GenServer.cast(node.owner_document, {:send_to_receiver, {:put, self(), field, value}})
     end
 
@@ -372,6 +389,9 @@ defmodule GenDOM.Node do
       child_nodes: Enum.map(node.child_nodes, &encode(&1)),
     }
   end
+
+  def allowed_fields,
+    do: []
 
   def clone_node(_node) do
 

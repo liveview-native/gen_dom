@@ -99,6 +99,9 @@ defmodule GenDOM.Element do
     })
   end
 
+  def allowed_fields,
+    do: super() ++ [:class_list, :id, :attributes, :tag_name]
+
   # Elixir has `after` as a reserved keyword so this must be called `do_after`
   def do_after(%__MODULE__{} = element, nodes) when is_list(nodes) do
 

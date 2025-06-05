@@ -57,6 +57,9 @@ defmodule GenDOM.Document do
     })
   end
 
+  def allowed_fields,
+    do: super() ++ [:title, :body, :head]
+
   @impl true
   def handle_call({:query_selector, selector}, _from, document) do
     if matches_selector?(document, selector) do
