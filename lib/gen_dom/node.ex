@@ -425,7 +425,7 @@ defmodule GenDOM.Node do
   end
 
   def remove_child(parent, child, opts \\ []) do
-    GenServer.call(parent.pid, {:remove_child, child.pid, opts}, :infinity)
+    GenServer.call(parent.pid, {:remove_child, child.pid, opts})
   end
 
   def replace_child(parent, new_child, old_child, opts \\ []) do
