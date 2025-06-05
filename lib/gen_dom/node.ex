@@ -294,11 +294,29 @@ defmodule GenDOM.Node do
 
   def handle_cast({:merge, fields}, node) do
     node = struct(node, fields)
+
+    if node.owner_document do
+      owner_document = GenServer.call(node.owner_document, :get)
+
+      if receiver = owner_document.receiver do
+        send(receiver, {:merge, self(), fields})
+      end
+    end
+
     {:noreply, node}
   end
 
   def handle_cast({:put, field, value}, node) do
     node = struct(node, %{field => value})
+
+    if node.owner_document do
+      owner_document = GenServer.call(node.owner_document, :get)
+
+      if receiver = owner_document.receiver do
+        send(receiver, {:put, self(), field, value})
+      end
+    end
+
     {:noreply, node}
   end
 
