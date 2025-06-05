@@ -169,7 +169,7 @@ defmodule GenDOM.Node do
     parent = struct(parent, child_nodes: child_nodes)
 
     if receiver = opts[:receiver] do
-      send(receiver, {:append_child, [parent.pid, apply(child.__struct__, :encode, [child])]})
+      send(receiver, {:append_child, parent.pid, apply(child.__struct__, :encode, [child])})
     end
 
     {:reply, parent, parent} 
@@ -190,11 +190,12 @@ defmodule GenDOM.Node do
     parent = struct(parent, child_nodes: child_nodes)
 
     if opts[:receiver] do
-      send(opts[:receiver], {:insert_before, [
+      send(opts[:receiver], {
+        :insert_before,
         parent.pid,
         apply(new_node.__struct__, :encode, [new_node]),
         reference_pid
-      ]})
+      })
     end
 
     {:reply, parent, parent}
@@ -206,7 +207,7 @@ defmodule GenDOM.Node do
     child_nodes = Enum.reject(parent.child_nodes, &(&1 == child_pid))
 
     if opts[:receiver] do
-      send(opts[:receiver], {:remove_child, [parent.pid, child_pid]})
+      send(opts[:receiver], {:remove_child, parent.pid, child_pid})
     end
 
     parent = struct(parent, child_nodes: child_nodes)
@@ -231,11 +232,12 @@ defmodule GenDOM.Node do
     parent = struct(parent, child_nodes: child_nodes)
 
     if opts[:receiver] do
-      send(opts[:receiver], {:replace_child, [
+      send(opts[:receiver], {
+        :replace_child,
         parent.pid,
         apply(new_child.__struct__, :encode, [new_child]),
         old_child_pid
-      ]})
+      })
     end
 
     {:reply, parent, parent}

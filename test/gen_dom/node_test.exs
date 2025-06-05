@@ -90,7 +90,7 @@ defmodule GenDOM.NodeTest do
       child_1 = Node.append_child(child_1, child_2)
       parent = Node.append_child(parent, child_1, receiver: self())
 
-      assert_received {:append_child, [parent_pid, %{
+      assert_received {:append_child, parent_pid, %{
         pid: child_1_pid,
         child_nodes: [
           %{
@@ -107,7 +107,7 @@ defmodule GenDOM.NodeTest do
         ],
         owner_document: nil,
         parent_element: parent_pid
-      }]}
+      }}
 
       assert parent_pid == parent.pid
       assert child_1_pid == child_1.pid
@@ -126,12 +126,12 @@ defmodule GenDOM.NodeTest do
       child_4 = Node.new([])
       child_3 = Node.append_child(child_3, child_4, receiver: self())
 
-      assert_received {:append_child, [^child_3_pid, %{
+      assert_received {:append_child, ^child_3_pid, %{
         pid: child_4_pid,
         child_nodes: [],
         parent_element: ^child_3_pid,
         owner_document: nil
-      }]}
+      }}
 
       assert child_4_pid == child_4.pid
 
@@ -156,12 +156,12 @@ defmodule GenDOM.NodeTest do
 
       parent = Node.insert_before(parent, child_2, child_1, receiver: self())
 
-      assert_received {:insert_before, [parent_pid, %{
+      assert_received {:insert_before, parent_pid, %{
         pid: child_2_pid,
         child_nodes: [],
         owner_document: nil,
         parent_element: parent_pid
-      }, child_1_pid]}
+      }, child_1_pid}
 
       assert parent_pid == parent.pid
       assert child_1_pid == child_1.pid
@@ -187,7 +187,7 @@ defmodule GenDOM.NodeTest do
       # Remove child
       parent = Node.remove_child(parent, child, receiver: self())
 
-      assert_received {:remove_child, [parent_pid, child_pid]}
+      assert_received {:remove_child, parent_pid, child_pid}
 
       assert parent_pid == parent.pid
       assert child_pid == child.pid
@@ -225,12 +225,12 @@ defmodule GenDOM.NodeTest do
 
       child_1 = Node.replace_child(child_1, new_child, old_child, receiver: self())
 
-      assert_received {:replace_child, [child_1_pid, %{
+      assert_received {:replace_child, child_1_pid, %{
         pid: new_child_pid,
         child_nodes: [],
         owner_document: nil,
         parent_element: child_1_pid 
-      }, old_child_pid]}
+      }, old_child_pid}
 
       assert child_1_pid == child_1.pid
       assert new_child_pid == new_child.pid
