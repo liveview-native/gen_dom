@@ -84,10 +84,10 @@ defmodule GenDOM.Node do
       def handle_call({:merge, fields}, from, node), do: GenDOM.Node.handle_call({:merge, fields}, from, node)
       def handle_call({:put, field, value}, from, node), do: GenDOM.Node.handle_call({:put, field, value}, from, node)
 
-      def handle_call({:append_child, child, opts}, from, node), do: GenDOM.handle_call({:append_child, child, opts}, from, node)
-      def handle_call({:insert_before, new_node, reference_node, opts}, from, node), do: GenDOM.handle_call({:insert_before, new_node, reference_node, opts}, from, node)
-      def handle_call({:remove_child, child, opts}, from, node), do: GenDOM.handle_call({:remove_child, child, opts}, from, node)
-      def handle_call({:replace_child, new_child, old_child, opts}, from, node), do: GenDOM.handle_call({:replace_child, new_child, old_child, opts}, from, node)
+      def handle_call({:append_child, child, opts}, from, node), do: GenDOM.Node.handle_call({:append_child, child, opts}, from, node)
+      def handle_call({:insert_before, new_node, reference_node, opts}, from, node), do: GenDOM.Node.handle_call({:insert_before, new_node, reference_node, opts}, from, node)
+      def handle_call({:remove_child, child, opts}, from, node), do: GenDOM.Node.handle_call({:remove_child, child, opts}, from, node)
+      def handle_call({:replace_child, new_child, old_child, opts}, from, node), do: GenDOM.Node.handle_call({:replace_child, new_child, old_child, opts}, from, node)
 
       @impl true
       def handle_cast({:assign, assigns}, node), do: GenDOM.Node.handle_cast({:assign, assigns}, node)
