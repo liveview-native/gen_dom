@@ -25,26 +25,26 @@ defmodule GenDOM.Parser do
     Enum.reduce(children, document, &Document.append_child(&2, &1, receiver: opts[:receiver]))
   end
 
-  def parse_from_html(string, _mime_type \\ nil, opts) do
-    {:ok, children} =
-      Floki.parse_document(string,
-        attributes_as_maps: true
-      )
-
-    document = Document.new([])
-
-    # {children} = create_elements_from_children(children, [], 0)
-    :timer.tc fn ->
-      children = create_elements_from_children(children, [])
-
-      if receiver = opts[:receiver] do
-        document = Document.put(document, :receiver, receiver)
-        send(receiver, {:document, Document.encode(document)})
-      end
-
-      Enum.reduce(children, document, &Document.append_child(&2, &1, receiver: opts[:receiver]))
-    end
-  end
+  # def parse_from_html(string, _mime_type \\ nil, opts) do
+  #   {:ok, children} =
+  #     Floki.parse_document(string,
+  #       attributes_as_maps: true
+  #     )
+  #
+  #   document = Document.new([])
+  #
+  #   # {children} = create_elements_from_children(children, [], 0)
+  #   :timer.tc fn ->
+  #     children = create_elements_from_children(children, [])
+  #
+  #     if receiver = opts[:receiver] do
+  #       document = Document.put(document, :receiver, receiver)
+  #       send(receiver, {:document, Document.encode(document)})
+  #     end
+  #
+  #     Enum.reduce(children, document, &Document.append_child(&2, &1, receiver: opts[:receiver]))
+  #   end
+  # end
 
   defp create_elements_from_children([], elements), do: elements
 
