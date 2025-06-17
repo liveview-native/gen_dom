@@ -43,6 +43,8 @@ defmodule GenDOM.Node do
         {:ok, struct(%__MODULE__{}, Keyword.put(opts, :pid, pid))}
       end
 
+      defoverridable init: 1
+
       defdelegate encode(node), to: GenDOM.Node
       defoverridable encode: 1
 

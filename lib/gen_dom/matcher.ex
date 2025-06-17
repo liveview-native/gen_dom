@@ -5,7 +5,7 @@ defmodule GenDOM.Matcher do
     Node
   }
 
-  def matches_selector?(%Document{} = document, selectors) do
+  def matches?(%Element{} = document, selectors) do
     
   end
 end

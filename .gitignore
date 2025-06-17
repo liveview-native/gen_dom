@@ -21,3 +21,5 @@ gen_dom-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+.coder
+.iex.exs

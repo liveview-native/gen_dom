@@ -99,6 +99,223 @@ defmodule GenDOM.Element do
     })
   end
 
+  def init(opts) do
+    {:ok, element} = super(opts)
+
+    fields = extract_fields_from_attributes(Keyword.get(opts, :attributes, %{}))
+
+    {:ok, struct(element, fields)}
+  end
+
+  defp extract_fields_from_attributes(attributes) do
+    Enum.reduce(attributes, %{}, &extract_fields_from_attribute(&1, &2))
+  end
+
+  defp extract_fields_from_attribute({"id", id}, fields) do
+    Map.put(fields, :id, id)
+  end
+
+  defp extract_fields_from_attribute({"class", class_name}, fields) do
+    Map.merge(fields, %{
+      class_name: class_name,
+      class_list: String.split(class_name)
+    })
+  end
+
+  defp extract_fields_from_attribute(_attributes, fields) do
+    fields
+  end
+
+  @impl true
+  def handle_info({:DOWN, ref, :process, pid, :normal}, element) when is_reference(ref) and is_pid(pid) do
+    {:noreply, element}
+  end
+
+  def match(element, matcher, opts \\ [])
+
+  def match(%__MODULE__{} = element, {:tag_name, "*", _rule_opts}, _opts) do
+    element
+  end
+
+  def match(%__MODULE__{tag_name: tag_name} = element, {:tag_name, tag_name, _rule_opts}, _opts) do
+    element
+  end
+
+  def match(%__MODULE__{id: id} = element, {:id, id}, _opts) do
+    element
+  end
+
+  def match(%__MODULE__{attributes: attributes} = element, {:attribute, {compare_type, name, compare_value, attr_opts}}, _opts) do
+    name = apply_namespace(name, attr_opts[:namespace])
+
+    with {:ok, actual_value} <- Map.fetch(attributes, name),
+      {actual_value, compare_value} <- apply_case_sensitivity(actual_value, compare_value, attr_opts[:i]),
+      true <- attribute_compare(compare_type, actual_value, compare_value, attr_opts) do
+        element
+    else
+      _ -> nil
+    end
+  end
+  
+  def match(%__MODULE__{} = element, {:class, name}, _opts) when is_binary(name) do
+    if name in element.class_list,
+      do: element,
+      else: nil
+  end
+
+  def match(%__MODULE__{} = element, {:class, names}, _opts) when is_list(names) do
+    case (for name <- names, name in element.class_list, do: name) do
+      [] -> nil
+      _names -> element
+    end
+  end
+
+  def match(%__MODULE__{} = element, {:selectors, selectors}, opts) do
+    all_descendants = :pg.get_members(element.pid)
+
+    tasks = Enum.reduce(all_descendants, [], fn(pid, tasks) ->
+      Enum.reduce(selectors, tasks, fn(selector, tasks) ->
+        task = Task.async(fn ->
+          element = GenServer.call(pid, :get)
+          __MODULE__.match(element, selector, opts)
+        end)
+
+        [task | tasks]
+      end)
+    end)
+
+    Enum.reduce(selectors, opts[:await].(tasks), fn(selector, elements) ->
+      case match(element, selector, opts) do
+        nil -> elements
+        element -> [element | elements]
+      end
+    end)
+  end
+
+  def match(%__MODULE__{} = element, {:rules, [rule]}, opts) do
+    match(element, rule, opts)
+  end
+
+  def match(%__MODULE__{} = element, {:rules, [rule | [{:rule, _next_rules, next_rule_opts} | _] = rules]}, opts) do
+    rules = if match(element, rule, opts) do
+      rules
+    else
+      [rule | rules]
+    end
+
+    {pids, opts} = apply_combinator(element, next_rule_opts[:combinator], opts)
+
+    tasks = Enum.map(pids, fn(pid) ->
+      Task.async(fn ->
+        case GenServer.call(pid, :get) do
+          %__MODULE__{} = element ->
+            __MODULE__.match(element, {:rules, rules}, opts)
+          _node -> nil
+        end
+      end)
+    end)
+
+    opts[:await].(tasks)
+  end
+
+  def match(%__MODULE__{} = element, {:rule, segments, _rule_opts}, opts) do
+    Enum.reduce_while(segments, element, fn(segment, element) ->
+      case match(element, segment, opts) do
+        nil -> {:halt, nil}
+        _element -> {:cont, element}
+      end
+    end)
+  end
+
+  def match(_element, _matcher, _opts) do
+    nil
+  end
+
+  defp apply_combinator(%__MODULE__{} = element, nil, opts) do
+    if Keyword.get(opts, :recursive, true) do
+      []
+    else
+      {:pg.get_members(element.pid), opts}
+    end
+  end
+
+  defp apply_combinator(%__MODULE__{} = element, ">", opts) do
+    {element.child_nodes, Keyword.put(opts, :recursive, false)}  
+  end
+
+  defp apply_combinator(%__MODULE__{} = element, "+", opts) do
+    parent = GenServer.call(element.parent_element, :get)
+    element_idx = Enum.find_index(parent.child_nodes, &(&1 == element.pid))
+    pids = case Enum.at(parent.child_nodes, element_idx + 1) do
+      nil -> []
+      sibling_pid -> [sibling_pid]
+    end
+
+    {pids, Keyword.put(opts, :recursive, false)}
+  end
+
+  defp apply_combinator(%__MODULE__{} = element, "~", opts) do
+    parent = GenServer.call(element.parent_element, :get)
+    element_pid = element.pid
+    {_bool, pids} = Enum.reduce(parent.child_nodes, {false, []}, fn
+      ^element_pid, {false, []} -> {true, []}
+      child_pid, {true, child_pids} -> {true, [child_pid | child_pids]}
+      _child_pid, {false, _child_pids} -> {false, []}
+    end)
+
+    {pids, Keyword.put(opts, :recursive, false)}
+  end
+
+  defp attribute_compare(:exists, _actual_value, _compare_value, _opts) do
+    true
+  end
+
+  defp attribute_compare(:equal, actual_value, compare_value, _opts) do
+    actual_value == compare_value
+  end
+
+  defp attribute_compare(:prefix, actual_value, compare_value, _opts) do
+    String.starts_with?(actual_value, compare_value)
+  end
+
+  defp attribute_compare(:suffix, actual_value, compare_value, _opts) do
+    String.ends_with?(actual_value, compare_value)
+  end
+
+  defp attribute_compare(:dash_match, actual_value, compare_value, _opts) do
+    split_actual_value = String.split(actual_value, "-")
+
+    compare_value in split_actual_value
+  end
+
+  defp attribute_compare(:substring, actual_value, compare_value, _opts) do
+    String.contains?(actual_value, compare_value)
+  end
+
+  defp attribute_compare(:includes, actual_value, compare_value, _opts) do
+    split_compare_value = String.split(compare_value)
+
+    Enum.any?(split_compare_value, fn(compare_value) ->
+      String.contains?(actual_value, compare_value)
+    end)
+  end
+
+  defp apply_case_sensitivity(string_a, string_b, nil) do
+    {string_a, string_b}
+  end
+
+  defp apply_case_sensitivity(string_a, string_b, _i) do
+    {String.downcase(string_a), String.downcase(string_b)}
+  end
+
+  defp apply_namespace(name, nil) do
+    name
+  end
+
+  defp apply_namespace(name, namespace) do
+    "#{namespace}:#{name}"
+  end
+
   def allowed_fields,
     do: super() ++ [:class_list, :id, :attributes, :tag_name]
 
@@ -168,15 +385,18 @@ defmodule GenDOM.Element do
   end
 
   def get_elements_by_class_name(%__MODULE__{} = element, names) do
+    query = Stream.map(names, &(".#{&1}")) |> Enum.join(",")
 
+    GenServer.call(element.pid, {:query_selector_all, query})
   end
 
   def get_elements_by_tag_name(%__MODULE__{} = element, tag_name) do
-
+    GenServer.call(element.pid, {:query_selector_all, tag_name})
   end
 
   def get_elements_by_tag_name_ns(%__MODULE__{} = element, namespace, local_name) do
-
+    query = "#{namespace}|#{local_name}"
+    GenServer.call(element.pid, {:query_selector_all, query})
   end
 
   def get_html(%__MODULE__{} = element, options \\ []) do
@@ -215,20 +435,16 @@ defmodule GenDOM.Element do
 
   end
 
-  def matches?(%__MODULE__{} = element, selectors) when is_binary(selectors) do
-
-  end
-
   def prepend(%__MODULE__{} = element, nodes) when is_list(nodes) do
 
   end
 
   def query_selector(%__MODULE__{} = element, selectors) when is_binary(selectors) do
-
   end
 
   def query_selector_all(%__MODULE__{} = element, selectors) when is_binary(selectors) do
-
+    selectors = Selector.parse(selectors)
+    GenServer.call(element.pid, {:query_selector_all, selectors})
   end
 
   def release_pointer_capture(%__MODULE__{} = element, pointer_id) do

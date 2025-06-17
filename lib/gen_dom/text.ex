@@ -15,4 +15,8 @@ defmodule GenDOM.Text do
 
   def allowed_fields,
     do: super() ++ [:whole_text] 
+
+  def handle_call({:matches?, _matcher, _opts}, _from, text) do
+    {:reply, nil, text}
+  end
 end

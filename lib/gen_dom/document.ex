@@ -1,4 +1,6 @@
 defmodule GenDOM.Document do
+  alias GenDOM.Element
+
   use GenDOM.Node, [
     node_type: 10,
     active_element: nil,
@@ -47,6 +49,9 @@ defmodule GenDOM.Document do
     visibility_state: nil
   ]
 
+  defguardp is_timeout(timeout)
+    when timeout == :infinity or (is_integer(timeout) and timeout >= 0)
+
   def encode(document) do
     Map.merge(super(document), %{
       style_sheets: document.style_sheets,
@@ -61,75 +66,146 @@ defmodule GenDOM.Document do
     do: super() ++ [:title, :body, :head]
 
   @impl true
-  def handle_call({:query_selector, selector}, _from, document) do
-    if matches_selector?(document, selector) do
-      {:reply, {:ok, document}, document}
-    else
-      case query_children_for_first_match(document, selector) do
-        {:ok, result} -> {:reply, {:ok, result}, document}
-        error -> {:reply, error, document}
+
+  def handle_info({:DOWN, ref, :process, pid, :normal}, document) when is_reference(ref) and is_pid(pid) do
+    {:noreply, document}
+  end
+
+  defp await_one(tasks, timeout \\ 5_000) when is_list(tasks) do
+    awaiting =
+      Map.new(tasks, fn %Task{ref: ref, owner: owner} = task ->
+        if owner != self() do
+          raise ArgumentError, invalid_owner_error(task)
+        end
+
+        {ref, true}
+      end)
+
+    timeout_ref = make_ref()
+
+    timer_ref =
+      if timeout != :infinity do
+        Process.send_after(self(), timeout_ref, timeout)
       end
+
+    try do
+      await_one(tasks, timeout, awaiting, timeout_ref)
+    after
+      timer_ref && Process.cancel_timer(timer_ref)
+      receive do: (^timeout_ref -> :ok), after: (0 -> :ok)
     end
   end
 
-  @impl true
-  def handle_call({:query_selector_all, selector}, _from, document) do
-    matches = if matches_selector?(document, selector), do: [document], else: []
+  defp await_one(_tasks, _timeout, awaiting, _timeout_ref) when map_size(awaiting) == 0 do
+    nil
+  end
 
-    case query_children_for_all_matches(document, selector) do
-      {:ok, child_matches} -> {:reply, {:ok, matches ++ child_matches}, document}
-      _ -> {:reply, {:ok, matches}, document}
+  defp await_one(tasks, timeout, awaiting, timeout_ref) do
+    receive do
+      ^timeout_ref ->
+        demonitor_pending_tasks(awaiting)
+        exit({:timeout, {__MODULE__, :await_one, [tasks, timeout]}})
+
+      {:DOWN, ref, _, proc, reason} when is_map_key(awaiting, ref) ->
+        demonitor_pending_tasks(awaiting)
+        exit({reason(reason, proc), {__MODULE__, :await_many, [tasks, timeout]}})
+
+      {ref, nil} when is_map_key(awaiting, ref) ->
+        demonitor(ref)
+        await_one(tasks, timeout, Map.delete(awaiting, ref), timeout_ref)
+
+      {ref, reply} when is_map_key(awaiting, ref) ->
+        awaiting = Map.delete(awaiting, ref)
+        demonitor_pending_tasks(awaiting)
+
+        reply
     end
   end
 
-  defp query_children_for_first_match(node, selector) do
-    child_nodes = node.child_nodes || []
-
-    if child_nodes == [] do
-      {:error, :not_found}
-    else
-      Enum.reduce_while(child_nodes, {:error, :not_found}, fn child_name, acc ->
-        child = GenServer.call(child_name, :get)
-
-        if matches_selector?(child, selector) do
-          {:halt, {:ok, child}}
-        else
-          case query_children_for_first_match(child, selector) do
-            {:ok, matching_node} -> {:halt, {:ok, matching_node}}
-            _ -> {:cont, acc}
-          end
-        end
-      end)
-    end
-  end
-
-  defp matches_selector?(child, selector) do
-    false
-  end
-
-  defp query_children_for_all_matches(node, selector) do
-    child_nodes = node.child_nodes || []
-
-    if child_nodes == [] do
-      {:ok, []}
-    else
-      child_matches = Enum.flat_map(child_nodes, fn child_name ->
-        child = GenServer.call(child_name, :get)
-
-        direct_matches = if matches_selector?(child, selector), do: [child], else: []
-
-        child_children_matches = case query_children_for_all_matches(child, selector) do
-          {:ok, matching_nodes} when is_list(matching_nodes) -> matching_nodes
-          _ -> []
+  def await_many(tasks, timeout \\ 5_000) when is_timeout(timeout) do
+    awaiting =
+      Map.new(tasks, fn %Task{ref: ref, owner: owner} = task ->
+        if owner != self() do
+          raise ArgumentError, invalid_owner_error(task)
         end
 
-        direct_matches ++ child_children_matches
+        {ref, true}
       end)
 
-      {:ok, child_matches}
+    timeout_ref = make_ref()
+
+    timer_ref =
+      if timeout != :infinity do
+        Process.send_after(self(), timeout_ref, timeout)
+      end
+
+    try do
+      await_many(tasks, timeout, awaiting, %{}, timeout_ref)
+    after
+      timer_ref && Process.cancel_timer(timer_ref)
+      receive do: (^timeout_ref -> :ok), after: (0 -> :ok)
     end
   end
 
+  defp await_many(tasks, _timeout, awaiting, replies, _timeout_ref)
+       when map_size(awaiting) == 0 do
+    for %{ref: ref} <- tasks, do: Map.fetch!(replies, ref)
+  end
+
+  defp await_many(tasks, timeout, awaiting, replies, timeout_ref) do
+    receive do
+      ^timeout_ref ->
+        demonitor_pending_tasks(awaiting)
+        exit({:timeout, {__MODULE__, :await_many, [tasks, timeout]}})
+
+      {:DOWN, ref, _, proc, reason} when is_map_key(awaiting, ref) ->
+        demonitor_pending_tasks(awaiting)
+        exit({reason(reason, proc), {__MODULE__, :await_many, [tasks, timeout]}})
+
+      {ref, nil} when is_map_key(awaiting, ref) ->
+        demonitor(ref)
+
+        await_many(
+          Enum.reject(tasks, &(&1.ref == ref)),
+          timeout,
+          Map.delete(awaiting, ref),
+          replies,
+          timeout_ref
+        )
+
+      {ref, reply} when is_map_key(awaiting, ref) ->
+        demonitor(ref)
+
+        await_many(
+          tasks,
+          timeout,
+          Map.delete(awaiting, ref),
+          Map.put(replies, ref, reply),
+          timeout_ref
+        )
+    end
+  end
+
+  defp demonitor_pending_tasks(awaiting) do
+    Enum.each(awaiting, fn {ref, _} ->
+      demonitor(ref)
+    end)
+  end
+
+  defp reason(:noconnection, proc), do: {:nodedown, monitor_node(proc)}
+  defp reason(reason, _), do: reason
+
+  defp monitor_node(pid) when is_pid(pid), do: node(pid)
+  defp monitor_node({_, node}), do: node
+
+  defp demonitor(ref) when is_reference(ref) do
+    Process.demonitor(ref, [:flush])
+    :ok
+  end
+
+  defp invalid_owner_error(task) do
+    "task #{inspect(task)} must be queried from the owner but was queried from #{inspect(self())}"
+  end
 
   def adopt_node(%__MODULE__{} = _document, _node) do
 
@@ -228,23 +304,51 @@ defmodule GenDOM.Document do
   end
 
   def get_element_by_id(%__MODULE__{} = document, id) do
+    all_descendants = :pg.get_members(document.pid)
 
+    tasks = Enum.map(all_descendants, fn(pid) ->
+      Task.async(fn ->
+        element = GenServer.call(pid, :get)
+        Element.match(element, {:id, id})
+      end)
+    end)
+
+    await_one(tasks)
   end
 
   def get_elements_by_class_name(%__MODULE__{} = document, names) do
+    names = String.split(names)
+    all_descendants = :pg.get_members(document.pid)
 
+    tasks = Enum.map(all_descendants, fn(pid) ->
+      Task.async(fn ->
+        element = GenServer.call(pid, :get)
+        Element.match(element, {:class, names})
+      end)
+    end)
+
+    await_many(tasks)
   end
 
   def get_elements_by_name(%__MODULE__{} = document, name) do
-
+    query_selector_all(document, ~s([name="#{name}"]))
   end
 
-  def get_elements_by_tag_name(%__MODULE__{} = document, name) do
+  def get_elements_by_tag_name(%__MODULE__{} = document, tag_name) do
+    all_descendants = :pg.get_members(document.pid)
 
+    tasks = Enum.map(all_descendants, fn(pid) ->
+      Task.async(fn ->
+        element = GenServer.call(pid, :get)
+        Element.match(element, {:tag_name, tag_name})
+      end)
+    end)
+
+    await_many(tasks)
   end
 
-  def get_elements_by_tag_name_ns(%__MODULE__{} = document, namespace, name) do
-
+  def get_elements_by_tag_name_ns(%__MODULE__{} = document, namespace, local_name) do
+    query_selector_all(document, "#{namespace}|#{local_name}")
   end
 
   def get_selection(%__MODULE__{} = document) do
@@ -275,18 +379,42 @@ defmodule GenDOM.Document do
 
   end
 
-
-
   def replace_children(%__MODULE__{} = document, children) when is_list(children) do
 
   end
 
-  def query_selector(%__MODULE__{} = document, selector_string) when is_binary(selector_string) do
-    GenServer.call(document.pid, {:query_selector, selector_string})
+  def query_selector(%__MODULE__{} = document, selectors) when is_binary(selectors) do
+    selectors = Selector.parse(selectors)
+    all_descendants = :pg.get_members(document.pid)
+
+    tasks = Enum.map(all_descendants, fn(pid) ->
+      Task.async(fn ->
+        element = GenServer.call(pid, :get)
+        Element.match(element, selectors, await: &await_one/1)
+      end)
+    end)
+
+    await_one(tasks)
   end
 
-  def query_selector_all(%__MODULE__{} = document, selector_string) when is_binary(selector_string) do
-    GenServer.call(document.pid, {:query_selector_all, selector_string})
+  def query_selector_all(%__MODULE__{} = document, selectors) when is_binary(selectors) do
+    selectors = Selector.parse(selectors)
+    # all_descendants = :pg.get_members(document.pid)
+
+    tasks = Enum.map(document.child_nodes, fn(pid) ->
+      Task.async(fn ->
+        case GenServer.call(pid, :get) do
+          %Element{} = element ->
+            Element.match(element, selectors, await: &await_many/1)
+          _node ->
+            nil
+        end
+      end)
+    end)
+
+    await_many(tasks)
+    |> List.flatten()
+    |> Enum.uniq()
   end
 
   def request_storage_access(%__MODULE__{} = document, types \\ %{all: true}) do
