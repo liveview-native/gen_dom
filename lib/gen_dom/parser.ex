@@ -14,6 +14,7 @@ defmodule GenDOM.Parser do
 
     document = Document.new([])
 
+
     children = create_elements_from_children(children, [])
 
     if receiver = opts[:receiver] do
@@ -24,11 +25,36 @@ defmodule GenDOM.Parser do
     Enum.reduce(children, document, &Document.append_child(&2, &1, receiver: opts[:receiver]))
   end
 
-  defp create_elements_from_children([], elements), do: Enum.reverse(elements)
+  def parse_from_html(string, _mime_type \\ nil, opts) do
+    {:ok, children} =
+      Floki.parse_document(string,
+        attributes_as_maps: true
+      )
+
+    document = Document.new([])
+
+    # {children} = create_elements_from_children(children, [], 0)
+    :timer.tc fn ->
+      children = create_elements_from_children(children, [])
+
+      if receiver = opts[:receiver] do
+        document = Document.put(document, :receiver, receiver)
+        send(receiver, {:document, Document.encode(document)})
+      end
+
+      Enum.reduce(children, document, &Document.append_child(&2, &1, receiver: opts[:receiver]))
+    end
+  end
+
+  defp create_elements_from_children([], elements), do: elements
 
   defp create_elements_from_children([text | tail], nodes) when is_binary(text) do
     node = Text.new(whole_text: text)
     create_elements_from_children(tail, [node | nodes])
+  end
+
+  defp create_elements_from_children([{:comment, _comment} | tail], nodes) do
+    create_elements_from_children(tail, nodes)
   end
 
   defp create_elements_from_children([{tag_name, attributes, children} | tail], nodes) do
@@ -38,5 +64,9 @@ defmodule GenDOM.Parser do
     element = Enum.reduce(children, element, &Element.append_child(&2, &1))
 
     create_elements_from_children(tail, [element | nodes])
+  end
+
+  defp create_elements_from_children([other | tail], nodes) do
+    create_elements_from_children(tail, nodes)
   end
 end

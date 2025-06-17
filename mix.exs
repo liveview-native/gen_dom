@@ -22,8 +22,10 @@ defmodule GenDOM.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:benchee, "~> 1.4"},
       {:live_view_native, github: "liveview-native/live_view_native"},
-      {:selector, path: "../selector"}
+      {:floki, "~> 0.38"},
+      {:selector, github: "liveview-native/selector"}
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
