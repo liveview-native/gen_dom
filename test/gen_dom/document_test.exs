@@ -95,6 +95,24 @@ defmodule GenDOM.DocumentTest do
   end
 
   describe "query_selector_all/2" do
+    test "finds nested elements with attr query" do
+      document = Document.new([])
+      head = Element.new(tag_name: "head")
+      text = Element.new(
+        tag_name: "Text",
+        attributes: %{
+          "template" => "loading"
+        }
+      )
+
+      head = Element.append_child(head, text)
+      document = Document.append_child(document, head)
+
+      text = GenServer.call(text.pid, :get)
+
+      assert [text] == Document.query_selector_all(document, ~s(head [template="loading"]))
+    end
+
     test "finds all elements that match a tag selector" do
       document = Document.new([])
       div1 = Element.new(tag_name: "div")

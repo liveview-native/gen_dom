@@ -1,11 +1,12 @@
 defmodule GenDOM.Element do
-  @derive {Inspect, only: [:tag_name, :id]}
+  @derive {Inspect, only: [:pid, :tag_name, :id, :class_list, :attributes]}
 
   use GenDOM.Node, [
     active_element: nil,
     adopted_style_sheets: nil,
     node_type: 1,
 
+    tag_name: nil,
     aria_active_descendant_element: nil,
     aria_atomic: nil,
     aria_auto_complete: nil,
@@ -87,7 +88,6 @@ defmodule GenDOM.Element do
     scroll_width: 0,
     shadow_root: nil,
     slot: nil,
-    tag_name: nil
   ]
 
   def encode(element) do
@@ -247,9 +247,9 @@ defmodule GenDOM.Element do
 
   defp apply_combinator(%__MODULE__{} = element, nil, opts) do
     if Keyword.get(opts, :recursive, true) do
-      {[], opts}
-    else
       {:pg.get_members(element.pid), opts}
+    else
+      {[], opts}
     end
   end
 
