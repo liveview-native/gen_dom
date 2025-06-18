@@ -247,7 +247,7 @@ defmodule GenDOM.Element do
 
   defp apply_combinator(%__MODULE__{} = element, nil, opts) do
     if Keyword.get(opts, :recursive, true) do
-      []
+      {[], opts}
     else
       {:pg.get_members(element.pid), opts}
     end
