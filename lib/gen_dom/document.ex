@@ -71,7 +71,7 @@ defmodule GenDOM.Document do
     {:noreply, document}
   end
 
-  defp await_one(tasks, timeout \\ 5_000) when is_list(tasks) do
+  def await_one(tasks, timeout \\ 5_000) when is_list(tasks) do
     awaiting =
       Map.new(tasks, fn %Task{ref: ref, owner: owner} = task ->
         if owner != self() do
@@ -96,11 +96,11 @@ defmodule GenDOM.Document do
     end
   end
 
-  defp await_one(_tasks, _timeout, awaiting, _timeout_ref) when map_size(awaiting) == 0 do
+  def await_one(_tasks, _timeout, awaiting, _timeout_ref) when map_size(awaiting) == 0 do
     nil
   end
 
-  defp await_one(tasks, timeout, awaiting, timeout_ref) do
+  def await_one(tasks, timeout, awaiting, timeout_ref) do
     receive do
       ^timeout_ref ->
         demonitor_pending_tasks(awaiting)
@@ -117,6 +117,7 @@ defmodule GenDOM.Document do
       {ref, reply} when is_map_key(awaiting, ref) ->
         awaiting = Map.delete(awaiting, ref)
         demonitor_pending_tasks(awaiting)
+        # shutdown_pending_tasks(awaiting)
 
         reply
     end

@@ -184,12 +184,26 @@ defmodule GenDOM.Element do
       end)
     end)
 
-    Enum.reduce(selectors, opts[:await].(tasks), fn(selector, elements) ->
-      case match(element, selector, opts) do
-        nil -> elements
-        element -> [element | elements]
-      end
-    end)
+    case opts[:await].(tasks) do
+      child_elements when is_list(child_elements) ->
+        Enum.reduce(selectors, child_elements, fn(selector, child_elements) ->
+          case match(element, selector, opts) do
+            nil -> child_elements
+            child_element -> [child_element | child_elements]
+          end
+        end)
+
+      nil ->
+        Enum.reduce_while(selectors, nil, fn
+          selector, nil ->
+            case match(element, selector, opts) do
+              nil -> {:cont, nil}
+              element -> {:halt, element}
+            end
+        end)
+
+      child_element -> child_element
+    end
   end
 
   def match(%__MODULE__{} = element, {:rules, [rule]}, opts) do

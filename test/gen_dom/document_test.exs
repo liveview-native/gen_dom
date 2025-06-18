@@ -36,13 +36,13 @@ defmodule GenDOM.DocumentTest do
 
       # Add elements to the document
       document = Node.append_child(document, div)
-      _div = Node.append_child(div, p)
+      div = Node.append_child(div, p)
 
       # Test query_selector with tag name
-      assert {:ok, matched_element} = Document.query_selector(document, "div")
+      matched_element = Document.query_selector(document, "div")
       assert matched_element.tag_name == "div"
 
-      assert {:ok, matched_element} = Document.query_selector(document, "p")
+      matched_element = Document.query_selector(document, "p")
       assert matched_element.tag_name == "p"
     end
 
@@ -56,10 +56,10 @@ defmodule GenDOM.DocumentTest do
       _div = Node.append_child(div, p)
 
       # Test query_selector with ID
-      assert {:ok, matched_element} = Document.query_selector(document, "#main")
+      matched_element = Document.query_selector(document, "#main")
       assert matched_element.id == "main"
 
-      assert {:ok, matched_element} = Document.query_selector(document, "#content")
+      matched_element = Document.query_selector(document, "#content")
       assert matched_element.id == "content"
     end
 
@@ -73,10 +73,10 @@ defmodule GenDOM.DocumentTest do
       _div = Node.append_child(div, p)
 
       # Test query_selector with class
-      assert {:ok, matched_element} = Document.query_selector(document, ".container")
+      matched_element = Document.query_selector(document, ".container")
       assert "container" in matched_element.class_list
 
-      assert {:ok, matched_element} = Document.query_selector(document, ".highlight")
+      matched_element = Document.query_selector(document, ".highlight")
       assert "highlight" in matched_element.class_list
     end
 
@@ -88,9 +88,9 @@ defmodule GenDOM.DocumentTest do
       document = Node.append_child(document, div)
 
       # Test query_selector with non-existent element
-      assert {:error, :not_found} = Document.query_selector(document, "span")
-      assert {:error, :not_found} = Document.query_selector(document, "#nonexistent")
-      assert {:error, :not_found} = Document.query_selector(document, ".missing")
+      refute Document.query_selector(document, "span")
+      refute Document.query_selector(document, "#nonexistent")
+      refute Document.query_selector(document, ".missing")
     end
   end
 
@@ -107,11 +107,11 @@ defmodule GenDOM.DocumentTest do
       _div1 = Node.append_child(div1, p)
 
       # Test query_selector_all with tag name
-      assert {:ok, matched_elements} = Document.query_selector_all(document, "div")
+      matched_elements = Document.query_selector_all(document, "div")
       assert length(matched_elements) == 2
       assert Enum.all?(matched_elements, fn el -> el.tag_name == "div" end)
 
-      assert {:ok, matched_elements} = Document.query_selector_all(document, "p")
+      matched_elements = Document.query_selector_all(document, "p")
       assert length(matched_elements) == 1
       assert hd(matched_elements).tag_name == "p"
     end
@@ -128,11 +128,11 @@ defmodule GenDOM.DocumentTest do
       _div1 = Node.append_child(div1, p)
 
       # Test query_selector_all with class
-      assert {:ok, matched_elements} = Document.query_selector_all(document, ".container")
+      matched_elements = Document.query_selector_all(document, ".container")
       assert length(matched_elements) == 2
       assert Enum.all?(matched_elements, fn el -> "container" in el.class_list end)
 
-      assert {:ok, matched_elements} = Document.query_selector_all(document, ".large")
+      matched_elements = Document.query_selector_all(document, ".large")
       assert length(matched_elements) == 1
       assert "large" in hd(matched_elements).class_list
     end
@@ -145,9 +145,9 @@ defmodule GenDOM.DocumentTest do
       document = Node.append_child(document, div)
 
       # Test query_selector_all with non-existent elements
-      assert {:ok, []} = Document.query_selector_all(document, "span")
-      assert {:ok, []} = Document.query_selector_all(document, "#nonexistent")
-      assert {:ok, []} = Document.query_selector_all(document, ".missing")
+      assert [] = Document.query_selector_all(document, "span")
+      assert [] = Document.query_selector_all(document, "#nonexistent")
+      assert [] = Document.query_selector_all(document, ".missing")
     end
 
     test "finds elements at different levels of nesting" do
@@ -162,7 +162,7 @@ defmodule GenDOM.DocumentTest do
       _div2 = Node.append_child(div2, div3)
 
       # Test query_selector_all finding elements at all levels
-      assert {:ok, matched_elements} = Document.query_selector_all(document, "div")
+      matched_elements = Document.query_selector_all(document, "div")
       assert length(matched_elements) == 3
     end
   end
