@@ -176,12 +176,33 @@ defmodule GenDOM.DocumentTest do
 
       # Create a nested structure
       document = Node.append_child(document, div1)
-      div1 = Node.append_child(div1, div2)
+      _div1 = Node.append_child(div1, div2)
       _div2 = Node.append_child(div2, div3)
 
       # Test query_selector_all finding elements at all levels
       matched_elements = Document.query_selector_all(document, "div")
       assert length(matched_elements) == 3
+    end
+  end
+
+
+  describe "pseudo selectors" do
+    test ":not" do
+      document = Document.new([])
+      div1 = Element.new(tag_name: "div", class_list: ["level1"])
+      div2 = Element.new(tag_name: "div", class_list: ["level2"])
+      div3 = Element.new(tag_name: "div", class_list: ["level3"])
+
+      document = Node.append_child(document, div1)
+      div1 = Node.append_child(div1, div2)
+      div1 = Node.append_child(div1, div3)
+
+      div3 = GenServer.call(div3.pid, :get)
+
+      document = GenServer.call(document.pid, :get)
+
+      assert [div1, div3] == Document.query_selector_all(document, "div:not(.level2)")
+      assert [div3] == Document.query_selector_all(document, "div :not(.level2)")
     end
   end
 end

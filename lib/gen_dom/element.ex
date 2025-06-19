@@ -1,6 +1,10 @@
 defmodule GenDOM.Element do
   @derive {Inspect, only: [:pid, :tag_name, :id, :class_list, :attributes]}
 
+  alias GenDOM.{
+    Match.Pseudo
+  }
+
   use GenDOM.Node, [
     active_element: nil,
     adopted_style_sheets: nil,
@@ -168,6 +172,10 @@ defmodule GenDOM.Element do
       [] -> nil
       _names -> element
     end
+  end
+
+  def match(%__MODULE__{} = element, {:pseudo_class, {type, params}}, opts) do
+    Pseudo.match(element, type, params, opts)
   end
 
   def match(%__MODULE__{} = element, {:selectors, selectors}, opts) do
