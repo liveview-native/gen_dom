@@ -1,9 +1,8 @@
-defmodule GenDOM.Match.Pseudo do
+defmodule GenDOM.Matcher.Pseudo do
   @moduledoc false
 
   import GenDOM.Document, only: [
-    await_one: 1,
-    await_many: 1
+    await_one: 1
   ]
 
   alias GenDOM.Element
@@ -13,7 +12,7 @@ defmodule GenDOM.Match.Pseudo do
 
     tasks = Enum.map(params, fn(param) ->
       Task.async fn ->
-        Element.match(element, param, opts)
+        GenDOM.Matcher.match(element, param, opts)
       end
     end)
 

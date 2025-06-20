@@ -1,5 +1,8 @@
 defmodule GenDOM.Document do
-  alias GenDOM.Element
+  alias GenDOM.{
+    Element,
+    Matcher
+  }
 
   use GenDOM.Node, [
     node_type: 10,
@@ -71,6 +74,49 @@ defmodule GenDOM.Document do
     {:noreply, document}
   end
 
+  def clone_node(node, deep? \\ false) do
+    fields = Map.drop(node, [
+      :__struct__,
+      :pid,
+      :receiver,
+      :owner_document,
+      :parent_element,
+      :parent_node,
+      :previous_sibling,
+      :last_child,
+      :first_child,
+      :base_node,
+      :child_nodes,
+
+      :body,
+      :child_element_count,
+      :children,
+      :cookie,
+      :document,
+      :document_element,
+      :document_uri,
+      :head,
+      :images,
+      :last_element_child,
+      :links,
+      :picture_in_picture_element,
+      :scripts,
+      :style_sheets,
+      :title
+    ]) |> Map.to_list()
+
+    new_node = apply(node.__struct__, :new, [fields])
+
+    if deep? do
+      Enum.reduce(node.child_nodes, new_node, fn(child_node_pid, new_node) ->
+        child_node = GenServer.call(child_node_pid, :get)
+        append_child(new_node, clone_node(child_node, deep?))
+      end)
+    else
+      new_node
+    end
+  end
+
   def await_one(tasks, timeout \\ 5_000) when is_list(tasks) do
     awaiting =
       Map.new(tasks, fn %Task{ref: ref, owner: owner} = task ->
@@ -123,7 +169,7 @@ defmodule GenDOM.Document do
     end
   end
 
-  def await_many(tasks, timeout \\ 5_000) when is_timeout(timeout) do
+  def await_many(tasks, timeout \\ 60_000) when is_timeout(timeout) do
     awaiting =
       Map.new(tasks, fn %Task{ref: ref, owner: owner} = task ->
         if owner != self() do
@@ -310,7 +356,7 @@ defmodule GenDOM.Document do
     tasks = Enum.map(all_descendants, fn(pid) ->
       Task.async(fn ->
         element = GenServer.call(pid, :get)
-        Element.match(element, {:id, id})
+        Matcher.match(element, {:id, id})
       end)
     end)
 
@@ -324,7 +370,7 @@ defmodule GenDOM.Document do
     tasks = Enum.map(all_descendants, fn(pid) ->
       Task.async(fn ->
         element = GenServer.call(pid, :get)
-        Element.match(element, {:class, names})
+        Matcher.match(element, {:class, names})
       end)
     end)
 
@@ -341,7 +387,7 @@ defmodule GenDOM.Document do
     tasks = Enum.map(all_descendants, fn(pid) ->
       Task.async(fn ->
         element = GenServer.call(pid, :get)
-        Element.match(element, {:tag_name, tag_name})
+        Matcher.match(element, {:tag_name, tag_name})
       end)
     end)
 
@@ -391,7 +437,7 @@ defmodule GenDOM.Document do
     tasks = Enum.map(all_descendants, fn(pid) ->
       Task.async(fn ->
         element = GenServer.call(pid, :get)
-        Element.match(element, selectors, await: &await_one/1)
+        Matcher.match(element, selectors, await: &await_one/1)
       end)
     end)
 
@@ -406,7 +452,7 @@ defmodule GenDOM.Document do
       Task.async(fn ->
         case GenServer.call(pid, :get) do
           %Element{} = element ->
-            Element.match(element, selectors, await: &await_many/1)
+            Matcher.match(element, selectors, await: &await_many/1)
           _node ->
             nil
         end

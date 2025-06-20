@@ -204,5 +204,39 @@ defmodule GenDOM.DocumentTest do
       assert [div1, div3] == Document.query_selector_all(document, "div:not(.level2)")
       assert [div3] == Document.query_selector_all(document, "div :not(.level2)")
     end
+
+    test "very complex :not case" do
+      html = """
+        <div class="main-content" id="content1">
+          <p>This paragraph should be selected.</p>
+          <div class="container">
+            <p data-status="inactive">This paragraph should be selected.</p>
+            <p data-status="active">This paragraph should NOT be selected.</p>
+          </div>
+          <span class="info">Some info here.</span>
+        </div>
+
+        <div class="main-content" id="temp-div-1">
+          <p>This entire div should NOT be selected.</p>
+        </div>
+
+        <div class="main-content" id="content2">
+          <p>Another paragraph to be selected.</p>
+        </div>
+        """
+
+      document = GenDOM.Parser.parse_from_html(html, nil, [])
+
+      [div1, div2, div3] = GenDOM.Document.query_selector_all(document, ~s'div:not(.container > p[data-status="active"]):not([id^="temp"])')
+
+      assert div1.id == "content1"
+      assert "main-content" in div1.class_list 
+
+      assert div2.id == ""
+      assert "content" in div2.class_list
+
+      assert div3.id == "content2"
+      assert "main-content" in div3.class_list 
+    end
   end
 end
