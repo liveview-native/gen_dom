@@ -96,6 +96,18 @@ defmodule GenDOM.Element do
     slot: nil,
   ]
 
+  defmacro __using__(fields \\ []) do
+    quote do
+      Module.register_attribute(__MODULE__, :fields, accumulate: true)
+
+      @fields unquote(Macro.escape(fields))
+      @fields unquote(Macro.escape(@fields))
+
+      use GenDOM.Node
+    end
+  end
+
+
   def encode(element) do
     Map.merge(super(element), %{
       class_list: element.class_list,

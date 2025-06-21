@@ -1,7 +1,7 @@
 defmodule GenDOM.Node do
   use GenServer
 
-  @properties [
+  @fields [
     assigns: %{},
     pid: nil,
     receiver: nil,
@@ -26,7 +26,12 @@ defmodule GenDOM.Node do
     quote do
       use GenServer
 
-      defstruct Keyword.merge(unquote(Macro.escape(@properties)), unquote(Macro.escape(fields)))
+      Module.register_attribute(__MODULE__, :fields, accumulate: true)
+
+      @fields unquote(Macro.escape(fields))
+      @fields unquote(Macro.escape(@fields))
+
+      defstruct List.flatten(@fields) |> Enum.reverse()
 
       def start_link(opts) do
         GenServer.start_link(__MODULE__, opts)
@@ -126,7 +131,7 @@ defmodule GenDOM.Node do
     end
   end
 
-  defstruct @properties
+  defstruct @fields
 
   def start_link(opts) do
     name = GenDOM.generate_name(__MODULE__)

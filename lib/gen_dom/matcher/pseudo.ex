@@ -1,9 +1,7 @@
 defmodule GenDOM.Matcher.Pseudo do
   @moduledoc false
 
-  import GenDOM.Document, only: [
-    await_one: 1
-  ]
+  import GenDOM.Task
 
   alias GenDOM.Element
 
