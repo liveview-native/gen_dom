@@ -34,7 +34,7 @@ defmodule GenDOM.MixProject do
   defp package do
     [
       name: "gen_dom",
-      files: ~w(lib .formatter.exs mix.exs README.md LICENSE.md),
+      files: ~w(lib .formatter.exs mix.exs README.md LICENSE.md logo.png),
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/liveview-native/gen_dom",
@@ -49,6 +49,7 @@ defmodule GenDOM.MixProject do
     [
       main: "GenDOM",
       source_url: "https://github.com/liveview-native/gen_dom",
+      logo: "logo.png",
       extras: ["README.md", "LICENSE.md"],
       groups_for_modules: [
         "Core": [GenDOM, GenDOM.Node, GenDOM.Element, GenDOM.Document],
