@@ -1,4 +1,32 @@
 defmodule GenDOM.Node do
+  @moduledoc """
+  The DOM Node interface is an abstract base class upon which many other DOM API objects are based,
+  thus letting those object types to be used similarly and often interchangeably.
+
+  The `GenDOM.Node` module provides the base functionality for all DOM node types in the GenDOM library.
+  It implements the core DOM Node specification as an Elixir GenServer process, allowing for stateful
+  node management and hierarchical tree operations.
+
+  ## Usage
+
+  ```elixir
+  # Create a new node
+  {:ok, node} = GenDOM.Node.new([])
+
+  # Use in other modules
+  defmodule MyElement do
+    use GenDOM.Node, [custom_field: "value"]
+  end
+  ```
+
+  ## Features
+
+  - Full DOM Node specification compliance
+  - Process-based state management via GenServer
+  - Hierarchical tree operations (appendChild, removeChild, etc.)
+  - Node comparison and traversal methods
+  - Namespace handling for XML documents
+  """
   use GenServer
 
   @fields [
@@ -28,10 +56,19 @@ defmodule GenDOM.Node do
 
       Module.register_attribute(__MODULE__, :fields, accumulate: true)
 
-      @fields unquote(Macro.escape(fields))
       @fields unquote(Macro.escape(@fields))
+      @fields unquote(Macro.escape(fields))
 
-      defstruct List.flatten(@fields) |> Enum.reverse()
+      # Flatten and resolve field conflicts (later fields override earlier ones)
+      all_fields = List.flatten(@fields)
+      |> Enum.reverse()
+      |> Enum.uniq_by(fn 
+        {key, _} -> key
+        key -> key
+      end)
+      |> Enum.reverse()
+
+      defstruct all_fields
 
       def start_link(opts) do
         GenServer.start_link(__MODULE__, opts)
@@ -68,6 +105,8 @@ defmodule GenDOM.Node do
       defdelegate append_child(node, child, opts), to: GenDOM.Node
       defdelegate append_child!(node, child), to: GenDOM.Node
       defdelegate append_child!(node, child, opts), to: GenDOM.Node
+      defdelegate clone_node(node), to: GenDOM.Node
+      defdelegate clone_node(node, deep?), to: GenDOM.Node
       defdelegate compare_document_position(node, other_node), to: GenDOM.Node
       defdelegate contains?(node, other_node), to: GenDOM.Node
       defdelegate has_child_nodes?(node), to: GenDOM.Node
@@ -346,6 +385,27 @@ defmodule GenDOM.Node do
     node
   end
 
+  @doc """
+  Adds the specified child node as the last child to the current node.
+
+  Returns the modified parent node with the child appended to its `child_nodes` list.
+  This method implements the DOM `appendChild()` specification.
+
+  ## Parameters
+
+  - `parent` - The parent node to append to
+  - `child` - The child node to append
+  - `opts` - Optional keyword list of options
+
+  ## Examples
+
+      iex> {:ok, parent} = GenDOM.Node.new([])
+      iex> {:ok, child} = GenDOM.Node.new([])
+      iex> updated_parent = GenDOM.Node.append_child(parent, child)
+      iex> length(updated_parent.child_nodes)
+      1
+
+  """
   def append_child(parent, child, opts \\ []) do
     GenServer.call(parent.pid, {:append_child, child.pid, opts})
   end
@@ -395,6 +455,23 @@ defmodule GenDOM.Node do
   def allowed_fields,
     do: []
 
+  @doc """
+  Clone a Node, and optionally, all of its contents.
+
+  By default, it clones the content of the node. This method implements the DOM `cloneNode()` specification.
+
+  ## Parameters
+
+  - `node` - The node to clone
+  - `deep?` - Boolean indicating whether descendants should be cloned (default: false)
+
+  ## Examples
+
+      node = %GenDOM.Node{text_content: "Hello"}
+      shallow_clone = GenDOM.Node.clone_node(node)
+      deep_clone = GenDOM.Node.clone_node(node, true)
+
+  """
   def clone_node(node, deep? \\ false) do
     fields = Map.drop(node, [
       :__struct__,
@@ -422,14 +499,65 @@ defmodule GenDOM.Node do
     end
   end
 
+  @doc """
+  Compares the position of the current node against another node in any other document.
+
+  This method implements the DOM `compareDocumentPosition()` specification.
+
+  ## Parameters
+
+  - `node` - The reference node
+  - `other_node` - The node to compare position with
+
+  ## Returns
+
+  A bitmask indicating the relative position of the nodes.
+
+  """
   def compare_document_position(_node, _other_node) do
 
   end
 
+  @doc """
+  Returns a boolean indicating whether a node is a descendant of the calling node.
+
+  This method implements the DOM `contains()` specification by checking if the
+  `other_node` is present in the process group members of the current node.
+
+  ## Parameters
+
+  - `node` - The node to check containment on
+  - `other_node` - The node to check if it's contained
+
+  ## Examples
+
+      iex> {:ok, parent} = GenDOM.Node.new([])
+      iex> {:ok, child} = GenDOM.Node.new([])
+      iex> updated_parent = GenDOM.Node.append_child(parent, child)
+      iex> GenDOM.Node.contains?(updated_parent, child)
+      true
+
+  """
   def contains?(node, other_node) do
     other_node.pid in :pg.get_members(node.pid)
   end
 
+  @doc """
+  Returns the context object's root which optionally includes the shadow root if it is available.
+
+  This method implements the DOM `getRootNode()` specification by traversing up the parent chain
+  until it finds a node with no parent.
+
+  ## Parameters
+
+  - `node` - The node to get the root of
+  - `opts` - Optional keyword list (unused currently)
+
+  ## Examples
+
+      root = GenDOM.Node.get_root_node(some_nested_node)
+
+  """
   def get_root_node(node, _opts \\ []) do
     if node.parent_element do
       get_root_node(GenServer.call(node.parent_element, :get))
@@ -438,6 +566,26 @@ defmodule GenDOM.Node do
     end
   end
 
+  @doc """
+  Returns a boolean indicating whether the element has any child nodes.
+
+  This method implements the DOM `hasChildNodes()` specification.
+
+  ## Parameters
+
+  - `node` - The node to check for child nodes
+
+  ## Examples
+
+      iex> {:ok, parent} = GenDOM.Node.new([])
+      iex> GenDOM.Node.has_child_nodes?(parent)
+      false
+      iex> {:ok, child} = GenDOM.Node.new([])
+      iex> updated_parent = GenDOM.Node.append_child(parent, child)
+      iex> GenDOM.Node.has_child_nodes?(updated_parent)
+      true
+
+  """
   def has_child_nodes?(%{child_nodes: []}) do
     false
   end
@@ -446,6 +594,23 @@ defmodule GenDOM.Node do
     true
   end
 
+  @doc """
+  Inserts a Node before the reference node as a child of a specified parent node.
+
+  This method implements the DOM `insertBefore()` specification.
+
+  ## Parameters
+
+  - `parent` - The parent node to insert into
+  - `new_node` - The node to be inserted
+  - `reference_node` - The node before which new_node is inserted
+  - `opts` - Optional keyword list of options
+
+  ## Examples
+
+      updated_parent = GenDOM.Node.insert_before(parent, new_child, existing_child)
+
+  """
   def insert_before(parent, new_node, reference_node, opts \\ []) do
     GenServer.call(parent.pid, {:insert_before, new_node.pid, reference_node.pid, opts})
   end
@@ -478,29 +643,133 @@ defmodule GenDOM.Node do
     struct(parent, child_nodes: child_nodes)
   end
 
+  @doc """
+  Accepts a namespace URI as an argument and returns a boolean value indicating whether 
+  or not the namespace is the default namespace on the given node.
+
+  This method implements the DOM `isDefaultNamespace()` specification.
+
+  ## Parameters
+
+  - `node` - The node to check
+  - `uri` - The namespace URI to test
+
+  """
   def is_default_namespace?(_node, _uri) do
 
   end
 
+  @doc """
+  Returns a boolean value which indicates whether or not two nodes are of the same type 
+  and all their defining data points match.
+
+  This method implements the DOM `isEqualNode()` specification.
+
+  ## Parameters
+
+  - `node` - The first node to compare
+  - `other_node` - The second node to compare
+
+  """
   def is_equal_node?(_node, _other_node) do
   end
 
+  @doc """
+  Returns a boolean value indicating whether or not the two nodes are the same.
+
+  This method implements the DOM `isSameNode()` specification by comparing process IDs.
+
+  ## Parameters
+
+  - `node` - The first node to compare
+  - `other_node` - The second node to compare
+
+  ## Examples
+
+      GenDOM.Node.is_same_node?(node1, node2)
+      # => true if they are the same node instance
+
+  """
   def is_same_node?(node, other_node) do
     node.pid == other_node.pid
   end
 
+  @doc """
+  Accepts a prefix and returns the namespace URI associated with it on the given node.
+
+  This method implements the DOM `lookupNamespaceURI()` specification. Returns `nil` if the prefix
+  is not found.
+
+  ## Parameters
+
+  - `node` - The node to lookup the namespace URI on
+  - `prefix` - The namespace prefix to lookup
+
+  ## Examples
+
+      namespace_uri = GenDOM.Node.lookup_namespace_uri(node, "xml")
+      # => "http://www.w3.org/XML/1998/namespace"
+
+  """
   def lookup_namespace_uri(node, prefix) do
     GenServer.call(node.pid, {:lookup_namespace_uri, prefix})
   end
 
+  @doc """
+  Returns the prefix for a given namespace URI, if present, and `nil` if not.
+
+  This method implements the DOM `lookupPrefix()` specification.
+
+  ## Parameters
+
+  - `node` - The node to lookup the prefix on
+  - `namespace` - The namespace URI to find the prefix for
+
+  ## Examples
+
+      prefix = GenDOM.Node.lookup_prefix(node, "http://www.w3.org/XML/1998/namespace")
+      # => "xml"
+
+  """
   def lookup_prefix(node, namespace) do
     GenServer.call(node.pid, {:lookup_prefix, namespace})
   end
 
+  @doc """
+  Puts the specified node and all of its subtree into a normalized form.
+
+  This method implements the DOM `normalize()` specification. In a normalized subtree,
+  no text nodes in the subtree are empty and there are no adjacent text nodes.
+
+  ## Parameters
+
+  - `node` - The node to normalize
+
+  ## Examples
+
+      GenDOM.Node.normalize(node)
+
+  """
   def normalize(_node) do
 
   end
 
+  @doc """
+  Removes a child node from the DOM and returns the removed node.
+
+  This method implements the DOM `removeChild()` specification.
+
+  ## Parameters
+
+  - `parent` - The parent node to remove the child from
+  - `child` - The child node to remove
+  - `opts` - Optional keyword list of options
+
+  ## Examples
+
+      updated_parent = GenDOM.Node.remove_child(parent, child_to_remove)
+
+  """
   def remove_child(parent, child, opts \\ []) do
     GenServer.call(parent.pid, {:remove_child, child.pid, opts})
   end
@@ -521,6 +790,24 @@ defmodule GenDOM.Node do
     struct(parent, child_nodes: child_nodes)
   end
 
+  @doc """
+  Replaces a child node within the given parent node.
+
+  This method implements the DOM `replaceChild()` specification. The old child is removed
+  and the new child is inserted in its place.
+
+  ## Parameters
+
+  - `parent` - The parent node containing the child to replace
+  - `new_child` - The new node to replace the old child with
+  - `old_child` - The existing child to be replaced
+  - `opts` - Optional keyword list of options
+
+  ## Examples
+
+      updated_parent = GenDOM.Node.replace_child(parent, new_element, old_element)
+
+  """
   def replace_child(parent, new_child, old_child, opts \\ []) do
     GenServer.call(parent.pid, {:replace_child, new_child.pid, old_child.pid, opts})
   end

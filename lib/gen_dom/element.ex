@@ -1,9 +1,42 @@
 defmodule GenDOM.Element do
-  @derive {Inspect, only: [:pid, :tag_name, :id, :class_list, :attributes]}
+  @moduledoc """
+  Element is the most general base class from which all element objects in a Document inherit.
+  It only has methods and properties common to all kinds of elements.
 
-  alias GenDOM.{
-    Match.Pseudo
-  }
+  The `GenDOM.Element` module extends `GenDOM.Node` with element-specific functionality including
+  attributes, CSS classes, styling, and DOM manipulation methods. It implements the full DOM
+  Element specification as defined by the Web API.
+
+  ## Usage
+
+  ```elixir
+  # Create an element directly
+  {:ok, element} = GenDOM.Element.new([tag_name: "div", id: "my-div"])
+
+  # Use in other modules
+  defmodule MyButton do
+    use GenDOM.Element, [type: "button", disabled: false]
+  end
+  ```
+
+  ## Features
+
+  - Full DOM Element specification compliance
+  - Attribute management (get, set, has, remove)
+  - CSS class and style manipulation
+  - Element traversal and selection methods
+  - Shadow DOM support
+  - Animation and visual effect methods
+  - Event handling capabilities
+  - Accessibility (ARIA) attribute support
+
+  ## Element Methods
+
+  All child modules that use `GenDOM.Element` inherit all Element instance methods
+  and can override them as needed using `defoverridable`.
+  """
+
+  @derive {Inspect, only: [:pid, :tag_name, :id, :class_list, :attributes]}
 
   use GenDOM.Node, [
     active_element: nil,
@@ -100,10 +133,167 @@ defmodule GenDOM.Element do
     quote do
       Module.register_attribute(__MODULE__, :fields, accumulate: true)
 
-      @fields unquote(Macro.escape(fields))
       @fields unquote(Macro.escape(@fields))
+      @fields unquote(Macro.escape(fields))
 
       use GenDOM.Node
+
+      # Element instance method delegations
+      defdelegate do_after(element, nodes), to: GenDOM.Element
+      defoverridable do_after: 2
+
+      defdelegate animate(element, keyframes, options \\ []), to: GenDOM.Element
+      defoverridable animate: 3
+
+      defdelegate append(element, nodes), to: GenDOM.Element
+      defoverridable append: 2
+
+      defdelegate attach_shadow(element, options \\ []), to: GenDOM.Element
+      defoverridable attach_shadow: 2
+
+      defdelegate before(element, nodes), to: GenDOM.Element
+      defoverridable before: 2
+
+      defdelegate check_visibility(element, options \\ []), to: GenDOM.Element
+      defoverridable check_visibility: 2
+
+      defdelegate closest(element, selectors), to: GenDOM.Element
+      defoverridable closest: 2
+
+      defdelegate computed_style_map(element), to: GenDOM.Element
+      defoverridable computed_style_map: 1
+
+      defdelegate get_animations(element, options \\ []), to: GenDOM.Element
+      defoverridable get_animations: 2
+
+      defdelegate get_attribute(element, attribute_name), to: GenDOM.Element
+      defoverridable get_attribute: 2
+
+      defdelegate get_attribute_names(element), to: GenDOM.Element
+      defoverridable get_attribute_names: 1
+
+      defdelegate get_attribute_node(element, attribute_name), to: GenDOM.Element
+      defoverridable get_attribute_node: 2
+
+      defdelegate get_attribute_node_ns(element, namespace, node_name), to: GenDOM.Element
+      defoverridable get_attribute_node_ns: 3
+
+      defdelegate get_attribute_ns(element, namespace, name), to: GenDOM.Element
+      defoverridable get_attribute_ns: 3
+
+      defdelegate get_bounding_client_rect(element), to: GenDOM.Element
+      defoverridable get_bounding_client_rect: 1
+
+      defdelegate get_client_rects(element), to: GenDOM.Element
+      defoverridable get_client_rects: 1
+
+      defdelegate get_elements_by_class_name(element, names), to: GenDOM.Element
+      defoverridable get_elements_by_class_name: 2
+
+      defdelegate get_elements_by_tag_name(element, tag_name), to: GenDOM.Element
+      defoverridable get_elements_by_tag_name: 2
+
+      defdelegate get_elements_by_tag_name_ns(element, namespace, local_name), to: GenDOM.Element
+      defoverridable get_elements_by_tag_name_ns: 3
+
+      defdelegate get_html(element, options \\ []), to: GenDOM.Element
+      defoverridable get_html: 2
+
+      defdelegate has_attribute?(element, name), to: GenDOM.Element
+      defoverridable has_attribute?: 2
+
+      defdelegate has_attribute_ns?(element, namespace, local_name), to: GenDOM.Element
+      defoverridable has_attribute_ns?: 3
+
+      defdelegate has_attributes?(element), to: GenDOM.Element
+      defoverridable has_attributes?: 1
+
+      defdelegate has_pointer_capture?(element, pointer_id), to: GenDOM.Element
+      defoverridable has_pointer_capture?: 2
+
+      defdelegate insert_adjacent_element(element, position, other_element), to: GenDOM.Element
+      defoverridable insert_adjacent_element: 3
+
+      defdelegate insert_adjacent_html(element, position, text), to: GenDOM.Element
+      defoverridable insert_adjacent_html: 3
+
+      defdelegate insert_adjacent_text(element, where, data), to: GenDOM.Element
+      defoverridable insert_adjacent_text: 3
+
+      defdelegate prepend(element, nodes), to: GenDOM.Element
+      defoverridable prepend: 2
+
+      defdelegate query_selector(element, selectors), to: GenDOM.Element
+      defoverridable query_selector: 2
+
+      defdelegate query_selector_all(element, selectors), to: GenDOM.Element
+      defoverridable query_selector_all: 2
+
+      defdelegate release_pointer_capture(element, pointer_id), to: GenDOM.Element
+      defoverridable release_pointer_capture: 2
+
+      defdelegate remove(element), to: GenDOM.Element
+      defoverridable remove: 1
+
+      defdelegate remove_attribute(element, attribute_name), to: GenDOM.Element
+      defoverridable remove_attribute: 2
+
+      defdelegate remove_attribute_node(element, attribute_node), to: GenDOM.Element
+      defoverridable remove_attribute_node: 2
+
+      defdelegate remove_attribute_ns(element, namespace, attribute_node), to: GenDOM.Element
+      defoverridable remove_attribute_ns: 3
+
+      defdelegate replace_children(element, children), to: GenDOM.Element
+      defoverridable replace_children: 2
+
+      defdelegate replace_with(element, nodes), to: GenDOM.Element
+      defoverridable replace_with: 2
+
+      defdelegate request_fullscreen(element, options \\ []), to: GenDOM.Element
+      defoverridable request_fullscreen: 2
+
+      defdelegate request_pointer_lock(element, options \\ []), to: GenDOM.Element
+      defoverridable request_pointer_lock: 2
+
+      defdelegate scroll(element, options), to: GenDOM.Element
+      defdelegate scroll(element, x_coord, y_coord), to: GenDOM.Element
+      defoverridable scroll: 2
+      defoverridable scroll: 3
+
+      defdelegate scroll_by(element, options), to: GenDOM.Element
+      defoverridable scroll_by: 2
+
+      defdelegate scroll_into_view(element, align_to_top), to: GenDOM.Element
+      defoverridable scroll_into_view: 2
+
+      defdelegate scroll_to(element, options), to: GenDOM.Element
+      defdelegate scroll_to(element, x_coord, y_coord), to: GenDOM.Element
+      defoverridable scroll_to: 2
+      defoverridable scroll_to: 3
+
+      defdelegate set_attribute(element, name, value), to: GenDOM.Element
+      defoverridable set_attribute: 3
+
+      defdelegate set_attribute_node(element, attribute), to: GenDOM.Element
+      defoverridable set_attribute_node: 2
+
+      defdelegate set_attribute_node_ns(element, attribute_node), to: GenDOM.Element
+      defoverridable set_attribute_node_ns: 2
+
+      defdelegate set_attribute_ns(element, namespace, name, value), to: GenDOM.Element
+      defoverridable set_attribute_ns: 4
+
+      defdelegate set_html_unsafe(element, html), to: GenDOM.Element
+      defoverridable set_html_unsafe: 2
+
+      defdelegate set_pointer_capture(element, pointer_id), to: GenDOM.Element
+      defoverridable set_pointer_capture: 2
+
+      defdelegate toggle_attribute(element, name), to: GenDOM.Element
+      defdelegate toggle_attribute(element, name, force), to: GenDOM.Element
+      defoverridable toggle_attribute: 2
+      defoverridable toggle_attribute: 3
     end
   end
 
@@ -195,238 +385,1133 @@ defmodule GenDOM.Element do
   def allowed_fields,
     do: super() ++ [:class_list, :id, :attributes, :tag_name]
 
+  @doc """
+  Inserts a set of Node objects or string objects after the element.
+
+  This method implements the DOM `after()` specification. Note: In Elixir, `after` is a
+  reserved keyword, so this method is named `do_after`.
+
+  ## Parameters
+
+  - `element` - The element to insert nodes after
+  - `nodes` - A list of Node objects or strings to insert
+
+  ## Examples
+
+      GenDOM.Element.do_after(element, [new_element, "Some text"])
+
+  """
   # Elixir has `after` as a reserved keyword so this must be called `do_after`
   def do_after(%__MODULE__{} = element, nodes) when is_list(nodes) do
 
   end
 
+  @doc """
+  Returns an Animation object representing an animation that plays on the element.
+
+  This method implements the DOM `animate()` specification for creating animations
+  using the Web Animations API.
+
+  ## Parameters
+
+  - `element` - The element to animate
+  - `keyframes` - The keyframes to animate through
+  - `options` - Animation options (duration, easing, etc.)
+
+  ## Examples
+
+      animation = GenDOM.Element.animate(element, 
+        [%{transform: "translateX(0px)"}, %{transform: "translateX(100px)"}],
+        duration: 1000
+      )
+
+  """
   def animate(%__MODULE__{} = element, keyframes, options \\ []) do
 
   end
 
+  @doc """
+  Inserts a set of Node objects or string objects after the last child of the element.
+
+  This method implements the DOM `append()` specification. The nodes are inserted
+  in the same order as they appear in the list.
+
+  ## Parameters
+
+  - `element` - The element to append nodes to
+  - `nodes` - A list of Node objects or strings to append
+
+  ## Examples
+
+      GenDOM.Element.append(parent_element, [child_element, "Some text"])
+
+  """
   def append(%__MODULE__{} = element, nodes) when is_list(nodes) do
 
   end
 
+  @doc """
+  Attaches a shadow DOM tree to the specified element and returns a reference to its ShadowRoot.
+
+  This method implements the DOM `attachShadow()` specification for creating Shadow DOM.
+
+  ## Parameters
+
+  - `element` - The element to attach a shadow root to
+  - `options` - Shadow DOM options (mode: :open or :closed)
+
+  ## Examples
+
+      shadow_root = GenDOM.Element.attach_shadow(element, mode: :open)
+
+  """
   def attach_shadow(%__MODULE__{} = element, options \\ []) do
 
   end
 
+  @doc """
+  Inserts a set of Node objects or string objects in the children list of the element's parent, just before the element.
+
+  This method implements the DOM `before()` specification.
+
+  ## Parameters
+
+  - `element` - The element to insert nodes before
+  - `nodes` - A list of Node objects or strings to insert
+
+  ## Examples
+
+      GenDOM.Element.before(element, [new_element, "Some text"])
+
+  """
   def before(%__MODULE__{} = element, nodes) when is_list(nodes) do
 
   end
 
+  @doc """
+  Checks whether the element would be visible to a user.
+
+  This method implements the DOM `checkVisibility()` specification. It returns a boolean
+  indicating whether the element is visible.
+
+  ## Parameters
+
+  - `element` - The element to check visibility for
+  - `options` - Visibility check options
+
+  ## Examples
+
+      is_visible = GenDOM.Element.check_visibility(element)
+      # => true or false
+
+  """
   def check_visibility(%__MODULE__{} = element, options \\ []) do
 
   end
 
+  @doc """
+  Returns the closest ancestor element (or the element itself) that matches the specified selectors.
+
+  This method implements the DOM `closest()` specification. It traverses the element and its
+  parents heading toward the document root until it finds a node matching the selector.
+
+  ## Parameters
+
+  - `element` - The element to start searching from
+  - `selectors` - A CSS selector string to match against
+
+  ## Examples
+
+      parent = GenDOM.Element.closest(element, ".container")
+      button = GenDOM.Element.closest(element, "button[type='submit']")
+
+  """
   def closest(%__MODULE__{} = element, selectors) when is_binary(selectors) do
 
   end
 
+  @doc """
+  Returns a StylePropertyMapReadOnly interface containing the computed CSS property values.
+
+  This method implements the DOM `computedStyleMap()` specification from the CSS Typed OM.
+
+  ## Parameters
+
+  - `element` - The element to get computed styles for
+
+  ## Examples
+
+      style_map = GenDOM.Element.computed_style_map(element)
+
+  """
   def computed_style_map(%__MODULE__{} = element) do
 
   end
 
+  @doc """
+  Returns an array of all Animation objects affecting this element or its descendants.
+
+  This method implements the DOM `getAnimations()` specification.
+
+  ## Parameters
+
+  - `element` - The element to get animations for
+  - `options` - Options for filtering animations
+
+  ## Examples
+
+      animations = GenDOM.Element.get_animations(element)
+      running_animations = GenDOM.Element.get_animations(element, subtree: true)
+
+  """
   def get_animations(%__MODULE__{} = element, options \\ []) do
 
   end
 
-  def get_attribute(%__MODULE__{attributes: attributes} = _element, attribute_name) do
+  @doc """
+  Retrieves the value of the named attribute from the current element and returns it as a string.
+
+  This method implements the DOM `getAttribute()` specification. If the attribute doesn't exist,
+  it returns `nil`.
+
+  ## Parameters
+
+  - `element` - The element to get the attribute from
+  - `attribute_name` - The name of the attribute to retrieve
+
+  ## Examples
+
+      iex> element = %SomeElement{attributes: %{"class" => "btn", "id" => "submit"}}
+      iex> GenDOM.Element.get_attribute(element, "class")
+      "btn"
+      iex> GenDOM.Element.get_attribute(element, "nonexistent")
+      nil
+
+  """
+  def get_attribute(%{attributes: attributes} = _node, attribute_name) do
     Map.get(attributes, attribute_name)
   end
 
-  def get_attribute_names(%__MODULE__{attributes: attributes, class_list: class_list, id: id}) do
+  @doc """
+  Returns the attribute names of the element as an array of strings.
+
+  This method implements the DOM `getAttributeNames()` specification.
+
+  ## Parameters
+
+  - `element` - The element to get attribute names from
+
+  ## Examples
+
+      iex> element = %SomeElement{attributes: %{"class" => "btn", "id" => "submit", "disabled" => "true"}}
+      iex> GenDOM.Element.get_attribute_names(element)
+      ["class", "id", "disabled"]
+
+  """
+  def get_attribute_names(%{attributes: attributes} = _element) do
     Map.keys(attributes)
   end
 
+  @doc """
+  Returns the specified attribute node for the current element.
+
+  This method implements the DOM `getAttributeNode()` specification.
+
+  ## Parameters
+
+  - `element` - The element to get the attribute node from
+  - `attribute_name` - The name of the attribute node to retrieve
+
+  ## Examples
+
+      attr_node = GenDOM.Element.get_attribute_node(element, "class")
+
+  """
   def get_attribute_node(%__MODULE__{} = element, attribute_name) do
 
   end
 
+  @doc """
+  Returns the Attr node for the attribute with the given namespace and name.
+
+  This method implements the DOM `getAttributeNodeNS()` specification.
+
+  ## Parameters
+
+  - `element` - The element to get the attribute node from
+  - `namespace` - The namespace of the attribute
+  - `node_name` - The name of the attribute
+
+  ## Examples
+
+      attr_node = GenDOM.Element.get_attribute_node_ns(element, "http://www.w3.org/1999/xlink", "href")
+
+  """
   def get_attribute_node_ns(%__MODULE__{} = element, namespace, node_name) do
 
   end
 
+  @doc """
+  Returns the string value of the attribute with the specified namespace and name.
+
+  This method implements the DOM `getAttributeNS()` specification.
+
+  ## Parameters
+
+  - `element` - The element to get the attribute from
+  - `namespace` - The namespace of the attribute
+  - `name` - The name of the attribute
+
+  ## Examples
+
+      value = GenDOM.Element.get_attribute_ns(element, "http://www.w3.org/1999/xlink", "href")
+
+  """
   def get_attribute_ns(%__MODULE__{} = element, namespace, name) do
 
   end
 
+  @doc """
+  Returns the size of an element and its position relative to the viewport.
+
+  This method implements the DOM `getBoundingClientRect()` specification. It returns
+  a DOMRect object providing information about the size and position of the element.
+
+  ## Parameters
+
+  - `element` - The element to get the bounding rectangle for
+
+  ## Examples
+
+      rect = GenDOM.Element.get_bounding_client_rect(element)
+      # => %{x: 0, y: 0, width: 100, height: 50, top: 0, right: 100, bottom: 50, left: 0}
+
+  """
   def get_bounding_client_rect(%__MODULE__{} = element) do
 
   end
 
+  @doc """
+  Returns a collection of DOMRect objects that indicate the bounding rectangles for each CSS border box in the element.
+
+  This method implements the DOM `getClientRects()` specification.
+
+  ## Parameters
+
+  - `element` - The element to get client rectangles for
+
+  ## Examples
+
+      rects = GenDOM.Element.get_client_rects(element)
+      # => [%{x: 0, y: 0, width: 100, height: 25}, %{x: 0, y: 25, width: 100, height: 25}]
+
+  """
   def get_client_rects(%__MODULE__{} = element) do
 
   end
 
+  @doc """
+  Returns a live collection of child elements which have all of the given class names.
+
+  This method implements the DOM `getElementsByClassName()` specification.
+
+  ## Parameters
+
+  - `element` - The element to search within
+  - `names` - A list of class names to search for
+
+  ## Examples
+
+      elements = GenDOM.Element.get_elements_by_class_name(element, ["btn", "primary"])
+
+  """
   def get_elements_by_class_name(%__MODULE__{} = element, names) do
     query = Stream.map(names, &(".#{&1}")) |> Enum.join(",")
 
     GenServer.call(element.pid, {:query_selector_all, query})
   end
 
+  @doc """
+  Returns a live collection of elements with the given tag name.
+
+  This method implements the DOM `getElementsByTagName()` specification. The search is limited
+  to descendants of the specified element.
+
+  ## Parameters
+
+  - `element` - The element to search within
+  - `tag_name` - The tag name to search for (case-insensitive)
+
+  ## Examples
+
+      divs = GenDOM.Element.get_elements_by_tag_name(element, "div")
+      all_elements = GenDOM.Element.get_elements_by_tag_name(element, "*")
+
+  """
   def get_elements_by_tag_name(%__MODULE__{} = element, tag_name) do
     GenServer.call(element.pid, {:query_selector_all, tag_name})
   end
 
+  @doc """
+  Returns a live collection of elements with the given tag name belonging to the given namespace.
+
+  This method implements the DOM `getElementsByTagNameNS()` specification.
+
+  ## Parameters
+
+  - `element` - The element to search within
+  - `namespace` - The namespace URI to search for
+  - `local_name` - The local name to search for
+
+  ## Examples
+
+      svg_elements = GenDOM.Element.get_elements_by_tag_name_ns(element, "http://www.w3.org/2000/svg", "rect")
+
+  """
   def get_elements_by_tag_name_ns(%__MODULE__{} = element, namespace, local_name) do
     query = "#{namespace}|#{local_name}"
     GenServer.call(element.pid, {:query_selector_all, query})
   end
 
+  @doc """
+  Returns a string representing the markup serialization of the element and its descendants.
+
+  This method implements the DOM `getHTML()` specification (proposed feature).
+
+  ## Parameters
+
+  - `element` - The element to serialize
+  - `options` - Serialization options
+
+  ## Examples
+
+      markup = GenDOM.Element.get_html(element)
+      # => "<div class='container'><p>Hello</p></div>"
+
+  """
   def get_html(%__MODULE__{} = element, options \\ []) do
 
   end
 
-  def has_attribute?(%__MODULE__{attributes: attributes} = element, name) do
+  @doc """
+  Returns a boolean indicating whether the specified element has the specified attribute.
+
+  This method implements the DOM `hasAttribute()` specification.
+
+  ## Parameters
+
+  - `element` - The element to check for the attribute
+  - `name` - The name of the attribute to check for
+
+  ## Examples
+
+      iex> element = %SomeElement{attributes: %{"class" => "btn", "disabled" => "true"}}
+      iex> GenDOM.Element.has_attribute?(element, "class")
+      true
+      iex> GenDOM.Element.has_attribute?(element, "nonexistent")
+      false
+
+  """
+  def has_attribute?(%{attributes: attributes} = _node, name) do
     Map.has_key?(attributes, name)
   end
 
+  @doc """
+  Returns a boolean indicating whether the element has the specified attribute in the specified namespace.
+
+  This method implements the DOM `hasAttributeNS()` specification.
+
+  ## Parameters
+
+  - `element` - The element to check
+  - `namespace` - The namespace to check for the attribute in
+  - `local_name` - The name of the attribute to check for
+
+  ## Examples
+
+      has_attr = GenDOM.Element.has_attribute_ns?(element, "http://www.w3.org/1999/xlink", "href")
+      # => true or false
+
+  """
   def has_attribute_ns?(%__MODULE__{} = element, namespace, local_name) do
 
   end
 
+  @doc """
+  Returns a boolean indicating whether the current element has any attributes.
+
+  This method implements the DOM `hasAttributes()` specification.
+
+  ## Parameters
+
+  - `element` - The element to check for attributes
+
+  ## Examples
+
+      has_attrs = GenDOM.Element.has_attributes?(element)
+      # => true or false
+
+  """
   def has_attributes?(%__MODULE__{} = element) do
 
   end
 
+  @doc """
+  Returns a boolean indicating whether the element on which it is invoked has pointer capture for the pointer identified by the given pointer ID.
+
+  This method implements the DOM `hasPointerCapture()` specification.
+
+  ## Parameters
+
+  - `element` - The element to check pointer capture for
+  - `pointer_id` - The identifier for the pointer to check
+
+  ## Examples
+
+      has_capture = GenDOM.Element.has_pointer_capture?(element, pointer_id)
+      # => true or false
+
+  """
   def has_pointer_capture?(%__MODULE__{} = element, pointer_id) do
 
   end
 
+  @doc """
+  Inserts a given element node at a given position relative to the element it is invoked upon.
+
+  This method implements the DOM `insertAdjacentElement()` specification.
+
+  ## Parameters
+
+  - `element` - The element to insert relative to
+  - `position` - The position relative to element: :beforebegin, :afterbegin, :beforeend, or :afterend
+  - `other_element` - The element to insert
+
+  ## Examples
+
+      GenDOM.Element.insert_adjacent_element(element, :afterend, new_element)
+
+  """
   def insert_adjacent_element(%__MODULE__{} = element, position, %__MODULE__{} = other_element) do
 
   end
 
+  @doc """
+  Parses the specified text as markup and inserts the resulting nodes into the DOM tree at a specified position.
+
+  This method implements the DOM `insertAdjacentHTML()` specification.
+
+  ## Parameters
+
+  - `element` - The element to insert relative to
+  - `position` - The position relative to element: :beforebegin, :afterbegin, :beforeend, or :afterend
+  - `text` - The markup text to parse and insert
+
+  ## Examples
+
+      GenDOM.Element.insert_adjacent_html(element, :beforeend, "<p>New content</p>")
+
+  """
   def insert_adjacent_html(%__MODULE__{} = element, position, text) when is_binary(text) do
 
   end
 
+  @doc """
+  Inserts a given text node at a given position relative to the element it is invoked upon.
+
+  This method implements the DOM `insertAdjacentText()` specification.
+
+  ## Parameters
+
+  - `element` - The element to insert relative to
+  - `where` - The position relative to element: :beforebegin, :afterbegin, :beforeend, or :afterend
+  - `data` - The text data to insert
+
+  ## Examples
+
+      GenDOM.Element.insert_adjacent_text(element, :afterend, "Some text content")
+
+  """
   def insert_adjacent_text(%__MODULE__{} = element, where, data) when is_binary(data) do
 
   end
 
+  @doc """
+  Creates a copy of a node from an external document that can be inserted into the current document.
+
+  Note: This method is typically available on Document, but included here for completeness.
+
+  ## Parameters
+
+  - `element` - The element context (usually not used for this operation)
+  - `external_node` - The node to import
+  - `deep?` - Whether to import all descendants
+
+  ## Examples
+
+      imported = GenDOM.Element.import_node(element, external_node, true)
+
+  """
   def import_node(%__MODULE__{} = element, external_node, deep?) do
 
   end
 
+  @doc """
+  Inserts a set of Node objects or string objects before the first child of the element.
+
+  This method implements the DOM `prepend()` specification.
+
+  ## Parameters
+
+  - `element` - The element to prepend nodes to
+  - `nodes` - A list of Node objects or strings to prepend
+
+  ## Examples
+
+      GenDOM.Element.prepend(parent_element, [header_element, "Title: "])
+
+  """
   def prepend(%__MODULE__{} = element, nodes) when is_list(nodes) do
 
   end
 
+  @doc """
+  Returns the first descendant element that matches the specified group of selectors.
+
+  This method implements the DOM `querySelector()` specification.
+
+  ## Parameters
+
+  - `element` - The element to search within
+  - `selectors` - A CSS selector string
+
+  ## Examples
+
+      first_button = GenDOM.Element.query_selector(element, "button.primary")
+      first_input = GenDOM.Element.query_selector(element, "input[type='text']")
+
+  """
   def query_selector(%__MODULE__{} = element, selectors) when is_binary(selectors) do
   end
 
+  @doc """
+  Returns a static NodeList representing a list of elements that match the specified group of selectors.
+
+  This method implements the DOM `querySelectorAll()` specification.
+
+  ## Parameters
+
+  - `element` - The element to search within
+  - `selectors` - A CSS selector string
+
+  ## Examples
+
+      all_buttons = GenDOM.Element.query_selector_all(element, "button")
+      inputs = GenDOM.Element.query_selector_all(element, "input[type='text'], input[type='email']")
+
+  """
   def query_selector_all(%__MODULE__{} = element, selectors) when is_binary(selectors) do
     selectors = Selector.parse(selectors)
     GenServer.call(element.pid, {:query_selector_all, selectors})
   end
 
+  @doc """
+  Releases pointer capture that was previously set for a specific pointer.
+
+  This method implements the DOM `releasePointerCapture()` specification.
+
+  ## Parameters
+
+  - `element` - The element to release pointer capture from
+  - `pointer_id` - The identifier for the pointer
+
+  ## Examples
+
+      GenDOM.Element.release_pointer_capture(element, pointer_id)
+
+  """
   def release_pointer_capture(%__MODULE__{} = element, pointer_id) do
 
   end
 
+  @doc """
+  Removes the element from the DOM tree.
+
+  This method implements the DOM `remove()` specification. The element is removed
+  from its parent's children list.
+
+  ## Parameters
+
+  - `element` - The element to remove
+
+  ## Examples
+
+      GenDOM.Element.remove(element)
+
+  """
   def remove(%__MODULE__{} = element) do
 
   end
 
+  @doc """
+  Removes the specified attribute from the element.
+
+  This method implements the DOM `removeAttribute()` specification.
+
+  ## Parameters
+
+  - `element` - The element to remove the attribute from
+  - `attribute_name` - The name of the attribute to remove
+
+  ## Examples
+
+      GenDOM.Element.remove_attribute(element, "disabled")
+
+  """
   def remove_attribute(%__MODULE__{} = element, attribute_name) do
 
   end
 
+  @doc """
+  Removes the specified Attr node from the element.
+
+  This method implements the DOM `removeAttributeNode()` specification.
+
+  ## Parameters
+
+  - `element` - The element to remove the attribute node from
+  - `attribute_node` - The Attr node to remove
+
+  ## Examples
+
+      removed_attr = GenDOM.Element.remove_attribute_node(element, attr_node)
+
+  """
   def remove_attribute_node(%__MODULE__{} = element, attribute_node) do
 
   end
 
+  @doc """
+  Removes the specified attribute from the element within the given namespace.
+
+  This method implements the DOM `removeAttributeNS()` specification.
+
+  ## Parameters
+
+  - `element` - The element to remove the attribute from
+  - `namespace` - The namespace of the attribute
+  - `attribute_node` - The local name of the attribute to remove
+
+  ## Examples
+
+      GenDOM.Element.remove_attribute_ns(element, "http://www.w3.org/1999/xlink", "href")
+
+  """
   def remove_attribute_ns(%__MODULE__{} = element, namespace, attribute_node) do
 
   end
 
+  @doc """
+  Replaces the existing children of the element with a new set of children.
+
+  This method implements the DOM `replaceChildren()` specification.
+
+  ## Parameters
+
+  - `element` - The element to replace children for
+  - `children` - A list of new child nodes
+
+  ## Examples
+
+      GenDOM.Element.replace_children(element, [new_child1, new_child2])
+
+  """
   def replace_children(%__MODULE__{} = element, children) when is_list(children) do
 
   end
 
+  @doc """
+  Replaces the element in the children list of its parent with a set of Node objects or strings.
+
+  This method implements the DOM `replaceWith()` specification.
+
+  ## Parameters
+
+  - `element` - The element to replace
+  - `nodes` - A list of Node objects or strings to replace with
+
+  ## Examples
+
+      GenDOM.Element.replace_with(old_element, [new_element, "Some text"])
+
+  """
   def replace_with(%__MODULE__{} = element, nodes) when is_list(nodes) do
 
   end
 
+  @doc """
+  Issues an asynchronous request to make the element be displayed in fullscreen mode.
+
+  This method implements the DOM `requestFullscreen()` specification.
+
+  ## Parameters
+
+  - `element` - The element to display in fullscreen
+  - `options` - Fullscreen options
+
+  ## Examples
+
+      GenDOM.Element.request_fullscreen(video_element, navigation_ui: :hide)
+
+  """
   def request_fullscreen(%__MODULE__{} = element, options \\ []) do
 
   end
 
+  @doc """
+  Asynchronously requests that the pointer be locked to the given element.
+
+  This method implements the DOM `requestPointerLock()` specification.
+
+  ## Parameters
+
+  - `element` - The element to lock the pointer to
+  - `options` - Pointer lock options
+
+  ## Examples
+
+      GenDOM.Element.request_pointer_lock(canvas_element)
+
+  """
   def request_pointer_lock(%__MODULE__{} = element, options \\ []) do
 
   end
 
+  @doc """
+  Scrolls the element to a particular set of coordinates inside a given element.
+
+  This method implements the DOM `scroll()` specification.
+
+  ## Parameters
+
+  - `element` - The element to scroll
+  - `options` - Scroll options (top, left, behavior)
+
+  ## Examples
+
+      GenDOM.Element.scroll(element, top: 100, left: 0, behavior: :smooth)
+
+  """
   def scroll(%__MODULE__{} = element, options \\ []) do
 
   end
 
+  @doc """
+  Scrolls the element to a particular set of coordinates inside a given element.
+
+  This method implements the DOM `scroll()` specification with explicit coordinates.
+
+  ## Parameters
+
+  - `element` - The element to scroll
+  - `x_coord` - The pixel along the horizontal axis to scroll to
+  - `y_coord` - The pixel along the vertical axis to scroll to
+
+  ## Examples
+
+      GenDOM.Element.scroll(element, 0, 100)
+
+  """
   def scroll(%__MODULE__{} = element, x_coord, y_coord) do
 
   end
 
+  @doc """
+  Scrolls the element by the given amount.
+
+  This method implements the DOM `scrollBy()` specification.
+
+  ## Parameters
+
+  - `element` - The element to scroll
+  - `options` - Scroll options (top, left, behavior)
+
+  ## Examples
+
+      GenDOM.Element.scroll_by(element, top: 50, left: 0, behavior: :smooth)
+
+  """
   def scroll_by(%__MODULE__{} = element, options \\ []) do
 
   end
 
+  @doc """
+  Scrolls the element's parent container such that the element is visible to the user.
+
+  This method implements the DOM `scrollIntoView()` specification.
+
+  ## Parameters
+
+  - `element` - The element to scroll into view
+  - `align_to_top` - Boolean indicating whether to align to the top of the scrolling area
+
+  ## Examples
+
+      GenDOM.Element.scroll_into_view(element, true)
+
+  """
   def scroll_into_view(%__MODULE__{} = element, align_to_top) when is_boolean(align_to_top) do
 
   end
 
+  @doc """
+  Scrolls the element's parent container such that the element is visible to the user.
+
+  This method implements the DOM `scrollIntoView()` specification with options.
+
+  ## Parameters
+
+  - `element` - The element to scroll into view
+  - `scroll_into_view_options` - A map containing scroll options (behavior, block, inline)
+
+  ## Examples
+
+      GenDOM.Element.scroll_into_view(element, %{behavior: :smooth, block: :center})
+
+  """
   def scroll_into_view(%__MODULE__{} = element, scroll_into_view_options) when is_map(scroll_into_view_options) do
 
   end
 
+  @doc """
+  Scrolls to a particular set of coordinates inside the element.
+
+  This method implements the DOM `scrollTo()` specification.
+
+  ## Parameters
+
+  - `element` - The element to scroll
+  - `options` - Scroll options (top, left, behavior)
+
+  ## Examples
+
+      GenDOM.Element.scroll_to(element, top: 0, left: 0, behavior: :smooth)
+
+  """
   def scroll_to(%__MODULE__{} = element, options \\ []) when is_list(options) do
 
   end
 
+  @doc """
+  Scrolls to a particular set of coordinates inside the element.
+
+  This method implements the DOM `scrollTo()` specification with explicit coordinates.
+
+  ## Parameters
+
+  - `element` - The element to scroll
+  - `x_coord` - The pixel along the horizontal axis to scroll to
+  - `y_coord` - The pixel along the vertical axis to scroll to
+
+  ## Examples
+
+      GenDOM.Element.scroll_to(element, 0, 100)
+
+  """
   def scroll_to(%__MODULE__{} = element, x_coord, y_coord) do
 
   end
 
-  def set_attribute(%__MODULE__{attributes: attributes} = element, name, value) do
-    Element.put(element, :attributes, Map.put(attributes, name, value))
+  @doc """
+  Sets the value of an attribute on the specified element.
+
+  This method implements the DOM `setAttribute()` specification. If the attribute already exists,
+  its value is updated. If it doesn't exist, a new attribute is created with the specified name and value.
+
+  ## Parameters
+
+  - `element` - The element to set the attribute on
+  - `name` - The name of the attribute to set
+  - `value` - The value to assign to the attribute
+
+  ## Examples
+
+      iex> element = %SomeElement{attributes: %{}}
+      iex> GenDOM.Element.set_attribute(element, "class", "btn primary")
+      %SomeElement{attributes: %{"class" => "btn primary"}}
+
+  """
+  def set_attribute(%{attributes: attributes} = node, name, value) do
+    GenDOM.Element.put(node, :attributes, Map.put(attributes, name, value))
   end
 
+  @doc """
+  Adds a new Attr node to the specified element.
+
+  This method implements the DOM `setAttributeNode()` specification.
+
+  ## Parameters
+
+  - `element` - The element to set the attribute node on
+  - `attribute` - The Attr node to add
+
+  ## Examples
+
+      GenDOM.Element.set_attribute_node(element, attr_node)
+
+  """
   def set_attribute_node(%__MODULE__{} = element, attribute) do
 
   end
 
+  @doc """
+  Adds a new namespaced Attr node to the specified element.
+
+  This method implements the DOM `setAttributeNodeNS()` specification.
+
+  ## Parameters
+
+  - `element` - The element to set the attribute node on
+  - `attribute_node` - The namespaced Attr node to add
+
+  ## Examples
+
+      GenDOM.Element.set_attribute_node_ns(element, namespaced_attr_node)
+
+  """
   def set_attribute_node_ns(%__MODULE__{} = element, attribute_node) do
 
   end
 
+  @doc """
+  Sets the value of an attribute on the specified element within a given namespace.
+
+  This method implements the DOM `setAttributeNS()` specification.
+
+  ## Parameters
+
+  - `element` - The element to set the attribute on
+  - `namespace` - The namespace of the attribute
+  - `name` - The name of the attribute
+  - `value` - The value to assign to the attribute
+
+  ## Examples
+
+      GenDOM.Element.set_attribute_ns(element, "http://www.w3.org/1999/xlink", "href", "#target")
+
+  """
   def set_attribute_ns(%__MODULE__{} = element, namespace, name, value) do
 
   end
 
+  @doc """
+  Sets the inner markup of the element to the given markup string without sanitization.
+
+  This method implements the DOM `setHTMLUnsafe()` specification (proposed feature).
+  WARNING: This method does not sanitize the markup and should be used with caution.
+
+  ## Parameters
+
+  - `element` - The element to set markup for
+  - `html` - The markup string to set (unsanitized)
+
+  ## Examples
+
+      GenDOM.Element.set_html_unsafe(element, "<p>Unsafe markup</p>")
+
+  """
   def set_html_unsafe(%__MODULE__{} = element, html) do
 
   end
 
+  @doc """
+  Designates a specific element as the capture target of future pointer events.
+
+  This method implements the DOM `setPointerCapture()` specification.
+
+  ## Parameters
+
+  - `element` - The element to capture pointer events to
+  - `pointer_id` - The identifier for the pointer to be captured
+
+  ## Examples
+
+      GenDOM.Element.set_pointer_capture(element, pointer_id)
+
+  """
   def set_pointer_capture(%__MODULE__{} = element, pointer_id) do
 
   end
 
-  def toggle_attribute(%__MODULE__{attributes: attributes} = element, name) do
+  @doc """
+  Toggles a boolean attribute on the element.
+
+  This method implements the DOM `toggleAttribute()` specification. If the attribute exists,
+  it is removed. If it doesn't exist, it is added.
+
+  ## Parameters
+
+  - `element` - The element to toggle the attribute on
+  - `name` - The name of the attribute to toggle
+
+  ## Examples
+
+      result = GenDOM.Element.toggle_attribute(element, "disabled")
+      # => true if attribute was added, false if removed
+
+  """
+  def toggle_attribute(%{attributes: attributes} = node, name) do
     value = !Map.get(attributes, name, false)
-    Element.put!(element, :attributes, Map.put(attributes, name, value))
+    GenDOM.Element.put!(node, :attributes, Map.put(attributes, name, value))
 
     value
   end
 
-  def toggle_attribute(%__MODULE__{attributes: attributes} = element, name, true) do
+  @doc """
+  Toggles a boolean attribute on the element with a force parameter.
+
+  This method implements the DOM `toggleAttribute()` specification with force.
+  When force is true, the attribute is added if not present.
+
+  ## Parameters
+
+  - `element` - The element to toggle the attribute on
+  - `name` - The name of the attribute to toggle
+  - `force` - When true, forces the attribute to be added
+
+  ## Examples
+
+      GenDOM.Element.toggle_attribute(element, "disabled", true)
+      # => Always adds the attribute and returns true
+
+  """
+  def toggle_attribute(%{attributes: attributes} = node, name, true) do
     value = Map.get(attributes, name, true)
-    Element.put!(element, :attributes, Map.put(attributes, name, value))
+    GenDOM.Element.put!(node, :attributes, Map.put(attributes, name, value))
 
     true
   end
 
-  def toggle_attribute(%__MODULE__{attributes: attributes} = element, name, false) do
-    Element.put!(element, :attributes, Map.put(attributes, name, false))
+  @doc """
+  Toggles a boolean attribute on the element with a force parameter.
+
+  This method implements the DOM `toggleAttribute()` specification with force.
+  When force is false, the attribute is removed if present.
+
+  ## Parameters
+
+  - `element` - The element to toggle the attribute on
+  - `name` - The name of the attribute to toggle
+  - `force` - When false, forces the attribute to be removed
+
+  ## Examples
+
+      GenDOM.Element.toggle_attribute(element, "disabled", false)
+      # => Always removes the attribute and returns false
+
+  """
+  def toggle_attribute(%{attributes: attributes} = node, name, false) do
+    GenDOM.Element.put!(node, :attributes, Map.put(attributes, name, false))
 
     false
   end

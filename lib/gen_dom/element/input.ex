@@ -1,10 +1,16 @@
 defmodule GenDOM.Element.Input do
-  @moduledoc false
+  @derive {Inspect, only: [:pid, :tag_name, :id, :class_list, :attributes]}
+
+  @moduledoc """
+  Represents an input element.
+
+  This module implements the InputElement interface as defined in the DOM specification.
+  Input elements inherit from Element and include input-specific properties and behaviors.
+  """
 
   use GenDOM.Element, [
     accept: nil,
     alt: nil,
-    autocapitalize: nil,
     autocomplete: nil,
     autofocus: nil,
     capture: nil,
@@ -18,8 +24,6 @@ defmodule GenDOM.Element.Input do
     formnovalidate: nil,
     formtarget: nil,
     height: nil,
-    id: nil,
-    inputmode: nil,
     list: nil,
     max: nil,
     maxlength: nil,
@@ -36,15 +40,11 @@ defmodule GenDOM.Element.Input do
     size: nil,
     src: nil,
     step: nil,
-    tabindex: nil,
-    title: nil,
     type: nil,
     value: nil,
     width: nil,
-    
-    # Non-standard attributes
     incremental: nil,
-    mozactionhint: nil,  # Deprecated
+    mozactionhint: nil,
     orient: nil,
     results: nil,
     webkitdirectory: nil

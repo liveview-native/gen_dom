@@ -1,5 +1,12 @@
-defmodule GenDom.Element.Button do
-  @moduledoc false
+defmodule GenDOM.Element.Button do
+  @derive {Inspect, only: [:pid, :tag_name, :id, :class_list, :attributes]}
+
+  @moduledoc """
+  Represents a button element.
+
+  This module implements the ButtonElement interface as defined in the DOM specification.
+  Button elements inherit from Element and include button-specific properties and behaviors.
+  """
 
   use GenDOM.Element, [
     autofocus: nil,
