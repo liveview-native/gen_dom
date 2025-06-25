@@ -2,6 +2,7 @@ defmodule GenDOM.QuerySelector do
   @moduledoc false
 
   import GenDOM.Task
+  alias GenDOM.Matcher
 
   defmacro __using__(_opts) do
     quote do
@@ -21,9 +22,9 @@ defmodule GenDOM.QuerySelector do
 
       def query_selector_all(%__MODULE__{} = node, selectors) when is_binary(selectors) do
         selectors = Selector.parse(selectors)
-        # all_descendants = :pg.get_members(document.pid)
+        all_descendants = :pg.get_members(node.pid)
 
-        tasks = Enum.map(node.child_nodes, fn(pid) ->
+        tasks = Enum.map(all_descendants, fn(pid) ->
           Task.async(fn ->
             case GenServer.call(pid, :get) do
               %GenDOM.Element{} = element ->

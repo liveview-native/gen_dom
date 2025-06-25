@@ -8,19 +8,19 @@ defmodule GenDOM.Matcher do
 
   def match(element, matcher, opts \\ [])
 
-  def match(%Element{} = element, {:tag_name, "*", _rule_opts}, _opts) do
+  def match(%{} = element, {:tag_name, "*", _rule_opts}, _opts) do
     element
   end
 
-  def match(%Element{tag_name: tag_name} = element, {:tag_name, tag_name, _rule_opts}, _opts) do
+  def match(%{tag_name: tag_name} = element, {:tag_name, tag_name, _rule_opts}, _opts) do
     element
   end
 
-  def match(%Element{id: id} = element, {:id, id}, _opts) do
+  def match(%{id: id} = element, {:id, id}, _opts) do
     element
   end
 
-  def match(%Element{attributes: attributes} = element, {:attribute, {compare_type, name, compare_value, attr_opts}}, _opts) do
+  def match(%{attributes: attributes} = element, {:attribute, {compare_type, name, compare_value, attr_opts}}, _opts) do
     name = apply_namespace(name, attr_opts[:namespace])
 
     with {:ok, actual_value} <- Map.fetch(attributes, name),
@@ -32,24 +32,24 @@ defmodule GenDOM.Matcher do
     end
   end
   
-  def match(%Element{} = element, {:class, name}, _opts) when is_binary(name) do
+  def match(%{} = element, {:class, name}, _opts) when is_binary(name) do
     if name in element.class_list,
       do: element,
       else: nil
   end
 
-  def match(%Element{} = element, {:class, names}, _opts) when is_list(names) do
+  def match(%{} = element, {:class, names}, _opts) when is_list(names) do
     case (for name <- names, name in element.class_list, do: name) do
       [] -> nil
       _names -> element
     end
   end
 
-  def match(%Element{} = element, {:pseudo_class, {type, params}}, opts) do
+  def match(%{} = element, {:pseudo_class, {type, params}}, opts) do
     Pseudo.match(element, type, params, opts)
   end
 
-  def match(%Element{} = element, {:selectors, selectors}, opts) do
+  def match(%{} = element, {:selectors, selectors}, opts) do
     all_descendants = :pg.get_members(element.pid)
 
     tasks = Enum.reduce(all_descendants, [], fn(pid, tasks) ->
@@ -85,11 +85,11 @@ defmodule GenDOM.Matcher do
     end
   end
 
-  def match(%Element{} = element, {:rules, [rule]}, opts) do
+  def match(%{} = element, {:rules, [rule]}, opts) do
     match(element, rule, opts)
   end
 
-  def match(%Element{} = element, {:rules, [rule | [{:rule, _next_rules, next_rule_opts} | _] = rules]}, opts) do
+  def match(%{} = element, {:rules, [rule | [{:rule, _next_rules, next_rule_opts} | _] = rules]}, opts) do
     rules = if match(element, rule, opts) do
       rules
     else
@@ -101,7 +101,7 @@ defmodule GenDOM.Matcher do
     tasks = Enum.map(pids, fn(pid) ->
       Task.async(fn ->
         case GenServer.call(pid, :get) do
-          %Element{} = element ->
+          %{} = element ->
             match(element, {:rules, rules}, opts)
           _node -> nil
         end
@@ -111,7 +111,7 @@ defmodule GenDOM.Matcher do
     opts[:await].(tasks)
   end
 
-  def match(%Element{} = element, {:rule, segments, _rule_opts}, opts) do
+  def match(%{} = element, {:rule, segments, _rule_opts}, opts) do
     Enum.reduce_while(segments, element, fn(segment, element) ->
       case match(element, segment, opts) do
         nil -> {:halt, nil}
@@ -124,7 +124,7 @@ defmodule GenDOM.Matcher do
     nil
   end
 
-  defp apply_options(%Element{} = element, nil, opts) do
+  defp apply_options(%{} = element, nil, opts) do
     if Keyword.get(opts, :recursive, true) do
       {:pg.get_members(element.pid), opts}
     else
@@ -132,11 +132,11 @@ defmodule GenDOM.Matcher do
     end
   end
 
-  defp apply_options(%Element{} = element, ">", opts) do
+  defp apply_options(%{} = element, ">", opts) do
     {element.child_nodes, Keyword.put(opts, :recursive, false)}  
   end
 
-  defp apply_options(%Element{} = element, "+", opts) do
+  defp apply_options(%{} = element, "+", opts) do
     parent = GenServer.call(element.parent_element, :get)
     element_idx = Enum.find_index(parent.child_nodes, &(&1 == element.pid))
     pids = case Enum.at(parent.child_nodes, element_idx + 1) do
@@ -147,7 +147,7 @@ defmodule GenDOM.Matcher do
     {pids, Keyword.put(opts, :recursive, false)}
   end
 
-  defp apply_options(%Element{} = element, "~", opts) do
+  defp apply_options(%{} = element, "~", opts) do
     parent = GenServer.call(element.parent_element, :get)
     element_pid = element.pid
     {_bool, pids} = Enum.reduce(parent.child_nodes, {false, []}, fn
