@@ -55,7 +55,7 @@ defmodule GenDOM.Task do
         reply
 
       other ->
-        IO.inspect(other)
+        IO.inspect(other, label: "Await greedy")
     end
   end
 
@@ -122,7 +122,7 @@ defmodule GenDOM.Task do
         )
 
       other ->
-        IO.inspect(other)
+        IO.inspect(other, label: "Await greedy")
     end
   end
 
