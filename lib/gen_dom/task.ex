@@ -39,12 +39,9 @@ defmodule GenDOM.Task do
         demonitor_pending_tasks(awaiting)
         exit({:timeout, {__MODULE__, :await_one, [tasks, timeout]}})
 
-      {:DOWN, ref, _, proc, reason} when is_map_key(awaiting, ref) ->
+      {:DOWN, ref, _proc, pid, reason} when is_map_key(awaiting, ref) ->
         demonitor_pending_tasks(awaiting)
-        exit({reason(reason, proc), {__MODULE__, :await_many, [tasks, timeout]}})
-
-      {:DOWN, _ref, _, _proc, _reason} ->
-        nil
+        exit({reason(reason, pid), {__MODULE__, :await_many, [tasks, timeout]}})
 
       {ref, nil} when is_map_key(awaiting, ref) ->
         demonitor(ref)
@@ -56,6 +53,9 @@ defmodule GenDOM.Task do
         # shutdown_pending_tasks(awaiting)
 
         reply
+
+      other ->
+        IO.inspect(other)
     end
   end
 
@@ -95,12 +95,9 @@ defmodule GenDOM.Task do
         demonitor_pending_tasks(awaiting)
         exit({:timeout, {__MODULE__, :await_many, [tasks, timeout]}})
 
-      {:DOWN, ref, _, proc, reason} when is_map_key(awaiting, ref) ->
+      {:DOWN, ref, _proc, pid, reason} when is_map_key(awaiting, ref) ->
         demonitor_pending_tasks(awaiting)
-        exit({reason(reason, proc), {__MODULE__, :await_many, [tasks, timeout]}})
-
-      {:DOWN, _ref, _, _proc, _reason} ->
-        nil
+        exit({reason(reason, pid), {__MODULE__, :await_many, [tasks, timeout]}})
 
       {ref, nil} when is_map_key(awaiting, ref) ->
         demonitor(ref)
@@ -123,6 +120,9 @@ defmodule GenDOM.Task do
           Map.put(replies, ref, reply),
           timeout_ref
         )
+
+      other ->
+        IO.inspect(other)
     end
   end
 
@@ -132,7 +132,7 @@ defmodule GenDOM.Task do
     end)
   end
 
-  defp reason(:noconnection, proc), do: {:nodedown, monitor_node(proc)}
+  defp reason(:noconnection, pid), do: {:nodedown, monitor_node(pid)}
   defp reason(reason, _), do: reason
 
   defp monitor_node(pid) when is_pid(pid), do: node(pid)
