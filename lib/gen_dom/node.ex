@@ -74,6 +74,10 @@ defmodule GenDOM.Node do
         GenServer.start_link(__MODULE__, opts)
       end
 
+      def start(opts) do
+        GenServer.start(__MODULE__, opts)
+      end
+
       @impl true
       def init(opts) do
         pid = self()
@@ -94,7 +98,7 @@ defmodule GenDOM.Node do
       defoverridable allowed_fields: 0
 
       def new(opts \\ []) when is_list(opts) do
-        case start_link(opts) do
+        case start(opts) do
           {:ok, pid} -> GenServer.call(pid, :get)
           _other -> {:error, "could not start"}
         end
@@ -177,6 +181,11 @@ defmodule GenDOM.Node do
     GenServer.start_link(__MODULE__, Keyword.put(opts, :name, name), name: name)
   end
 
+  def start(opts) do
+    name = GenDOM.generate_name(__MODULE__)
+    GenServer.start(__MODULE__, Keyword.put(opts, :name, name), name: name)
+  end
+
   @doc """
   Creates a new Node and returns the Node struct.
 
@@ -188,7 +197,7 @@ defmodule GenDOM.Node do
       iex> %GenDOM.Node{} = node
   """
   def new(opts \\ []) when is_list(opts) do
-    case start_link(opts) do
+    case start(opts) do
       {:ok, pid} -> GenServer.call(pid, :get)
       _other -> {:error, "could not start"}
     end
