@@ -43,6 +43,9 @@ defmodule GenDOM.Task do
         demonitor_pending_tasks(awaiting)
         exit({reason(reason, proc), {__MODULE__, :await_many, [tasks, timeout]}})
 
+      {:DOWN, _ref, _, _proc, _reason} ->
+        nil
+
       {ref, nil} when is_map_key(awaiting, ref) ->
         demonitor(ref)
         await_one(tasks, timeout, Map.delete(awaiting, ref), timeout_ref)
@@ -95,6 +98,9 @@ defmodule GenDOM.Task do
       {:DOWN, ref, _, proc, reason} when is_map_key(awaiting, ref) ->
         demonitor_pending_tasks(awaiting)
         exit({reason(reason, proc), {__MODULE__, :await_many, [tasks, timeout]}})
+
+      {:DOWN, _ref, _, _proc, _reason} ->
+        nil
 
       {ref, nil} when is_map_key(awaiting, ref) ->
         demonitor(ref)
