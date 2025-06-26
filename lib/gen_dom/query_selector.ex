@@ -12,6 +12,7 @@ defmodule GenDOM.QuerySelector do
 
         tasks = Enum.map(all_descendants, fn(pid) ->
           Task.async(fn ->
+            IO.inspect(self(), label: "Await One")
             element = GenServer.call(pid, :get)
             Matcher.match(element, selectors, await: &await_one/1)
           end)
@@ -26,6 +27,7 @@ defmodule GenDOM.QuerySelector do
 
         tasks = Enum.map(all_descendants, fn(pid) ->
           Task.async(fn ->
+            IO.inspect(self(), label: "Await Many")
             case GenServer.call(pid, :get) do
               %GenDOM.Element{} = element ->
                 Matcher.match(element, selectors, await: &await_many/1)
