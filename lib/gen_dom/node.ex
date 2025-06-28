@@ -47,7 +47,7 @@ defmodule GenDOM.Node do
     parent_element: nil,
     parent_node: nil,
     previous_sibling: nil,
-    text_content: nil
+    text_content: ""
   ]
 
   defmacro __using__(fields \\ []) do
@@ -56,8 +56,8 @@ defmodule GenDOM.Node do
 
       Module.register_attribute(__MODULE__, :fields, accumulate: true)
 
+      @fields unquote(fields)
       @fields unquote(Macro.escape(@fields))
-      @fields unquote(Macro.escape(fields))
 
       # Flatten and resolve field conflicts (later fields override earlier ones)
       all_fields = List.flatten(@fields)

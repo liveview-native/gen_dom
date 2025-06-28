@@ -145,4 +145,15 @@ defmodule GenDOM.Element.Form do
   def submit(_form) do
     # Implementation to be added
   end
+
+  def encode(form) do
+    Map.merge(super(form), %{
+      action: form.action,
+      method: form.method,
+      name: form.name,
+      accept: form.accept,
+      autocomplete: form.autocomplete,
+      novalidate: form.novalidate
+    })
+  end
 end

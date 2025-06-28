@@ -50,12 +50,9 @@ defmodule GenDOM.Task do
       {ref, reply} when is_map_key(awaiting, ref) ->
         awaiting = Map.delete(awaiting, ref)
         demonitor_pending_tasks(awaiting)
-        # shutdown_pending_tasks(awaiting)
+        shutdown_pending_tasks(tasks)
 
         reply
-
-      other ->
-        IO.inspect(other, label: "Await greedy")
     end
   end
 
@@ -120,9 +117,6 @@ defmodule GenDOM.Task do
           Map.put(replies, ref, reply),
           timeout_ref
         )
-
-      other ->
-        IO.inspect(other, label: "Await greedy")
     end
   end
 
@@ -130,6 +124,10 @@ defmodule GenDOM.Task do
     Enum.each(awaiting, fn {ref, _} ->
       demonitor(ref)
     end)
+  end
+
+  defp shutdown_pending_tasks(awaiting) do
+    Enum.each(awaiting, &Task.shutdown(&1))
   end
 
   defp reason(:noconnection, pid), do: {:nodedown, monitor_node(pid)}

@@ -2,7 +2,7 @@ defmodule GenDOM.Element.FormTest do
   use ExUnit.Case, async: true
 
   alias GenDOM.Element.Form
-  alias GenDOM.{Element, Node}
+  alias GenDOM.Element
 
   describe "inheritance from Element with FormElement properties" do
     test "inherits all Element fields and has FormElement fields" do

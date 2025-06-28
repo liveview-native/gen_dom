@@ -3,10 +3,15 @@ defmodule GenDOM.Matcher do
     Document,
     Element,
     Node,
-    Matcher.Pseudo
+    Matcher.Pseudo,
+    Text
   }
 
   def match(element, matcher, opts \\ [])
+
+  def match(%Text{}, _matcher, _opts) do
+    nil
+  end
 
   def match(%{} = element, {:tag_name, "*", _rule_opts}, _opts) do
     element
@@ -96,14 +101,19 @@ defmodule GenDOM.Matcher do
       [rule | rules]
     end
 
-    {pids, opts} = apply_options(element, next_rule_opts[:combinator], opts)
+    {pids, opts} = if Keyword.get(opts, :recursive, true) do
+      apply_options(element, next_rule_opts[:combinator], opts)
+    else
+      {[], opts}
+    end
 
     tasks = Enum.map(pids, fn(pid) ->
       Task.async(fn ->
         case GenServer.call(pid, :get) do
-          %{} = element ->
+          %Node{} -> nil
+          %Text{} -> nil
+          element ->
             match(element, {:rules, rules}, opts)
-          _node -> nil
         end
       end)
     end)
@@ -125,11 +135,7 @@ defmodule GenDOM.Matcher do
   end
 
   defp apply_options(%{} = element, nil, opts) do
-    if Keyword.get(opts, :recursive, true) do
-      {:pg.get_members(element.pid), opts}
-    else
-      {[], opts}
-    end
+    {:pg.get_members(element.pid), opts}
   end
 
   defp apply_options(%{} = element, ">", opts) do

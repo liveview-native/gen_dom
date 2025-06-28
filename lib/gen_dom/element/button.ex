@@ -38,4 +38,25 @@ defmodule GenDOM.Element.Button do
     spellcheck: nil,
     translate: nil
   ]
+
+  def check_validity(%__MODULE__{} = input) do
+
+  end
+
+  def report_validity(%__MODULE__{} = input) do
+
+  end
+
+  def set_custom_validity(%__MODULE__{} = input) do
+
+  end
+
+  def encode(button) do
+    Map.merge(super(button), %{
+      type: button.type,
+      value: button.value,
+      disabled: button.disabled,
+      name: button.name
+    })
+  end
 end

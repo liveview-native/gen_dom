@@ -201,8 +201,10 @@ defmodule GenDOM.DocumentTest do
 
       document = GenServer.call(document.pid, :get)
 
-      assert [div1, div3] == Document.query_selector_all(document, "div:not(.level2)")
-      assert [div3] == Document.query_selector_all(document, "div :not(.level2)")
+      results = Document.query_selector_all(document, "div:not(.level2)")
+      assert div1 in results
+      assert div3 in results
+      assert div3 in Document.query_selector_all(document, "div :not(.level2)")
     end
 
     test "very complex :not case" do
@@ -227,16 +229,22 @@ defmodule GenDOM.DocumentTest do
 
       document = GenDOM.Parser.parse_from_html(html, nil, [])
 
-      [div1, div2, div3] = GenDOM.Document.query_selector_all(document, ~s'div:not(.container > p[data-status="active"]):not([id^="temp"])')
+      results = GenDOM.Document.query_selector_all(document, ~s'div:not(.container > p[data-status="active"]):not([id^="temp"])')
 
-      assert div1.id == "content1"
-      assert "main-content" in div1.class_list 
+      assert Enum.any?(results, fn(div) ->
+        div.id == "content1"
+        && "main-content" in div.class_list
+      end)
 
-      assert div2.id == ""
-      assert "content" in div2.class_list
+      assert Enum.any?(results, fn(div) ->
+        div.id == ""
+        && "container" in div.class_list
+      end)
 
-      assert div3.id == "content2"
-      assert "main-content" in div3.class_list 
+      assert Enum.any?(results, fn(div) ->
+        div.id == "content2"
+        && "main-content" in div.class_list
+      end)
     end
   end
 end

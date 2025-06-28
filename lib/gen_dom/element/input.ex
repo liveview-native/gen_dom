@@ -50,4 +50,48 @@ defmodule GenDOM.Element.Input do
     webkitdirectory: nil
   ]
 
+  def check_validity(%__MODULE__{} = input) do
+    true
+  end
+
+  def report_validity(%__MODULE__{} = input) do
+    true
+  end
+
+  def select(%__MODULE__{} = input) do
+
+  end
+
+  def set_custom_validity(%__MODULE__{} = input) do
+
+  end
+
+  def set_range_text(%__MODULE__{} = input) do
+
+  end
+
+  def set_selection_range(%__MODULE__{} = input) do
+
+  end
+
+  def show_picker(%__MODULE__{} = input) do
+
+  end
+
+  def step_down(%__MODULE__{} = input) do
+
+  end
+
+  def step_up(%__MODULE__{} = input) do
+
+  end
+
+  def encode(input) do
+    Map.merge(super(input), %{
+      type: input.type,
+      value: input.value,
+      placeholder: input.placeholder,
+      required: input.required
+    })
+  end
 end

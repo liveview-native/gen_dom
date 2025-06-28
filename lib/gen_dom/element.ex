@@ -294,9 +294,11 @@ defmodule GenDOM.Element do
       defdelegate toggle_attribute(element, name, force), to: GenDOM.Element
       defoverridable toggle_attribute: 2
       defoverridable toggle_attribute: 3
+
+      defdelegate encode(node), to: GenDOM.Element
+      defoverridable encode: 1
     end
   end
-
 
   def encode(element) do
     Map.merge(super(element), %{
@@ -582,7 +584,7 @@ defmodule GenDOM.Element do
   ## Examples
 
       iex> element = %SomeElement{attributes: %{"class" => "btn", "id" => "submit"}}
-      iex> GenDOM.Element.get_attribute(element, "class")
+      iex> GenDOM.Element.getattribute(element, "class")
       "btn"
       iex> GenDOM.Element.get_attribute(element, "nonexistent")
       nil

@@ -97,6 +97,7 @@ defmodule GenDOM.Document do
       url: document.url,
       body: document.body,
       head: document.head,
+      node_type: document.node_type
     })
   end
 

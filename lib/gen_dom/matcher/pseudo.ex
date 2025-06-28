@@ -8,6 +8,12 @@ defmodule GenDOM.Matcher.Pseudo do
   def match(%Element{} = element, "not", [params], opts) do
     opts = Keyword.merge(opts, recursive: false, await: &await_one/1)
 
+    opts = if "main-content" in element.class_list do
+      Keyword.put(opts, :foo, true)
+    else
+      opts
+    end
+
     tasks = Enum.map(params, fn(param) ->
       Task.async fn ->
         GenDOM.Matcher.match(element, param, opts)

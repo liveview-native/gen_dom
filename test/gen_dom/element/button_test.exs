@@ -2,7 +2,6 @@ defmodule GenDOM.Element.ButtonTest do
   use ExUnit.Case, async: true
 
   alias GenDOM.Element.Button
-  alias GenDOM.{Element, Node}
 
   describe "inheritance from Element" do
     test "inherits all Element fields" do

@@ -2,7 +2,6 @@ defmodule GenDOM.Element.InputTest do
   use ExUnit.Case, async: true
 
   alias GenDOM.Element.Input
-  alias GenDOM.{Element, Node}
 
   describe "inheritance from Element" do
     test "inherits all Element fields" do
@@ -73,17 +72,6 @@ defmodule GenDOM.Element.InputTest do
       updated_input = Input.set_attribute(input, "value", "new value")
       assert Input.get_attribute(updated_input, "value") == "new value"
     end
-
-    test "can use FormElement methods" do
-      input = Input.new(tag_name: "input", type: "text")
-      
-      # Should have FormElement methods
-      assert function_exported?(Input, :check_validity, 1)
-      assert function_exported?(Input, :report_validity, 1)
-      assert function_exported?(Input, :request_submit, 1)
-      assert function_exported?(Input, :reset, 1)
-      assert function_exported?(Input, :submit, 1)
-    end
   end
 
   describe "Input-specific functionality" do
@@ -121,50 +109,6 @@ defmodule GenDOM.Element.InputTest do
       assert checkbox_input.type == "checkbox"
       assert checkbox_input.checked == true
     end
-
-    test "can override FormElement defaults" do
-      input = Input.new(
-        tag_name: "input",
-        name: "custom-input-name",
-        action: "/custom-action",
-        method: "patch",
-        autocomplete: "off"
-      )
-      
-      # Should override FormElement defaults
-      assert input.name == "custom-input-name"
-      assert input.action == "/custom-action"
-      assert input.method == "patch"
-      assert input.autocomplete == "off"
-    end
-  end
-
-  describe "field precedence and merging" do
-    test "Input fields take precedence over FormElement fields when both exist" do
-      # Both Input and FormElement define these fields
-      input = Input.new(
-        tag_name: "input",
-        name: "input-name",         # Both define this
-        autocomplete: "username",   # Both define this
-        accept: "image/png"         # Input-specific override
-      )
-      
-      # Should use Input's values
-      assert input.name == "input-name"
-      assert input.autocomplete == "username"
-      assert input.accept == "image/png"
-    end
-
-    test "inherits FormElement fields not defined in Input" do
-      input = Input.new(tag_name: "input")
-      
-      # Should have FormElement fields that Input doesn't override
-      assert input.elements == []       # From FormElement
-      assert input.length == 0          # From FormElement
-      assert input.no_validate == false # From FormElement
-      assert input.rel_list == []       # From FormElement
-      assert input.encoding == nil      # From FormElement
-    end
   end
 
   describe "encoding" do
@@ -193,11 +137,6 @@ defmodule GenDOM.Element.InputTest do
       assert encoded[:tag_name] == "input"
       assert encoded[:id] == "email-input"
       
-      # Should include FormElement fields
-      assert encoded[:action] == "/validate"
-      assert encoded[:name] == "user-email"
-      assert encoded[:autocomplete] == "email"
-      
       # Should include Input-specific fields
       assert encoded[:type] == "email"
       assert encoded[:value] == "test@example.com"
@@ -221,31 +160,6 @@ defmodule GenDOM.Element.InputTest do
       assert function_exported?(Input, :set_attribute, 3)
       assert function_exported?(Input, :query_selector, 2)
       assert function_exported?(Input, :has_attribute?, 2)
-      
-      # FormElement methods
-      assert function_exported?(Input, :check_validity, 1)
-      assert function_exported?(Input, :report_validity, 1)
-      assert function_exported?(Input, :submit, 1)
-      assert function_exported?(Input, :reset, 1)
-    end
-  end
-
-  describe "form validation methods" do
-    test "form validation methods are available and callable" do
-      input = Input.new(
-        tag_name: "input",
-        type: "email",
-        required: true,
-        value: "test@example.com"
-      )
-      
-      # These should be callable (even if implementation is empty)
-      # They shouldn't raise exceptions
-      Input.check_validity(input)
-      Input.report_validity(input)
-      Input.request_submit(input)
-      Input.reset(input)
-      Input.submit(input)
     end
   end
 
