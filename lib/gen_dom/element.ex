@@ -1081,7 +1081,8 @@ defmodule GenDOM.Element do
   - slectors - A string containing valid CSS selectors to test the Element against.
   """
   def matches?(%{} = element, selectors) do
-
+    selectors = Selector.parse(selectors)
+    !!GenDOM.Matcher.match(element, selectors, await: &GenDOM.Task.await_one/1, recursive: false)
   end
 
   @doc """
@@ -1197,7 +1198,8 @@ defmodule GenDOM.Element do
 
   """
   def remove_attribute(%__MODULE__{} = element, attribute_name) do
-
+    attributes = Map.delete(element.attributes, attribute_name)
+    GenServer.cast(element.pid, {:put, :attributes, attributes})
   end
 
   @doc """
