@@ -1,7 +1,10 @@
 defmodule GenDOM.NodeTest do
   use ExUnit.Case, async: true
 
-  alias GenDOM.Node
+  alias GenDOM.{
+    Element,
+    Node
+  }
 
   # Define a test module that inherits from Node for testing purposes
   defmodule TestNode do
@@ -76,15 +79,15 @@ defmodule GenDOM.NodeTest do
       updated_child = Node.get(child.pid)
 
       assert Enum.member?(:pg.get_members(updated_parent.pid), updated_child.pid)
-      assert updated_child.parent_element == parent.pid
+      assert updated_child.parent_node == parent.pid
     end
 
     test "appending a child node onto a child will tell all parents" do
       parent = Node.new([])
 
-      child_1 = Node.new([])
-      child_2 = Node.new([])
-      child_3 = Node.new([])
+      child_1 = Element.new([])
+      child_2 = Element.new([])
+      child_3 = Element.new([])
 
       child_2 = Node.append_child(child_2, child_3)
       child_1 = Node.append_child(child_1, child_2)
@@ -106,7 +109,7 @@ defmodule GenDOM.NodeTest do
           }
         ],
         owner_document: nil,
-        parent_element: parent_pid
+        parent_element: nil
       }}
 
       assert parent_pid == parent.pid
@@ -125,6 +128,10 @@ defmodule GenDOM.NodeTest do
 
       child_4 = Node.new([])
       child_3 = Node.append_child(child_3, child_4, receiver: self())
+
+      Node.append_child(child_1, child_4, receiver: self())
+
+      child_4 = GenServer.call(child_4.pid, :get)
 
       assert_received {:append_child, ^child_3_pid, %{
         pid: child_4_pid,
@@ -160,7 +167,7 @@ defmodule GenDOM.NodeTest do
         pid: child_2_pid,
         child_nodes: [],
         owner_document: nil,
-        parent_element: parent_pid
+        parent_element: nil
       }, child_1_pid}
 
       assert parent_pid == parent.pid
@@ -214,12 +221,12 @@ defmodule GenDOM.NodeTest do
     test "replacing a child node" do
       parent = Node.new([])
 
-      child_1 = Node.new([])
+      child_1 = Element.new([])
 
       old_child = Node.new([])
 
       parent = Node.append_child(parent, child_1)
-      child_1 = Node.append_child(child_1, old_child)
+      child_1 = Element.append_child(child_1, old_child)
 
       new_child = Node.new([])
 
@@ -294,7 +301,7 @@ defmodule GenDOM.NodeTest do
             pid: child.pid,
             node_type: 0,
             owner_document: nil,
-            parent_element: node.pid,
+            parent_element: nil,
             test_property: "other",
             child_nodes: []
           }

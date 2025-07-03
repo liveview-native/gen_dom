@@ -17,7 +17,7 @@ defmodule GenDOM.DocumentTest do
         pid: document.pid,
         node_type: 10,
         owner_document: nil,
-        parent_element: parent.pid,
+        parent_element: nil,
         child_nodes: [],
         style_sheets: [],
         title: nil,
@@ -199,9 +199,11 @@ defmodule GenDOM.DocumentTest do
 
       div3 = GenServer.call(div3.pid, :get)
 
-      document = GenServer.call(document.pid, :get)
+      document = reload(document)
 
       results = Document.query_selector_all(document, "div:not(.level2)")
+      div1 = reload(div1)
+
       assert div1 in results
       assert div3 in results
       assert div3 in Document.query_selector_all(document, "div :not(.level2)")
@@ -227,7 +229,7 @@ defmodule GenDOM.DocumentTest do
         </div>
         """
 
-      document = GenDOM.Parser.parse_from_html(html, nil, [])
+      document = GenDOM.Parser.parse_from_string(html, "text/html", [])
 
       results = GenDOM.Document.query_selector_all(document, ~s'div:not(.container > p[data-status="active"]):not([id^="temp"])')
 
@@ -246,5 +248,9 @@ defmodule GenDOM.DocumentTest do
         && "main-content" in div.class_list
       end)
     end
+  end
+
+  defp reload(%{pid: pid}) do
+    GenServer.call(pid, :get)
   end
 end

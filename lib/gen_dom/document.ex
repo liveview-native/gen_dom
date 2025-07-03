@@ -34,7 +34,6 @@ defmodule GenDOM.Document do
   """
 
   alias GenDOM.{
-    Element,
     Matcher
   }
 
@@ -108,6 +107,10 @@ defmodule GenDOM.Document do
 
   def handle_info({:DOWN, ref, :process, pid, :normal}, document) when is_reference(ref) and is_pid(pid) do
     {:noreply, document}
+  end
+
+  def handle_info(msg, document) do
+    super(msg, document)
   end
 
   def clone_node(node, deep? \\ false) do

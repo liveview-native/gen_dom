@@ -7,7 +7,7 @@ defmodule GenDOM.ElementTest do
   }
   
   describe "Encoding" do
-    test "will inherit form Node and extend" do
+    test "will inherit from Node and extend" do
       parent = Node.new()
       element = Element.new(
         tag_name: "Text",
@@ -16,7 +16,7 @@ defmodule GenDOM.ElementTest do
         text_content: "asdf"
       )
 
-      parent = Node.append_child(parent, element)
+      parent = Element.append_child(parent, element)
       element = Element.get(element)
 
       encoded_element = Element.encode(element)
@@ -25,7 +25,7 @@ defmodule GenDOM.ElementTest do
         pid: element.pid,
         node_type: 1,
         owner_document: nil,
-        parent_element: parent.pid,
+        parent_element: nil,
         child_nodes: [],
         id: "",
         tag_name: "Text",

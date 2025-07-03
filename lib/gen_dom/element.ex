@@ -220,6 +220,9 @@ defmodule GenDOM.Element do
       defdelegate insert_adjacent_text(element, where, data), to: GenDOM.Element
       defoverridable insert_adjacent_text: 3
 
+      defdelegate matches?(element, selectors), to: GenDOM.Element
+      defoverridable matches?: 2
+
       defdelegate prepend(element, nodes), to: GenDOM.Element
       defoverridable prepend: 2
 
@@ -309,12 +312,140 @@ defmodule GenDOM.Element do
     })
   end
 
+  @impl true
   def init(opts) do
     {:ok, element} = super(opts)
 
     fields = extract_fields_from_attributes(Keyword.get(opts, :attributes, %{}))
 
     {:ok, struct(element, fields)}
+  end
+
+  @impl true
+  def handle_call({:append_child, child, opts} = msg, from, element) do
+    {:reply, element, element} = super(msg, from, element)
+
+    element = do_append_child(element, child, opts)
+
+    {:reply, element, element}
+  end
+
+  def handle_call({:insert_before, new_element, reference_element, opts} = msg, from, element) do
+    {:reply, element, element} = super(msg, from, element)
+
+    element = do_insert_before(element, new_element, reference_element, opts)
+
+    {:reply, element, element}
+  end
+
+  def handle_call({:remove_child, child, opts} = msg, from, element) do
+    {:reply, element, element} = super(msg, from, element)
+
+    element = do_remove_child(element, child, opts)
+
+    {:reply, element, element}
+  end
+
+  def handle_call({:replace_child, new_child, old_child, opts} = msg, from, element) do
+    {:reply, element, element} = super(msg, from, element)
+  
+    element = do_replace_child(element, new_child, old_child, opts)
+
+    {:reply, element, element}
+  end
+
+  def handle_call(msg, from, element) do
+    super(msg, from, element)
+  end
+
+  @impl true
+  def handle_cast({:append_child, child, opts} = msg, element) do
+    {:noreply, element} = super(msg, element)
+
+    element = do_append_child(element, child, opts)
+
+    {:noreply, element}
+  end
+
+  def handle_cast({:insert_before, new_element, reference_element, opts} = msg, element) do
+    {:noreply, element} = super(msg, element)
+
+    element = do_insert_before(element, new_element, reference_element, opts)
+
+    {:noreply, element}
+  end
+
+  def handle_cast({:remove_child, child, opts} = msg, element) do
+    {:noreply, element} = super(msg, element)
+
+    element = do_remove_child(element, child, opts)
+
+    {:noreply, element}
+  end
+
+  def handle_cast({:replace_child, new_child, old_child, opts} = msg, element) do
+    {:noreply, element} = super(msg, element)
+  
+    element = do_replace_child(element, new_child, old_child, opts)
+
+    {:noreply, element}
+  end
+
+  def handle_cast(msg, element) do
+    super(msg, element)
+  end
+
+  defp do_append_child(parent, child, opts) do
+    case child do
+      %GenDOM.Node{} -> parent
+
+      %GenDOM.Text{} -> parent 
+
+      child ->
+        pos = length(parent.children)
+        children = List.insert_at(parent.children, -1, child.pid)
+
+        parent = struct(parent, children: children, child_element_count: parent.child_element_count + 1)
+        parent = struct(parent, children: children)
+
+        update_parent_relationships(parent, child, pos, opts)
+        update_element_relationships(child, parent, pos, opts)
+
+        parent
+    end
+  end
+
+  defp do_insert_before(element, new_element, %{pid: reference_element_pid}, _opts) do
+    children = Enum.reduce(element.children, [], fn
+      ^reference_element_pid, children ->
+        case new_element do
+          %GenDOM.Text{} -> children
+          new_element -> [reference_element_pid, new_element.pid | children]
+        end
+
+      child_pid, children -> [child_pid | children]
+    end)
+
+    struct(element, children: children, child_element_count: element.child_element_count + 1)
+  end
+
+  defp do_remove_child(element, child, _opts) do
+    children = Enum.reject(element.children, &(&1 == child.pid))
+    struct(element, children: children, child_element_count: element.child_element_count - 1)
+  end
+
+  defp do_replace_child(element, new_child, %{pid: old_child_pid} = old_child, opts) do
+    {children, pos} = Enum.reduce(element.children, {[], 0}, fn
+      child_pid, {children, pos} when child_pid == old_child_pid ->
+        update_parent_relationships(element, new_child, pos, opts)
+        {[new_child.pid | children], pos + 1}
+
+      child_pid, {children, pos} -> {[child_pid | children], pos + 1}
+    end)
+
+    update_element_relationships(new_child, element, pos, opts)
+
+    struct(element, children: children)
   end
 
   def clone_node(node, deep? \\ false) do
@@ -381,6 +512,10 @@ defmodule GenDOM.Element do
   @impl true
   def handle_info({:DOWN, ref, :process, pid, :normal}, element) when is_reference(ref) and is_pid(pid) do
     {:noreply, element}
+  end
+
+  def handle_info(msg, element) do
+    super(msg, element)
   end
 
 
@@ -939,22 +1074,13 @@ defmodule GenDOM.Element do
   end
 
   @doc """
-  Creates a copy of a node from an external document that can be inserted into the current document.
-
-  Note: This method is typically available on Document, but included here for completeness.
+  Tests whether the element would be selected by the specified CSS selector.
 
   ## Parameters
-
-  - `element` - The element context (usually not used for this operation)
-  - `external_node` - The node to import
-  - `deep?` - Whether to import all descendants
-
-  ## Examples
-
-      imported = GenDOM.Element.import_node(element, external_node, true)
-
+  - element - The element to match upon
+  - slectors - A string containing valid CSS selectors to test the Element against.
   """
-  def import_node(%__MODULE__{} = element, external_node, deep?) do
+  def matches?(%{} = element, selectors) do
 
   end
 
@@ -1516,5 +1642,41 @@ defmodule GenDOM.Element do
     GenDOM.Element.put!(node, :attributes, Map.put(attributes, name, false))
 
     false
+  end
+
+  defp update_element_relationships(element, parent, pos, _opts) do
+    previous_element_sibling = if pos != 0 do
+      previous_element_sibling = Enum.at(parent.children, pos - 1)
+      GenServer.cast(previous_element_sibling, {:put, :next_element_sibling, element.pid})
+      previous_element_sibling
+    end
+
+    next_pos = pos + 1
+    next_element_sibling = if next_pos < length(parent.children),
+      do: Enum.at(parent.children, next_pos)
+
+    GenServer.cast(element.pid, {:merge, %{
+      previous_element_sibling: previous_element_sibling,
+      next_element_sibling: next_element_sibling
+    }})
+  end
+
+  defp update_parent_relationships(%{children: [element_pid], pid: parent_pid}, %{__struct__: struct, pid: element_pid}, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+    GenServer.cast(parent_pid, {:merge, %{
+      first_element_child: element_pid,
+      last_element_child: element_pid
+    }})
+  end
+
+  defp update_parent_relationships(parent, %{__struct__: struct, pid: element_pid}, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+    GenServer.cast(parent.pid, {:put, :first_element_child, element_pid})
+  end
+
+  defp update_parent_relationships(%{children: children} = parent, %{__struct__: struct, pid: element_pid}, pos, _opts) when pos + 1 >= length(children) and struct not in [GenDOM.Node, GenDOM.Text] do
+    GenServer.cast(parent.pid, {:put, :last_element_child, element_pid})
+  end
+
+  defp update_parent_relationships(_parent, _node, _pos, _opts) do
+    :ok
   end
 end
