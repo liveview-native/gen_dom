@@ -1661,22 +1661,37 @@ defmodule GenDOM.Element do
     }})
   end
 
-  defp update_parent_relationships(%{children: [element_pid], pid: parent_pid}, %{__struct__: struct, pid: element_pid}, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+  defp update_parent_relationships(%{children: [element_pid], pid: parent_pid}, %{__struct__: struct, pid: element_pid} = element, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(element)
     GenServer.cast(parent_pid, {:merge, %{
       first_element_child: element_pid,
       last_element_child: element_pid
     }})
   end
 
-  defp update_parent_relationships(parent, %{__struct__: struct, pid: element_pid}, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+  defp update_parent_relationships(parent, %{__struct__: struct, pid: element_pid} = element, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(element)
     GenServer.cast(parent.pid, {:put, :first_element_child, element_pid})
   end
 
-  defp update_parent_relationships(%{children: children} = parent, %{__struct__: struct, pid: element_pid}, pos, _opts) when pos + 1 >= length(children) and struct not in [GenDOM.Node, GenDOM.Text] do
+  defp update_parent_relationships(%{children: children} = parent, %{__struct__: struct, pid: element_pid} = element, pos, _opts) when pos + 1 >= length(children) and struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(element)
     GenServer.cast(parent.pid, {:put, :last_element_child, element_pid})
   end
 
-  defp update_parent_relationships(_parent, _node, _pos, _opts) do
+  defp update_parent_relationships(_parent, element, _pos, _opts) do
+    update_owner_document(element)
     :ok
   end
+
+  defp update_owner_document(%{tag_name: "body", owner_document: owner_document, pid: element_pid}) when not is_nil(owner_document) do
+    GenServer.cast(owner_document, {:put, :body, element_pid})
+  end
+
+  defp update_owner_document(%{tag_name: "head", owner_document: owner_document, pid: element_pid}) when not is_nil(owner_document) do
+    GenServer.cast(owner_document, {:put, :head, element_pid})
+  end
+
+  defp update_owner_document(_element),
+    do: :ok
 end
