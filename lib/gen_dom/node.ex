@@ -189,6 +189,8 @@ defmodule GenDOM.Node do
       def handle_call({:track, child_pid_or_pids}, from, node), do: GenDOM.Node.handle_call({:track, child_pid_or_pids}, from, node)
       def handle_call({:untrack, child_pid_or_pids}, from, node), do: GenDOM.Node.handle_call({:untrack, child_pid_or_pids}, from, node)
 
+      def handle_call({:update, func}, from, node), do: GenDOM.Node.handle_call({:update, func}, from, node)
+
       defoverridable handle_call: 3
 
       @impl true
@@ -204,6 +206,8 @@ defmodule GenDOM.Node do
       def handle_cast({:track, child}, node), do: GenDOM.Node.handle_cast({:track, child}, node)
       def handle_cast({:untrack, child}, node), do: GenDOM.Node.handle_cast({:untrack, child}, node)
       def handle_cast({:send_to_receiver, msg}, node), do: GenDOM.Node.handle_cast({:send_to_receiver, msg}, node)
+
+      def handle_cast({:update, func}, node), do: GenDOM.Node.handle_cast({:update, func}, node)
 
       defoverridable handle_cast: 2
 
@@ -305,6 +309,10 @@ defmodule GenDOM.Node do
     {:reply, node, node}
   end
 
+  def handle_call({:update, func}, _from, node) when is_function(func) do
+    func.(node)
+  end
+
   @impl true
   def handle_cast({:assign, assigns}, node) when is_list(assigns) do
     handle_cast({:assign, Map.new(assigns)}, node)
@@ -362,6 +370,10 @@ defmodule GenDOM.Node do
     send_to_receiver(node.receiver, msg)
 
     {:noreply, node}
+  end
+
+  def handle_cast({:update, func}, node) when is_function(func) do
+    func.(node)
   end
 
   @impl true
