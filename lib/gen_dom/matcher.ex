@@ -1,4 +1,6 @@
 defmodule GenDOM.Matcher do
+  @moduledoc false
+
   alias GenDOM.{
     Document,
     Element,
