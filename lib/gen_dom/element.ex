@@ -42,6 +42,7 @@ defmodule GenDOM.Element do
     active_element: nil,
     adopted_style_sheets: nil,
     node_type: 1,
+    is_element?: true,
 
     tag_name: nil,
     aria_active_descendant_element: nil,

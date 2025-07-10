@@ -56,6 +56,7 @@ defmodule GenDOM.Document do
     document_element: nil,
     document_uri: nil,
     embeds: nil,
+    first_element_child: nil,
     fonts: [],
     forms: [],
     fragment_directive: nil,
@@ -84,8 +85,6 @@ defmodule GenDOM.Document do
     url: nil,
     visibility_state: nil
   ]
-
-  use GenDOM.QuerySelector
 
   import GenDOM.Task
 
@@ -351,7 +350,7 @@ defmodule GenDOM.Document do
 
   """
   def create_element(%__MODULE__{} = document, local_name, options \\ []) do
-
+    
   end
 
   @doc """

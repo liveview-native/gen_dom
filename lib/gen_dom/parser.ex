@@ -13,7 +13,9 @@ defmodule GenDOM.Parser do
         attributes_as_maps: true
       )
 
-    document = Document.new([])
+    document = Document.new([
+      content_type: "text/html"
+    ])
 
     children = create_elements_from_children(children, [], document)
 
@@ -28,15 +30,16 @@ defmodule GenDOM.Parser do
   end
 
 
-  def parse_from_string(string, _mime_type, opts) do
+  def parse_from_string(string, content_type, opts) do
     {:ok, children} =
       LiveViewNative.Template.Parser.parse_document(string,
         attributes_as_maps: true,
         strip_comments: true
       )
 
-    document = Document.new([])
-
+    document = Document.new([
+      content_type: content_type
+    ])
 
     children = create_elements_from_children(children, [], document)
 

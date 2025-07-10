@@ -33,6 +33,7 @@ defmodule GenDOM.Node do
     assigns: %{},
     pid: nil,
     receiver: nil,
+    is_element?: false,
 
     base_uri: nil,
     child_nodes: [],
@@ -69,6 +70,8 @@ defmodule GenDOM.Node do
       |> Enum.reverse()
 
       defstruct all_fields
+
+      use GenDOM.QuerySelector
 
       def start_link(opts) do
         GenServer.start_link(__MODULE__, opts)
@@ -944,7 +947,7 @@ defmodule GenDOM.Node do
   end
 
   defp update_node_relationships(node, parent, pos, _opts) do
-    parent_element = if is_element?(parent),
+    parent_element = if parent.is_element?,
       do: parent.pid
 
     previous_sibling = if pos != 0 do
@@ -983,13 +986,6 @@ defmodule GenDOM.Node do
   defp update_parent_relationships(_parent, _node, _pos, _opts) do
     :ok
   end
-
-  defp is_element?(%{__struct__: GenDOM.Text}),
-    do: false
-  defp is_element?(%{__struct__: __MODULE__}),
-    do: false
-  defp is_element?(_element),
-    do: true
 
   defp send_to_receiver(pid, msg) when is_pid(pid) do
     send(pid, msg)

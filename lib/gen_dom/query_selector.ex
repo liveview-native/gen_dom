@@ -119,12 +119,11 @@ defmodule GenDOM.QuerySelector do
 
         tasks = Enum.map(all_descendants, fn(pid) ->
           Task.async(fn ->
-            case GenServer.call(pid, :get) do
-              %Node{} -> nil
-              %Text{} -> nil
-              element ->
-                Matcher.match(element, selectors, await: &await_many/1)
-            end
+            node = GenServer.call(pid, :get)
+
+            if node.is_element?,
+              do: Matcher.match(node, selectors, await: &await_many/1),
+              else: nil
           end)
         end)
 

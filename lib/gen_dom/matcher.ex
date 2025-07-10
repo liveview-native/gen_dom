@@ -3,7 +3,6 @@ defmodule GenDOM.Matcher do
 
   alias GenDOM.{
     Document,
-    Element,
     Node,
     Matcher.Pseudo,
     Text
