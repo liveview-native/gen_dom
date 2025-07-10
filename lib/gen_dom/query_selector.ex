@@ -68,9 +68,9 @@ defmodule GenDOM.QuerySelector do
           nil
 
       """
-      def query_selector(%__MODULE__{} = node, selectors) when is_binary(selectors) do
+      def query_selector(node_pid, selectors) when is_binary(selectors) do
         selectors = Selector.parse(selectors)
-        all_descendants = :pg.get_members(node.pid)
+        all_descendants = :pg.get_members(node_pid)
 
         tasks = Enum.map(all_descendants, fn(pid) ->
           Task.async(fn ->
@@ -79,7 +79,10 @@ defmodule GenDOM.QuerySelector do
           end)
         end)
 
-        await_one(tasks)
+        case await_one(tasks) do
+          %{pid: pid} -> pid
+          other -> other
+        end
       end
 
       @doc """
@@ -113,9 +116,9 @@ defmodule GenDOM.QuerySelector do
           []
 
       """
-      def query_selector_all(%__MODULE__{} = node, selectors) when is_binary(selectors) do
+      def query_selector_all(node_pid, selectors) when is_binary(selectors) do
         selectors = Selector.parse(selectors)
-        all_descendants = :pg.get_members(node.pid)
+        all_descendants = :pg.get_members(node_pid)
 
         tasks = Enum.map(all_descendants, fn(pid) ->
           Task.async(fn ->
@@ -128,8 +131,33 @@ defmodule GenDOM.QuerySelector do
         end)
 
         await_many(tasks)
-        |> List.flatten()
-        |> Enum.uniq()
+        |> flat_uniq(MapSet.new([]))
+        |> MapSet.to_list()
+      end
+
+      defp flat_uniq([], acc) do
+        acc
+      end
+
+      defp flat_uniq([[]], acc) do
+        acc
+      end
+
+      defp flat_uniq([[] |  elements], acc) do
+        flat_uniq(elements, acc)
+      end
+
+      defp flat_uniq([element_list | elements], acc) when is_list(element_list) do
+        acc = flat_uniq(element_list, acc)
+        flat_uniq(elements, acc)
+      end
+
+      defp flat_uniq([element | []], acc) do
+        MapSet.put(acc, element.pid)
+      end
+
+      defp flat_uniq([element | elements], acc) do
+        flat_uniq(elements, MapSet.put(acc, element.pid))
       end
     end
   end

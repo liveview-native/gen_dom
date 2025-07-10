@@ -16,7 +16,7 @@ defmodule GenDOM.ElementTest do
         text_content: "asdf"
       )
 
-      parent = Element.append_child(parent, element)
+      Element.append_child(parent.pid, element.pid)
       element = Element.get(element)
 
       encoded_element = Element.encode(element)

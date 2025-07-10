@@ -61,8 +61,8 @@ defmodule GenDOM.Element.FormTest do
       
       # Test adding child elements
       input = Element.new(tag_name: "input")
-      updated_form = Form.append_child(form, input)
-      assert Form.has_child_nodes?(updated_form) == true
+      Form.append_child(form.pid, input.pid)
+      assert Form.has_child_nodes?(form.pid) == true
     end
 
     test "can use Element methods" do
@@ -72,14 +72,14 @@ defmodule GenDOM.Element.FormTest do
       )
       
       # Should be able to call Element methods
-      assert Form.get_attribute(form, "class") == "contact-form"
-      assert Form.get_attribute(form, "data-validation") == "true"
-      assert Form.has_attribute?(form, "class") == true
-      assert Form.has_attribute?(form, "nonexistent") == false
+      assert Form.get_attribute(form.pid, "class") == "contact-form"
+      assert Form.get_attribute(form.pid, "data-validation") == "true"
+      assert Form.has_attribute?(form.pid, "class") == true
+      assert Form.has_attribute?(form.pid, "nonexistent") == false
 
       # Test attribute manipulation
-      updated_form = Form.set_attribute(form, "method", "post")
-      assert Form.get_attribute(updated_form, "method") == "post"
+      Form.set_attribute(form.pid, "method", "post")
+      assert Form.get_attribute(form.pid, "method") == "post"
     end
 
     test "can use FormElement methods" do
@@ -223,11 +223,11 @@ defmodule GenDOM.Element.FormTest do
       
       # These should be callable (even if implementation is empty)
       # They shouldn't raise exceptions
-      Form.check_validity(form)
-      Form.report_validity(form)
-      Form.request_submit(form)
-      Form.reset(form)
-      Form.submit(form)
+      Form.check_validity(form.pid)
+      Form.report_validity(form.pid)
+      Form.request_submit(form.pid)
+      Form.reset(form.pid)
+      Form.submit(form.pid)
     end
   end
 end

@@ -38,11 +38,11 @@ defmodule GenDOM.Element.Form do
 
   ## Parameters
 
-  - `form` - The form element to validate
+  - `form_pid` - The PID of the form element to validate
 
   ## Examples
 
-      is_valid = GenDOM.Element.Form.check_validity(form)
+      is_valid = GenDOM.Element.Form.check_validity(form.pid)
       # => true or false
 
   """
@@ -58,11 +58,11 @@ defmodule GenDOM.Element.Form do
 
   ## Parameters
 
-  - `form` - The form element to validate and report on
+  - `form_pid` - The PID of the form element to validate and report on
 
   ## Examples
 
-      reported = GenDOM.Element.Form.report_validity(form)
+      reported = GenDOM.Element.Form.report_validity(form.pid)
       # => true if valid, false if validation problems were reported
 
   """
@@ -78,11 +78,11 @@ defmodule GenDOM.Element.Form do
 
   ## Parameters
 
-  - `form` - The form element to submit
+  - `form_pid` - The PID of the form element to submit
 
   ## Examples
 
-      GenDOM.Element.Form.request_submit(form)
+      GenDOM.Element.Form.request_submit(form.pid)
 
   """
   def request_submit(_form) do
@@ -96,12 +96,12 @@ defmodule GenDOM.Element.Form do
 
   ## Parameters
 
-  - `form` - The form element to submit
-  - `submitter` - The submit button that triggered the submission
+  - `form_pid` - The PID of the form element to submit
+  - `submitter_pid` - The PID of the submit button that triggered the submission
 
   ## Examples
 
-      GenDOM.Element.Form.request_submit(form, submit_button)
+      GenDOM.Element.Form.request_submit(form.pid, submit_button.pid)
 
   """
   def request_submit(_form, _submitter) do
@@ -116,11 +116,11 @@ defmodule GenDOM.Element.Form do
 
   ## Parameters
 
-  - `form` - The form element to reset
+  - `form_pid` - The PID of the form element to reset
 
   ## Examples
 
-      GenDOM.Element.Form.reset(form)
+      GenDOM.Element.Form.reset(form.pid)
 
   """
   def reset(_form) do
@@ -135,11 +135,11 @@ defmodule GenDOM.Element.Form do
 
   ## Parameters
 
-  - `form` - The form element to submit
+  - `form_pid` - The PID of the form element to submit
 
   ## Examples
 
-      GenDOM.Element.Form.submit(form)
+      GenDOM.Element.Form.submit(form.pid)
 
   """
   def submit(_form) do

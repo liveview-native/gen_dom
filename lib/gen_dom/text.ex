@@ -7,8 +7,9 @@ defmodule GenDOM.Text do
     whole_text: nil
   ]
 
-  def clone_node(node, deep? \\ false) do
-    fields = Map.drop(node, [
+  def clone_node(text_pid, deep? \\ false) do
+    text = get(text_pid)
+    fields = Map.drop(text, [
       :__struct__,
       :pid,
       :receiver,
@@ -24,15 +25,15 @@ defmodule GenDOM.Text do
       :assigned_slot
     ]) |> Map.to_list()
 
-    new_node = apply(node.__struct__, :new, [fields])
+    new_text = apply(text.__struct__, :new, [fields])
 
     if deep? do
-      Enum.reduce(node.child_nodes, new_node, fn(child_node_pid, new_node) ->
+      Enum.reduce(text.child_nodes, new_text.pid, fn(child_node_pid, new_text_pid) ->
         child_node = GenServer.call(child_node_pid, :get)
-        append_child(new_node, clone_node(child_node, deep?))
+        append_child(new_text_pid, clone_node(child_node, deep?))
       end)
     else
-      new_node
+      new_text.pid
     end
   end
 

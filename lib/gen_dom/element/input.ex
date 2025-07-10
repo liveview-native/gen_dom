@@ -6,6 +6,37 @@ defmodule GenDOM.Element.Input do
 
   This module implements the InputElement interface as defined in the DOM specification.
   Input elements inherit from Element and include input-specific properties and behaviors.
+
+  ## Usage
+
+  ```elixir
+  # Create a new input element
+  input = GenDOM.Element.Input.new([
+    tag_name: "input",
+    type: "email",
+    value: "user@example.com",
+    required: true
+  ])
+
+  # All Element methods work with PIDs
+  GenDOM.Element.Input.set_attribute(input.pid, "placeholder", "Enter your email")
+  ```
+
+  ## Features
+
+  - Full InputElement specification compliance
+  - Support for all input types (text, email, password, checkbox, etc.)
+  - Form validation capabilities
+  - File upload support
+  - All inherited Element functionality
+
+  ## Input Types
+
+  This module supports all standard HTML input types:
+  - text, email, password, tel, url
+  - number, range, date, time, datetime-local
+  - checkbox, radio, submit, reset, button
+  - file, hidden, image, color
   """
 
   use GenDOM.Element, [

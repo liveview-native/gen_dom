@@ -27,32 +27,34 @@ end
 
 ## 🚀 Quick Start
 
+**Important:** GenDOM uses a PID-based API. All functions work with process IDs (PIDs) rather than struct instances. When you create elements, they return structs containing a `.pid` field that you use for all operations.
+
 ### Creating a Basic DOM Structure
 
 ```elixir
 # Create a document
-{:ok, document} = GenDOM.Document.new()
+document = GenDOM.Document.new()
 
 # Create elements
-{:ok, html_element} = GenDOM.Element.new(tag_name: "html")
-{:ok, body_element} = GenDOM.Element.new(tag_name: "body", class_list: ["main-content"])
-{:ok, div_element} = GenDOM.Element.new(
+html_element = GenDOM.Element.new(tag_name: "html")
+body_element = GenDOM.Element.new(tag_name: "body", class_list: ["main-content"])
+div_element = GenDOM.Element.new(
   tag_name: "div",
   id: "container",
   attributes: %{"data-role" => "main"}
 )
 
-# Build the structure
-document = GenDOM.Document.append_child(document, html_element)
-html_element = GenDOM.Element.append_child(html_element, body_element)
-body_element = GenDOM.Element.append_child(body_element, div_element)
+# Build the structure (all functions work with PIDs)
+document_pid = GenDOM.Document.append_child(document.pid, html_element.pid)
+html_element_pid = GenDOM.Element.append_child(html_element.pid, body_element.pid)
+body_element_pid = GenDOM.Element.append_child(body_element.pid, div_element.pid)
 ```
 
 ### Working with Form Elements 📋
 
 ```elixir
 # Create a form with FormElement interface
-{:ok, form} = GenDOM.Element.Form.new(
+form = GenDOM.Element.Form.new(
   tag_name: "form",
   action: "/submit",
   method: "post",
@@ -60,7 +62,7 @@ body_element = GenDOM.Element.append_child(body_element, div_element)
 )
 
 # Add form controls
-{:ok, input} = GenDOM.Element.Input.new(
+input = GenDOM.Element.Input.new(
   tag_name: "input",
   type: "email",
   name: "email",
@@ -68,19 +70,19 @@ body_element = GenDOM.Element.append_child(body_element, div_element)
   required: true
 )
 
-{:ok, button} = GenDOM.Element.Button.new(
+button = GenDOM.Element.Button.new(
   tag_name: "button",
   type: "submit",
   value: "Submit Form"
 )
 
-# Assemble the form
-form = GenDOM.Element.Form.append_child(form, input)
-form = GenDOM.Element.Form.append_child(form, button)
+# Assemble the form (using PIDs)
+form_pid = GenDOM.Element.Form.append_child(form.pid, input.pid)
+form_pid = GenDOM.Element.Form.append_child(form_pid, button.pid)
 
-# Use FormElement methods
-is_valid = GenDOM.Element.Form.check_validity(form)
-GenDOM.Element.Form.submit(form)
+# Use FormElement methods (with PIDs)
+is_valid = GenDOM.Element.Form.check_validity(form_pid)
+GenDOM.Element.Form.submit(form_pid)
 ```
 
 ### Parsing from Templates 📄
@@ -95,90 +97,91 @@ html_string = """
 </div>
 """
 
-{:ok, document} = GenDOM.Parser.parse_from_html(html_string)
+document_pid = GenDOM.Parser.parse_from_string(html_string, "text/html", [])
 ```
 
 ### CSS Selector Querying 🔍
 
 ```elixir
 # Query by ID
-title_element = GenDOM.Document.get_element_by_id(document, "title")
+title_element_pid = GenDOM.Document.get_element_by_id(document_pid, "title")
 
 # Query by class name
-descriptions = GenDOM.Document.get_elements_by_class_name(document, ["description"])
+description_pids = GenDOM.Document.get_elements_by_class_name(document_pid, ["description"])
 
 # Query by tag name
-all_buttons = GenDOM.Document.get_elements_by_tag_name(document, "button")
+button_pids = GenDOM.Document.get_elements_by_tag_name(document_pid, "button")
 
 # Complex CSS selectors
 # Find all buttons inside containers
-buttons_in_containers = GenDOM.Document.query_selector_all(document, ".container button")
+buttons_in_containers = GenDOM.Document.query_selector_all(document_pid, ".container button")
 
 # Find first paragraph with specific class
-first_desc = GenDOM.Document.query_selector(document, "p.description")
+first_desc_pid = GenDOM.Document.query_selector(document_pid, "p.description")
 
 # Advanced selectors
-form_inputs = GenDOM.Document.query_selector_all(document, "form input[type='email']")
+form_input_pids = GenDOM.Document.query_selector_all(document_pid, "form input[type='email']")
 ```
 
 ### Element Manipulation 🔧
 
 ```elixir
-# Get and set attributes
-class_value = GenDOM.Element.get_attribute(div_element, "class")
-updated_div = GenDOM.Element.set_attribute(div_element, "data-loaded", "true")
+# Get and set attributes (using PIDs)
+class_value = GenDOM.Element.get_attribute(div_element.pid, "class")
+GenDOM.Element.set_attribute(div_element.pid, "data-loaded", "true")
 
 # Work with classes
-updated_div = GenDOM.Element.add_class(updated_div, "active")
-has_class = GenDOM.Element.has_class?(updated_div, "container")
+GenDOM.Element.toggle_attribute(div_element.pid, "class")
+has_attr = GenDOM.Element.has_attribute?(div_element.pid, "class")
 
 # Check element relationships
-is_descendant = GenDOM.Node.contains?(body_element, div_element)
-parent = GenDOM.Node.get_parent_node(div_element)
+is_descendant = GenDOM.Node.contains?(body_element.pid, div_element.pid)
+parent_node = GenDOM.Node.get_root_node(div_element.pid)
 
 # Clone elements
-cloned_div = GenDOM.Node.clone_node(div_element, true) # deep clone
-shallow_clone = GenDOM.Node.clone_node(div_element, false)
+cloned_div_pid = GenDOM.Node.clone_node(div_element.pid, true) # deep clone
+shallow_clone_pid = GenDOM.Node.clone_node(div_element.pid, false)
 ```
 
 ### Advanced DOM Operations ⚡
 
 ```elixir
 # Insert elements at specific positions
-{:ok, new_paragraph} = GenDOM.Element.new(
+new_paragraph = GenDOM.Element.new(
   tag_name: "p", 
   text_content: "Inserted paragraph"
 )
 
-# Insert before existing element
-updated_body = GenDOM.Node.insert_before(body_element, new_paragraph, div_element)
+# Insert before existing element (using PIDs)
+body_pid = GenDOM.Node.insert_before(body_element.pid, new_paragraph.pid, div_element.pid)
 
 # Replace existing elements
-{:ok, replacement} = GenDOM.Element.new(tag_name: "section", class_list: ["new-section"])
-updated_body = GenDOM.Node.replace_child(body_element, replacement, div_element)
+replacement = GenDOM.Element.new(tag_name: "section", class_list: ["new-section"])
+body_pid = GenDOM.Node.replace_child(body_element.pid, replacement.pid, div_element.pid)
 
 # Remove elements
-updated_body = GenDOM.Node.remove_child(body_element, div_element)
+body_pid = GenDOM.Node.remove_child(body_element.pid, div_element.pid)
 ```
 
 ### Working with Text Content ✏️
 
 ```elixir
 # Create text nodes
-{:ok, text_node} = GenDOM.Text.new(data: "Hello, World!")
+text_node = GenDOM.Text.new(data: "Hello, World!")
 
-# Set text content on elements
-updated_element = GenDOM.Element.set_text_content(div_element, "New content")
+# Work with text content using PIDs
+GenDOM.Node.put(div_element.pid, :text_content, "New content")
 
-# Get text content
-content = GenDOM.Element.get_text_content(div_element)
+# Get text content by retrieving the node
+updated_div = GenDOM.Node.get(div_element.pid)
+content = updated_div.text_content
 ```
 
 ### Form Validation and Submission ✅
 
 ```elixir
 # Create a complex form
-{:ok, contact_form} = GenDOM.Element.Form.new(
+contact_form = GenDOM.Element.Form.new(
   tag_name: "form",
   action: "/contact",
   method: "post",
@@ -186,7 +189,7 @@ content = GenDOM.Element.get_text_content(div_element)
 )
 
 # Add various input types
-{:ok, name_input} = GenDOM.Element.Input.new(
+name_input = GenDOM.Element.Input.new(
   tag_name: "input",
   type: "text",
   name: "name",
@@ -195,7 +198,7 @@ content = GenDOM.Element.get_text_content(div_element)
   maxlength: 50
 )
 
-{:ok, email_input} = GenDOM.Element.Input.new(
+email_input = GenDOM.Element.Input.new(
   tag_name: "input",
   type: "email",
   name: "email",
@@ -203,7 +206,7 @@ content = GenDOM.Element.get_text_content(div_element)
   pattern: ".*@.*\\..*"
 )
 
-{:ok, age_input} = GenDOM.Element.Input.new(
+age_input = GenDOM.Element.Input.new(
   tag_name: "input",
   type: "number",
   name: "age",
@@ -212,17 +215,17 @@ content = GenDOM.Element.get_text_content(div_element)
   step: 1
 )
 
-# Assemble form
-contact_form = GenDOM.Element.Form.append_child(contact_form, name_input)
-contact_form = GenDOM.Element.Form.append_child(contact_form, email_input)
-contact_form = GenDOM.Element.Form.append_child(contact_form, age_input)
+# Assemble form (using PIDs)
+form_pid = GenDOM.Element.Form.append_child(contact_form.pid, name_input.pid)
+form_pid = GenDOM.Element.Form.append_child(form_pid, email_input.pid)
+form_pid = GenDOM.Element.Form.append_child(form_pid, age_input.pid)
 
-# Validate form
-is_valid = GenDOM.Element.Form.check_validity(contact_form)
-validation_report = GenDOM.Element.Form.report_validity(contact_form)
+# Validate form (using PIDs)
+is_valid = GenDOM.Element.Form.check_validity(form_pid)
+validation_report = GenDOM.Element.Form.report_validity(form_pid)
 
 # Submit form
-GenDOM.Element.Form.request_submit(contact_form)
+GenDOM.Element.Form.request_submit(form_pid)
 ```
 
 ### Element Traversal and Navigation 🔄

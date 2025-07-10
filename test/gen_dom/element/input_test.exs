@@ -50,7 +50,8 @@ defmodule GenDOM.Element.InputTest do
       assert Input.is_same_node?(input, input) == true
       
       # Test cloning
-      cloned_input = Input.clone_node(input)
+      cloned_input_pid = Input.clone_node(input.pid)
+      cloned_input = Input.get(cloned_input_pid)
       assert cloned_input.type == "text"
       assert cloned_input.pid != input.pid
     end
@@ -63,14 +64,14 @@ defmodule GenDOM.Element.InputTest do
       )
       
       # Should be able to call Element methods
-      assert Input.get_attribute(input, "class") == "form-input"
-      assert Input.get_attribute(input, "data-validation") == "required"
-      assert Input.has_attribute?(input, "class") == true
-      assert Input.has_attribute?(input, "nonexistent") == false
+      assert Input.get_attribute(input.pid, "class") == "form-input"
+      assert Input.get_attribute(input.pid, "data-validation") == "required"
+      assert Input.has_attribute?(input.pid, "class") == true
+      assert Input.has_attribute?(input.pid, "nonexistent") == false
 
       # Test attribute manipulation
-      updated_input = Input.set_attribute(input, "value", "new value")
-      assert Input.get_attribute(updated_input, "value") == "new value"
+      Input.set_attribute(input.pid, "value", "new value")
+      assert Input.get_attribute(input.pid, "value") == "new value"
     end
   end
 

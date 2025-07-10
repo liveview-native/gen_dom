@@ -8,8 +8,8 @@ defmodule GenDOM.DocumentTest do
       parent = Node.new()
       document = Document.new()
 
-      parent = Node.append_child(parent, document)
-      document = Document.get(document)
+      Node.append_child(parent.pid, document.pid)
+      document = Document.get(document.pid)
 
       encoded_document = Document.encode(document)
 
@@ -35,15 +35,15 @@ defmodule GenDOM.DocumentTest do
       p = Element.new(tag_name: "p")
 
       # Add elements to the document
-      document = Node.append_child(document, div)
-      div = Node.append_child(div, p)
+      Node.append_child(document.pid, div.pid)
+      Node.append_child(div.pid, p.pid)
 
       # Test query_selector with tag name
-      matched_element = Document.query_selector(document, "div")
-      assert matched_element.tag_name == "div"
+      matched_element_pid = Document.query_selector(document.pid, "div")
+      assert Element.get(matched_element_pid).tag_name == "div"
 
-      matched_element = Document.query_selector(document, "p")
-      assert matched_element.tag_name == "p"
+      matched_element_pid = Document.query_selector(document.pid, "p")
+      assert Element.get(matched_element_pid).tag_name == "p"
     end
 
     test "finds the first element that matches an ID selector" do
@@ -52,15 +52,15 @@ defmodule GenDOM.DocumentTest do
       p = Element.new(tag_name: "p", id: "content")
 
       # Add elements to the document
-      document = Node.append_child(document, div)
-      _div = Node.append_child(div, p)
+      Node.append_child(document.pid, div.pid)
+      Node.append_child(div.pid, p.pid)
 
       # Test query_selector with ID
-      matched_element = Document.query_selector(document, "#main")
-      assert matched_element.id == "main"
+      matched_element_pid = Document.query_selector(document.pid, "#main")
+      assert Element.get(matched_element_pid).id == "main"
 
-      matched_element = Document.query_selector(document, "#content")
-      assert matched_element.id == "content"
+      matched_element_pid = Document.query_selector(document.pid, "#content")
+      assert Element.get(matched_element_pid).id == "content"
     end
 
     test "finds the first element that matches a class selector" do
@@ -69,15 +69,15 @@ defmodule GenDOM.DocumentTest do
       p = Element.new(tag_name: "p", class_list: ["text", "highlight"])
 
       # Add elements to the document
-      document = Node.append_child(document, div)
-      _div = Node.append_child(div, p)
+      Node.append_child(document.pid, div.pid)
+      Node.append_child(div.pid, p.pid)
 
       # Test query_selector with class
-      matched_element = Document.query_selector(document, ".container")
-      assert "container" in matched_element.class_list
+      matched_element_pid = Document.query_selector(document.pid, ".container")
+      assert "container" in Element.get(matched_element_pid).class_list
 
-      matched_element = Document.query_selector(document, ".highlight")
-      assert "highlight" in matched_element.class_list
+      matched_element_pid = Document.query_selector(document.pid, ".highlight")
+      assert "highlight" in Element.get(matched_element_pid).class_list
     end
 
     test "returns error when no element matches the selector" do
@@ -85,12 +85,12 @@ defmodule GenDOM.DocumentTest do
       div = Element.new(tag_name: "div")
 
       # Add elements to the document
-      document = Node.append_child(document, div)
+      Node.append_child(document.pid, div.pid)
 
       # Test query_selector with non-existent element
-      refute Document.query_selector(document, "span")
-      refute Document.query_selector(document, "#nonexistent")
-      refute Document.query_selector(document, ".missing")
+      refute Document.query_selector(document.pid, "span")
+      refute Document.query_selector(document.pid, "#nonexistent")
+      refute Document.query_selector(document.pid, ".missing")
     end
   end
 
@@ -105,12 +105,10 @@ defmodule GenDOM.DocumentTest do
         }
       )
 
-      head = Element.append_child(head, text)
-      document = Document.append_child(document, head)
+      Element.append_child(head.pid, text.pid)
+      Document.append_child(document.pid, head.pid)
 
-      text = GenServer.call(text.pid, :get)
-
-      assert [text] == Document.query_selector_all(document, ~s(head [template="loading"]))
+      assert [text.pid] == Document.query_selector_all(document.pid, ~s(head [template="loading"]))
     end
 
     test "finds all elements that match a tag selector" do
@@ -120,18 +118,18 @@ defmodule GenDOM.DocumentTest do
       p = Element.new(tag_name: "p")
 
       # Add elements to the document
-      document = Node.append_child(document, div1)
-      document = Node.append_child(document, div2)
-      _div1 = Node.append_child(div1, p)
+      Node.append_child(document.pid, div1.pid)
+      Node.append_child(document.pid, div2.pid)
+      Node.append_child(div1.pid, p.pid)
 
       # Test query_selector_all with tag name
-      matched_elements = Document.query_selector_all(document, "div")
-      assert length(matched_elements) == 2
-      assert Enum.all?(matched_elements, fn el -> el.tag_name == "div" end)
+      matched_element_pids = Document.query_selector_all(document.pid, "div")
+      assert length(matched_element_pids) == 2
+      assert Enum.all?(matched_element_pids, fn el_pid -> Element.get(el_pid).tag_name == "div" end)
 
-      matched_elements = Document.query_selector_all(document, "p")
-      assert length(matched_elements) == 1
-      assert hd(matched_elements).tag_name == "p"
+      matched_element_pids = Document.query_selector_all(document.pid, "p")
+      assert length(matched_element_pids) == 1
+      assert (hd(matched_element_pids) |> Element.get()).tag_name == "p"
     end
 
     test "finds all elements that match a class selector" do
@@ -141,18 +139,18 @@ defmodule GenDOM.DocumentTest do
       p = Element.new(tag_name: "p", class_list: ["text"])
 
       # Add elements to the document
-      document = Node.append_child(document, div1)
-      document = Node.append_child(document, div2)
-      _div1 = Node.append_child(div1, p)
+      Node.append_child(document.pid, div1)
+      Node.append_child(document.pid, div2)
+      _div1 = Node.append_child(div1.pid, p.pid)
 
       # Test query_selector_all with class
-      matched_elements = Document.query_selector_all(document, ".container")
-      assert length(matched_elements) == 2
-      assert Enum.all?(matched_elements, fn el -> "container" in el.class_list end)
+      matched_element_pids = Document.query_selector_all(document.pid, ".container")
+      assert length(matched_element_pids) == 2
+      assert Enum.all?(matched_element_pids, fn el_pid -> "container" in Element.get(el_pid).class_list end)
 
-      matched_elements = Document.query_selector_all(document, ".large")
-      assert length(matched_elements) == 1
-      assert "large" in hd(matched_elements).class_list
+      matched_element_pids = Document.query_selector_all(document.pid, ".large")
+      assert length(matched_element_pids) == 1
+      assert "large" in (hd(matched_element_pids) |> Element.get()).class_list
     end
 
     test "returns empty list when no elements match the selector" do
@@ -160,12 +158,12 @@ defmodule GenDOM.DocumentTest do
       div = Element.new(tag_name: "div")
 
       # Add elements to the document
-      document = Node.append_child(document, div)
+      Node.append_child(document.pid, div)
 
       # Test query_selector_all with non-existent elements
-      assert [] = Document.query_selector_all(document, "span")
-      assert [] = Document.query_selector_all(document, "#nonexistent")
-      assert [] = Document.query_selector_all(document, ".missing")
+      assert [] = Document.query_selector_all(document.pid, "span")
+      assert [] = Document.query_selector_all(document.pid, "#nonexistent")
+      assert [] = Document.query_selector_all(document.pid, ".missing")
     end
 
     test "finds elements at different levels of nesting" do
@@ -175,12 +173,12 @@ defmodule GenDOM.DocumentTest do
       div3 = Element.new(tag_name: "div", class_list: ["level3"])
 
       # Create a nested structure
-      document = Node.append_child(document, div1)
-      _div1 = Node.append_child(div1, div2)
-      _div2 = Node.append_child(div2, div3)
+      Node.append_child(document.pid, div1)
+      Node.append_child(div1.pid, div2)
+      Node.append_child(div2.pid, div3)
 
       # Test query_selector_all finding elements at all levels
-      matched_elements = Document.query_selector_all(document, "div")
+      matched_elements = Document.query_selector_all(document.pid, "div")
       assert length(matched_elements) == 3
     end
   end
@@ -193,20 +191,17 @@ defmodule GenDOM.DocumentTest do
       div2 = Element.new(tag_name: "div", class_list: ["level2"])
       div3 = Element.new(tag_name: "div", class_list: ["level3"])
 
-      document = Node.append_child(document, div1)
-      div1 = Node.append_child(div1, div2)
-      div1 = Node.append_child(div1, div3)
+      Node.append_child(document.pid, div1)
+      Node.append_child(div1.pid, div2)
+      Node.append_child(div1.pid, div3)
 
       div3 = GenServer.call(div3.pid, :get)
 
-      document = reload(document)
+      results = Document.query_selector_all(document.pid, "div:not(.level2)")
 
-      results = Document.query_selector_all(document, "div:not(.level2)")
-      div1 = reload(div1)
-
-      assert div1 in results
-      assert div3 in results
-      assert div3 in Document.query_selector_all(document, "div :not(.level2)")
+      assert div1.pid in results
+      assert div3.pid in results
+      assert div3.pid in Document.query_selector_all(document.pid, "div :not(.level2)")
     end
 
     test "very complex :not case" do
@@ -229,28 +224,27 @@ defmodule GenDOM.DocumentTest do
         </div>
         """
 
-      document = GenDOM.Parser.parse_from_string(html, "text/html", [])
+      document_pid = GenDOM.Parser.parse_from_string(html, "text/html", [])
 
-      results = GenDOM.Document.query_selector_all(document, ~s'div:not(.container > p[data-status="active"]):not([id^="temp"])')
+      results = GenDOM.Document.query_selector_all(document_pid, ~s'div:not(.container > p[data-status="active"]):not([id^="temp"])')
 
-      assert Enum.any?(results, fn(div) ->
+      assert Enum.any?(results, fn(div_pid) ->
+        div = Element.get(div_pid)
         div.id == "content1"
         && "main-content" in div.class_list
       end)
 
-      assert Enum.any?(results, fn(div) ->
+      assert Enum.any?(results, fn(div_pid) ->
+        div = Element.get(div_pid)
         div.id == ""
         && "container" in div.class_list
       end)
 
-      assert Enum.any?(results, fn(div) ->
+      assert Enum.any?(results, fn(div_pid) ->
+        div = Element.get(div_pid)
         div.id == "content2"
         && "main-content" in div.class_list
       end)
     end
-  end
-
-  defp reload(%{pid: pid}) do
-    GenServer.call(pid, :get)
   end
 end

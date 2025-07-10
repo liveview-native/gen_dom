@@ -42,11 +42,12 @@ defmodule GenDOM.Element.ButtonTest do
       button = Button.new(tag_name: "button", type: "button")
       
       # Should be able to call Node methods
-      assert Button.has_child_nodes?(button) == false
-      assert Button.is_same_node?(button, button) == true
+      assert Button.has_child_nodes?(button.pid) == false
+      assert Button.is_same_node?(button.pid, button.pid) == true
       
       # Test cloning
-      cloned_button = Button.clone_node(button)
+      cloned_button_pid = Button.clone_node(button.pid)
+      cloned_button = Button.get(cloned_button_pid)
       assert cloned_button.type == "button"
       assert cloned_button.pid != button.pid
     end
@@ -59,14 +60,14 @@ defmodule GenDOM.Element.ButtonTest do
       )
       
       # Should be able to call Element methods
-      assert Button.get_attribute(button, "class") == "btn-primary"
-      assert Button.get_attribute(button, "data-action") == "submit"
-      assert Button.has_attribute?(button, "class") == true
-      assert Button.has_attribute?(button, "nonexistent") == false
+      assert Button.get_attribute(button.pid, "class") == "btn-primary"
+      assert Button.get_attribute(button.pid, "data-action") == "submit"
+      assert Button.has_attribute?(button.pid, "class") == true
+      assert Button.has_attribute?(button.pid, "nonexistent") == false
 
       # Test setting attributes
-      updated_button = Button.set_attribute(button, "disabled", "true")
-      assert Button.get_attribute(updated_button, "disabled") == "true"
+      Button.set_attribute(button.pid, "disabled", "true")
+      assert Button.get_attribute(button.pid, "disabled") == "true"
     end
 
   end

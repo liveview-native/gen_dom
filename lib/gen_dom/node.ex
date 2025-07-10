@@ -11,7 +11,7 @@ defmodule GenDOM.Node do
 
   ```elixir
   # Create a new node
-  {:ok, node} = GenDOM.Node.new([])
+  node = GenDOM.Node.new([])
 
   # Use in other modules
   defmodule MyElement do
@@ -236,11 +236,11 @@ defmodule GenDOM.Node do
   @doc """
   Creates a new Node and returns the Node struct.
 
-  This is a convenience function that calls start_link and then immediately gets the Node struct.
+  This is a convenience function that calls start and then immediately gets the Node struct.
 
   ## Examples
 
-      iex> {:ok, node} = GenDOM.Node.new([])
+      iex> node = GenDOM.Node.new([])
       iex> %GenDOM.Node{} = node
   """
   def new(opts \\ []) when is_list(opts) do
@@ -269,7 +269,7 @@ defmodule GenDOM.Node do
 
   def handle_call({:assign, assigns}, _from, node) when is_map(assigns) do
     node = struct(node, assigns: Map.merge(node.assigns, assigns))
-    {:reply, node, node}
+    {:reply, node.pid, node}
   end
 
   def handle_call({:merge, fields}, _from, node) do
@@ -303,12 +303,13 @@ defmodule GenDOM.Node do
   end
 
   def handle_call({:track, child_pid_or_children_pids}, _from, node) do
+    IO.inspect(node.node_name)
     do_track(node, child_pid_or_children_pids)
     {:reply, node, node}
   end
 
   def handle_call({:untrack, child_pid_or_children_pids}, _from, node) do
-    node = do_untrack(node, child_pid_or_children_pids)
+    do_untrack(node, child_pid_or_children_pids)
     {:reply, node, node}
   end
 
@@ -347,7 +348,7 @@ defmodule GenDOM.Node do
 
   def handle_cast({:remove_child, child, opts}, node) do
     node = do_remove_child(node, child, opts)
-    {:norepy, node}
+    {:noreply, node}
   end
 
   def handle_cast({:replace_child, new_child, old_child, opts}, node) do
@@ -356,15 +357,13 @@ defmodule GenDOM.Node do
   end
 
   def handle_cast({:track, child_pid_or_children_pids}, node) do
-    if node.parent_element, do: GenServer.cast(node.parent_element, {:track, child_pid_or_children_pids})
-    :pg.join(node.pid, child_pid_or_children_pids)
+    do_track(node, child_pid_or_children_pids)
 
     {:noreply, node}
   end
 
   def handle_cast({:untrack, child_pid_or_children_pids}, node) do
-    if node.parent_element, do: GenServer.cast(node.parent_element, {:untrack, child_pid_or_children_pids})
-    :pg.leave(node.pid, child_pid_or_children_pids)
+    do_untrack(node, child_pid_or_children_pids)
 
     {:noreply, node}
   end
@@ -393,24 +392,24 @@ defmodule GenDOM.Node do
   def get(%{pid: pid}),
     do: get(pid)
 
-  def assign(node, key, value) when is_atom(key),
-    do: assign(node, %{key => value})
-  def assign(node, assigns) do
-    GenServer.call(node.pid, {:assign, assigns})
+  def assign(node_pid, key, value) when is_atom(key),
+    do: assign(node_pid, %{key => value})
+  def assign(node_pid, assigns) do
+    GenServer.call(node_pid, {:assign, assigns})
   end
 
-  def assign!(node, key, value) when is_atom(key),
-    do: assign!(node, %{key => value})
-  def assign!(node, assigns) do
-    GenServer.cast(node.pid, {:assign, assigns})
+  def assign!(node_pid, key, value) when is_atom(key),
+    do: assign!(node_pid, %{key => value})
+  def assign!(node_pid, assigns) do
+    GenServer.cast(node_pid, {:assign, assigns})
   end
 
-  def put(node, field, value) do
-    GenServer.call(node.pid, {:put, field, value})
+  def put(node_pid, field, value) do
+    GenServer.call(node_pid, {:put, field, value})
   end
 
-  def put!(node, field, value) do
-    GenServer.cast(node.pid, {:put, field, value})
+  def put!(node_pid, field, value) do
+    GenServer.cast(node_pid, {:put, field, value})
   end
 
   defp do_put(node, field, value) do
@@ -425,12 +424,12 @@ defmodule GenDOM.Node do
     node
   end
 
-  def merge(node, fields) do
-    GenServer.call(node.pid, {:merge, fields})
+  def merge(node_pid, fields) do
+    GenServer.call(node_pid, {:merge, fields})
   end
 
-  def merge!(node, fields) do
-    GenServer.cast(node.pid, {:merge, fields})
+  def merge!(node_pid, fields) do
+    GenServer.cast(node_pid, {:merge, fields})
   end
 
   defp do_merge(node, fields) do
@@ -451,30 +450,34 @@ defmodule GenDOM.Node do
   @doc """
   Adds the specified child node as the last child to the current node.
 
-  Returns the modified parent node with the child appended to its `child_nodes` list.
+  Returns the parent node PID after appending the child.
   This method implements the DOM `appendChild()` specification.
 
   ## Parameters
 
-  - `parent` - The parent node to append to
-  - `child` - The child node to append
+  - `parent_pid` - The PID of the parent node to append to
+  - `child_pid` - The PID of the child node to append
   - `opts` - Optional keyword list of options
 
   ## Examples
 
-      iex> {:ok, parent} = GenDOM.Node.new([])
-      iex> {:ok, child} = GenDOM.Node.new([])
-      iex> updated_parent = GenDOM.Node.append_child(parent, child)
+      iex> parent = GenDOM.Node.new([])
+      iex> child = GenDOM.Node.new([])
+      iex> parent_pid = GenDOM.Node.append_child(parent.pid, child.pid)
+      iex> updated_parent = GenDOM.Node.get(parent_pid)
       iex> length(updated_parent.child_nodes)
       1
 
   """
-  def append_child(parent, child, opts \\ []) do
-    GenServer.call(parent.pid, {:append_child, child, opts})
+  def append_child(parent_pid, child_pid, opts \\ []) do
+    child = get(child_pid)
+    parent = GenServer.call(parent_pid, {:append_child, child, opts})
+    parent.pid
   end
 
-  def append_child!(parent, child, opts \\ []) do
-    GenServer.cast(parent.pid, {:append_child, child, opts})
+  def append_child!(parent_pid, child_pid, opts \\ []) do
+    child = get(child_pid)
+    GenServer.cast(parent_pid, {:append_child, child, opts})
   end
 
   defp do_append_child(parent, child, opts) do
@@ -537,17 +540,18 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The node to clone
+  - `node_pid` - The PID of the node to clone
   - `deep?` - Boolean indicating whether descendants should be cloned (default: false)
 
   ## Examples
 
-      node = %GenDOM.Node{text_content: "Hello"}
-      shallow_clone = GenDOM.Node.clone_node(node)
-      deep_clone = GenDOM.Node.clone_node(node, true)
+      node = GenDOM.Node.new([text_content: "Hello"])
+      shallow_clone_pid = GenDOM.Node.clone_node(node.pid)
+      deep_clone_pid = GenDOM.Node.clone_node(node.pid, true)
 
   """
-  def clone_node(node, deep? \\ false) do
+  def clone_node(node_pid, deep? \\ false) do
+    node = get(node_pid)
     fields = Map.drop(node, [
       :__struct__,
       :pid,
@@ -565,12 +569,11 @@ defmodule GenDOM.Node do
     new_node = apply(node.__struct__, :new, [fields])
 
     if deep? do
-      Enum.reduce(node.child_nodes, new_node, fn(child_node_pid, new_node) ->
-        child_node = GenServer.call(child_node_pid, :get)
-        append_child(new_node, clone_node(child_node, deep?))
+      Enum.reduce(node.child_nodes, new_node.pid, fn(child_node_pid, new_node_pid) ->
+        append_child(new_node_pid, clone_node(child_node_pid, deep?))
       end)
     else
-      new_node
+      new_node.pid
     end
   end
 
@@ -581,8 +584,8 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The reference node
-  - `other_node` - The node to compare position with
+  - `node_pid` - The PID of the reference node
+  - `other_node_pid` - The PID of the node to compare position with
 
   ## Returns
 
@@ -597,24 +600,24 @@ defmodule GenDOM.Node do
   Returns a boolean indicating whether a node is a descendant of the calling node.
 
   This method implements the DOM `contains()` specification by checking if the
-  `other_node` is present in the process group members of the current node.
+  `other_node_pid` is present in the process group members of the current node.
 
   ## Parameters
 
-  - `node` - The node to check containment on
-  - `other_node` - The node to check if it's contained
+  - `node_pid` - The PID of the node to check containment on
+  - `other_node_pid` - The PID of the node to check if it's contained
 
   ## Examples
 
-      iex> {:ok, parent} = GenDOM.Node.new([])
-      iex> {:ok, child} = GenDOM.Node.new([])
-      iex> updated_parent = GenDOM.Node.append_child(parent, child)
-      iex> GenDOM.Node.contains?(updated_parent, child)
+      iex> parent = GenDOM.Node.new([])
+      iex> child = GenDOM.Node.new([])
+      iex> parent_pid = GenDOM.Node.append_child(parent.pid, child.pid)
+      iex> GenDOM.Node.contains?(parent_pid, child.pid)
       true
 
   """
-  def contains?(node, other_node) do
-    other_node.pid in :pg.get_members(node.pid)
+  def contains?(pid, other_pid) do
+    other_pid in :pg.get_members(pid)
   end
 
   @doc """
@@ -625,20 +628,24 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The node to get the root of
+  - `node_pid` - The PID of the node to get the root of
   - `opts` - Optional keyword list (unused currently)
 
   ## Examples
 
-      root = GenDOM.Node.get_root_node(some_nested_node)
+      root_pid = GenDOM.Node.get_root_node(some_nested_node.pid)
 
   """
-  def get_root_node(node, _opts \\ []) do
-    if node.parent_node do
+  def get_root_node(node_pid, _opts \\ []) do
+    node = get(node_pid)
+
+    root_node = if node.parent_node do
       get_root_node(GenServer.call(node.parent_node, :get))
     else
       node
     end
+
+    root_node.pid
   end
 
   @doc """
@@ -648,25 +655,24 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The node to check for child nodes
+  - `node_pid` - The PID of the node to check for child nodes
 
   ## Examples
 
-      iex> {:ok, parent} = GenDOM.Node.new([])
-      iex> GenDOM.Node.has_child_nodes?(parent)
+      iex> parent = GenDOM.Node.new([])
+      iex> GenDOM.Node.has_child_nodes?(parent.pid)
       false
-      iex> {:ok, child} = GenDOM.Node.new([])
-      iex> updated_parent = GenDOM.Node.append_child(parent, child)
-      iex> GenDOM.Node.has_child_nodes?(updated_parent)
+      iex> child = GenDOM.Node.new([])
+      iex> parent_pid = GenDOM.Node.append_child(parent.pid, child.pid)
+      iex> GenDOM.Node.has_child_nodes?(parent_pid)
       true
 
   """
-  def has_child_nodes?(%{child_nodes: []}) do
-    false
-  end
-
-  def has_child_nodes?(%{child_nodes: _child_nodes}) do
-    true
+  def has_child_nodes?(node_pid) do
+    case get(node_pid) do
+      %{child_nodes: []} -> false
+      %{child_nodes: _child_nodes} -> true
+    end
   end
 
   @doc """
@@ -676,21 +682,27 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `parent` - The parent node to insert into
-  - `new_node` - The node to be inserted
-  - `reference_node` - The node before which new_node is inserted
+  - `parent_pid` - The PID of the parent node to insert into
+  - `new_node_pid` - The PID of the node to be inserted
+  - `reference_node_pid` - The PID of the node before which new_node is inserted
   - `opts` - Optional keyword list of options
 
   ## Examples
 
-      updated_parent = GenDOM.Node.insert_before(parent, new_child, existing_child)
+      parent_pid = GenDOM.Node.insert_before(parent.pid, new_child.pid, existing_child.pid)
 
   """
-  def insert_before(parent, new_node, reference_node, opts \\ []) do
-    GenServer.call(parent.pid, {:insert_before, new_node, reference_node, opts})
+  def insert_before(parent_pid, new_node_pid, reference_node_pid, opts \\ []) do
+    new_node = get(new_node_pid)
+    reference_node = get(reference_node_pid)
+    parent = GenServer.call(parent_pid, {:insert_before, new_node, reference_node, opts})
+
+    parent.pid
   end
 
-  def insert_before!(parent, new_node, reference_node, opts \\ []) do
+  def insert_before!(parent, new_node_pid, reference_node_pid, opts \\ []) do
+    new_node = get(new_node_pid)
+    reference_node = get(reference_node_pid)
     GenServer.cast(parent.pid, {:insert_before, new_node, reference_node, opts})
   end
 
@@ -733,7 +745,7 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The node to check
+  - `node_pid` - The PID of the node to check
   - `uri` - The namespace URI to test
 
   """
@@ -749,8 +761,8 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The first node to compare
-  - `other_node` - The second node to compare
+  - `node_pid` - The PID of the first node to compare
+  - `other_node_pid` - The PID of the second node to compare
 
   """
   def is_equal_node?(_node, _other_node) do
@@ -763,17 +775,17 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The first node to compare
-  - `other_node` - The second node to compare
+  - `node_pid` - The PID of the first node to compare
+  - `other_node_pid` - The PID of the second node to compare
 
   ## Examples
 
-      GenDOM.Node.is_same_node?(node1, node2)
+      GenDOM.Node.is_same_node?(node1.pid, node2.pid)
       # => true if they are the same node instance
 
   """
-  def is_same_node?(node, other_node) do
-    node.pid == other_node.pid
+  def is_same_node?(node_pid, other_node_pid) do
+    node_pid == other_node_pid
   end
 
   @doc """
@@ -784,17 +796,17 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The node to lookup the namespace URI on
+  - `node_pid` - The PID of the node to lookup the namespace URI on
   - `prefix` - The namespace prefix to lookup
 
   ## Examples
 
-      namespace_uri = GenDOM.Node.lookup_namespace_uri(node, "xml")
+      namespace_uri = GenDOM.Node.lookup_namespace_uri(node.pid, "xml")
       # => "http://www.w3.org/XML/1998/namespace"
 
   """
-  def lookup_namespace_uri(node, prefix) do
-    GenServer.call(node.pid, {:lookup_namespace_uri, prefix})
+  def lookup_namespace_uri(node_pid, prefix) do
+    GenServer.call(node_pid, {:lookup_namespace_uri, prefix})
   end
 
   @doc """
@@ -804,17 +816,17 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The node to lookup the prefix on
+  - `node_pid` - The PID of the node to lookup the prefix on
   - `namespace` - The namespace URI to find the prefix for
 
   ## Examples
 
-      prefix = GenDOM.Node.lookup_prefix(node, "http://www.w3.org/XML/1998/namespace")
+      prefix = GenDOM.Node.lookup_prefix(node.pid, "http://www.w3.org/XML/1998/namespace")
       # => "xml"
 
   """
-  def lookup_prefix(node, namespace) do
-    GenServer.call(node.pid, {:lookup_prefix, namespace})
+  def lookup_prefix(node_pid, namespace) do
+    GenServer.call(node_pid, {:lookup_prefix, namespace})
   end
 
   @doc """
@@ -825,11 +837,11 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `node` - The node to normalize
+  - `node_pid` - The PID of the node to normalize
 
   ## Examples
 
-      GenDOM.Node.normalize(node)
+      GenDOM.Node.normalize(node.pid)
 
   """
   def normalize(_node) do
@@ -837,32 +849,36 @@ defmodule GenDOM.Node do
   end
 
   @doc """
-  Removes a child node from the DOM and returns the removed node.
+  Removes a child node from the DOM and returns the parent node PID.
 
   This method implements the DOM `removeChild()` specification.
 
   ## Parameters
 
-  - `parent` - The parent node to remove the child from
-  - `child` - The child node to remove
+  - `parent_pid` - The PID of the parent node to remove the child from
+  - `child_pid` - The PID of the child node to remove
   - `opts` - Optional keyword list of options
 
   ## Examples
 
-      updated_parent = GenDOM.Node.remove_child(parent, child_to_remove)
+      parent_pid = GenDOM.Node.remove_child(parent.pid, child_to_remove.pid)
 
   """
-  def remove_child(parent, child, opts \\ []) do
-    GenServer.call(parent.pid, {:remove_child, child, opts})
+  def remove_child(parent_pid, child_pid, opts \\ []) do
+    child = get(child_pid)
+    parent = GenServer.call(parent_pid, {:remove_child, child, opts})
+    parent.pid
   end
 
-  def remove_child!(parent, child, opts \\ []) do
-    GenServer.cast(parent.pid, {:remove_child, child, opts})
+  def remove_child!(parent_pid, child_pid, opts \\ []) do
+    child = get(child_pid)
+    GenServer.cast(parent_pid, {:remove_child, child, opts})
   end
 
   defp do_remove_child(parent, child, opts) do
     all_descendants = [child.pid | :pg.get_members(child.pid)]
-    parent = do_untrack(parent, all_descendants)
+    do_untrack(parent, all_descendants)
+
     child_nodes = Enum.reject(parent.child_nodes, &(&1 == child.pid))
 
     if opts[:receiver] do
@@ -880,22 +896,27 @@ defmodule GenDOM.Node do
 
   ## Parameters
 
-  - `parent` - The parent node containing the child to replace
-  - `new_child` - The new node to replace the old child with
-  - `old_child` - The existing child to be replaced
+  - `parent_pid` - The PID of the parent node containing the child to replace
+  - `new_child_pid` - The PID of the new node to replace the old child with
+  - `old_child_pid` - The PID of the existing child to be replaced
   - `opts` - Optional keyword list of options
 
   ## Examples
 
-      updated_parent = GenDOM.Node.replace_child(parent, new_element, old_element)
+      parent_pid = GenDOM.Node.replace_child(parent.pid, new_element.pid, old_element.pid)
 
   """
-  def replace_child(parent, new_child, old_child, opts \\ []) do
-    GenServer.call(parent.pid, {:replace_child, new_child, old_child, opts})
+  def replace_child(parent_pid, new_child_pid, old_child_pid, opts \\ []) do
+    new_child = get(new_child_pid)
+    old_child = get(old_child_pid)
+    parent = GenServer.call(parent_pid, {:replace_child, new_child, old_child, opts})
+    parent.pid
   end
 
-  def replace_child!(parent, new_child, old_child, opts \\ []) do
-    GenServer.cast(parent.pid, {:replace_child, new_child, old_child, opts})
+  def replace_child!(parent_pid, new_child_pid, old_child_pid, opts \\ []) do
+    new_child = get(new_child_pid)
+    old_child = get(old_child_pid)
+    GenServer.cast(parent_pid, {:replace_child, new_child, old_child, opts})
   end
 
   defp do_replace_child(parent, new_child, %{pid: old_child_pid} = old_child, opts) do
@@ -933,17 +954,24 @@ defmodule GenDOM.Node do
   end
 
   defp do_track(parent, child_pid_or_children_pids) do
-    if parent.parent_node, do: GenServer.cast(parent.parent_node, {:track, child_pid_or_children_pids})
-    :pg.join(parent.pid, child_pid_or_children_pids)
+    if parent.parent_node do
+      GenServer.cast(parent.parent_node, {:track, child_pid_or_children_pids})
+    end
 
-    parent
+    if parent.parent_element,
+      do: GenServer.cast(parent.parent_element, {:track, child_pid_or_children_pids})
+
+    :pg.join(parent.pid, child_pid_or_children_pids)
   end
 
   defp do_untrack(parent, child_pid_or_children_pids) do
-    if parent.parent_node, do: GenServer.cast(parent.parent_node, {:untrack, child_pid_or_children_pids})
-    :pg.leave(parent.pid, child_pid_or_children_pids)
+    if parent.parent_node,
+      do: GenServer.cast(parent.parent_node, {:untrack, child_pid_or_children_pids})
 
-    parent
+    if parent.parent_element,
+      do: GenServer.cast(parent.parent_element, {:untrack, child_pid_or_children_pids})
+
+    :pg.leave(parent.pid, child_pid_or_children_pids)
   end
 
   defp update_node_relationships(node, parent, pos, _opts) do

@@ -11,10 +11,10 @@ defmodule GenDOM.Document do
 
   ```elixir
   # Create a new document
-  {:ok, document} = GenDOM.Document.new([])
+  document = GenDOM.Document.new([])
 
   # Create elements within the document
-  {:ok, element} = GenDOM.Document.create_element(document, "div", id: "content")
+  element = GenDOM.Document.create_element(document.pid, "div", id: "content")
   ```
 
   ## Features
@@ -112,8 +112,9 @@ defmodule GenDOM.Document do
     super(msg, document)
   end
 
-  def clone_node(node, deep? \\ false) do
-    fields = Map.drop(node, [
+  def clone_node(document_pid, deep? \\ false) do
+    document = get(document_pid)
+    fields = Map.drop(document, [
       :__struct__,
       :pid,
       :receiver,
@@ -143,15 +144,14 @@ defmodule GenDOM.Document do
       :title
     ]) |> Map.to_list()
 
-    new_node = apply(node.__struct__, :new, [fields])
+    new_document = apply(document.__struct__, :new, [fields])
 
     if deep? do
-      Enum.reduce(node.child_nodes, new_node, fn(child_node_pid, new_node) ->
-        child_node = GenServer.call(child_node_pid, :get)
-        append_child(new_node, clone_node(child_node, deep?))
+      Enum.reduce(document.child_nodes, new_document.pid, fn(child_node_pid, new_document_pid) ->
+        append_child(new_document_pid, clone_node(child_node_pid, deep?))
       end)
     else
-      new_node
+      new_document.pid
     end
   end
 
@@ -632,8 +632,8 @@ defmodule GenDOM.Document do
 
   end
 
-  def get_element_by_id(%__MODULE__{} = document, id) do
-    all_descendants = :pg.get_members(document.pid)
+  def get_element_by_id(document_pid, id) do
+    all_descendants = :pg.get_members(document_pid)
 
     tasks = Enum.map(all_descendants, fn(pid) ->
       Task.async(fn ->
@@ -645,9 +645,9 @@ defmodule GenDOM.Document do
     await_one(tasks)
   end
 
-  def get_elements_by_class_name(%__MODULE__{} = document, names) do
+  def get_elements_by_class_name(document_pid, names) do
     names = String.split(names)
-    all_descendants = :pg.get_members(document.pid)
+    all_descendants = :pg.get_members(document_pid)
 
     tasks = Enum.map(all_descendants, fn(pid) ->
       Task.async(fn ->
@@ -666,20 +666,20 @@ defmodule GenDOM.Document do
 
   ## Parameters
 
-  - `document` - The document to search in
+  - `document_pid` - The PID of the document to search in
   - `name` - The value of the name attribute to search for
 
   ## Examples
 
-      inputs = GenDOM.Document.get_elements_by_name(document, "username")
+      inputs = GenDOM.Document.get_elements_by_name(document.pid, "username")
 
   """
-  def get_elements_by_name(%__MODULE__{} = document, name) do
-    query_selector_all(document, ~s([name="#{name}"]))
+  def get_elements_by_name(document_pid, name) do
+    query_selector_all(document_pid, ~s([name="#{name}"]))
   end
 
-  def get_elements_by_tag_name(%__MODULE__{} = document, tag_name) do
-    all_descendants = :pg.get_members(document.pid)
+  def get_elements_by_tag_name(document_pid, tag_name) do
+    all_descendants = :pg.get_members(document_pid)
 
     tasks = Enum.map(all_descendants, fn(pid) ->
       Task.async(fn ->
@@ -698,17 +698,17 @@ defmodule GenDOM.Document do
 
   ## Parameters
 
-  - `document` - The document to search in
+  - `document_pid` - The PID of the document to search in
   - `namespace` - The namespace URI to search for
   - `local_name` - The local name to search for
 
   ## Examples
 
-      svg_rects = GenDOM.Document.get_elements_by_tag_name_ns(document, "http://www.w3.org/2000/svg", "rect")
+      svg_rects = GenDOM.Document.get_elements_by_tag_name_ns(document.pid, "http://www.w3.org/2000/svg", "rect")
 
   """
-  def get_elements_by_tag_name_ns(%__MODULE__{} = document, namespace, local_name) do
-    query_selector_all(document, "#{namespace}|#{local_name}")
+  def get_elements_by_tag_name_ns(document_pid, namespace, local_name) do
+    query_selector_all(document_pid, "#{namespace}|#{local_name}")
   end
 
   @doc """
@@ -921,5 +921,4 @@ defmodule GenDOM.Document do
   def writeln(%__MODULE__{} = document, line) when is_binary(line) do
 
   end
-
 end

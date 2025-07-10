@@ -11,7 +11,7 @@ defmodule GenDOM.Element do
 
   ```elixir
   # Create an element directly
-  {:ok, element} = GenDOM.Element.new([tag_name: "div", id: "my-div"])
+  element = GenDOM.Element.new([tag_name: "div", id: "my-div"])
 
   # Use in other modules
   defmodule MyButton do
@@ -435,7 +435,7 @@ defmodule GenDOM.Element do
     struct(element, children: children, child_element_count: element.child_element_count - 1)
   end
 
-  defp do_replace_child(element, new_child, %{pid: old_child_pid} = old_child, opts) do
+  defp do_replace_child(element, new_child, %{pid: old_child_pid}, opts) do
     {children, pos} = Enum.reduce(element.children, {[], 0}, fn
       child_pid, {children, pos} when child_pid == old_child_pid ->
         update_parent_relationships(element, new_child, pos, opts)
@@ -449,7 +449,9 @@ defmodule GenDOM.Element do
     struct(element, children: children)
   end
 
-  def clone_node(node, deep? \\ false) do
+  def clone_node(node_pid, deep? \\ false) do
+    node = get(node_pid)
+
     fields = Map.drop(node, [
       :__struct__,
       :pid,
@@ -483,12 +485,10 @@ defmodule GenDOM.Element do
     new_node = apply(node.__struct__, :new, [fields])
 
     if deep? do
-      Enum.reduce(node.child_nodes, new_node, fn(child_node_pid, new_node) ->
-        child_node = GenServer.call(child_node_pid, :get)
-        append_child(new_node, clone_node(child_node, deep?))
-      end)
+      Enum.reduce(node.child_nodes, new_node.pid, fn(child_node_pid, new_node_pid) ->
+        append_child(new_node_pid, clone_node(child_node_pid, deep?))      end)
     else
-      new_node
+      new_node.pid
     end
   end
 
@@ -531,12 +531,12 @@ defmodule GenDOM.Element do
 
   ## Parameters
 
-  - `element` - The element to insert nodes after
+  - `element_pid` - The PID of the element to insert nodes after
   - `nodes` - A list of Node objects or strings to insert
 
   ## Examples
 
-      GenDOM.Element.do_after(element, [new_element, "Some text"])
+      GenDOM.Element.do_after(element.pid, [new_element, "Some text"])
 
   """
   # Elixir has `after` as a reserved keyword so this must be called `do_after`
@@ -714,19 +714,20 @@ defmodule GenDOM.Element do
 
   ## Parameters
 
-  - `element` - The element to get the attribute from
+  - `element_pid` - The PID of the element to get the attribute from
   - `attribute_name` - The name of the attribute to retrieve
 
   ## Examples
 
-      iex> element = %SomeElement{attributes: %{"class" => "btn", "id" => "submit"}}
-      iex> GenDOM.Element.getattribute(element, "class")
+      iex> element = GenDOM.Element.new([attributes: %{"class" => "btn", "id" => "submit"}])
+      iex> GenDOM.Element.get_attribute(element.pid, "class")
       "btn"
-      iex> GenDOM.Element.get_attribute(element, "nonexistent")
+      iex> GenDOM.Element.get_attribute(element.pid, "nonexistent")
       nil
 
   """
-  def get_attribute(%{attributes: attributes} = _node, attribute_name) do
+  def get_attribute(element_pid, attribute_name) do
+    %{attributes: attributes} = get(element_pid)
     Map.get(attributes, attribute_name)
   end
 
@@ -737,16 +738,17 @@ defmodule GenDOM.Element do
 
   ## Parameters
 
-  - `element` - The element to get attribute names from
+  - `element_pid` - The PID of the element to get attribute names from
 
   ## Examples
 
-      iex> element = %SomeElement{attributes: %{"class" => "btn", "id" => "submit", "disabled" => "true"}}
-      iex> GenDOM.Element.get_attribute_names(element)
+      iex> element = GenDOM.Element.new([attributes: %{"class" => "btn", "id" => "submit", "disabled" => "true"}])
+      iex> GenDOM.Element.get_attribute_names(element.pid)
       ["class", "id", "disabled"]
 
   """
-  def get_attribute_names(%{attributes: attributes} = _element) do
+  def get_attribute_names(element_pid) do
+    %{attributes: attributes} = get(element_pid)
     Map.keys(attributes)
   end
 
@@ -863,10 +865,10 @@ defmodule GenDOM.Element do
       elements = GenDOM.Element.get_elements_by_class_name(element, ["btn", "primary"])
 
   """
-  def get_elements_by_class_name(%__MODULE__{} = element, names) do
+  def get_elements_by_class_name(element_pid, names) do
     query = Stream.map(names, &(".#{&1}")) |> Enum.join(",")
 
-    GenServer.call(element.pid, {:query_selector_all, query})
+    GenServer.call(element_pid, {:query_selector_all, query})
   end
 
   @doc """
@@ -886,8 +888,8 @@ defmodule GenDOM.Element do
       all_elements = GenDOM.Element.get_elements_by_tag_name(element, "*")
 
   """
-  def get_elements_by_tag_name(%__MODULE__{} = element, tag_name) do
-    GenServer.call(element.pid, {:query_selector_all, tag_name})
+  def get_elements_by_tag_name(element_pid, tag_name) do
+    GenServer.call(element_pid, {:query_selector_all, tag_name})
   end
 
   @doc """
@@ -906,9 +908,9 @@ defmodule GenDOM.Element do
       svg_elements = GenDOM.Element.get_elements_by_tag_name_ns(element, "http://www.w3.org/2000/svg", "rect")
 
   """
-  def get_elements_by_tag_name_ns(%__MODULE__{} = element, namespace, local_name) do
+  def get_elements_by_tag_name_ns(element_pid, namespace, local_name) do
     query = "#{namespace}|#{local_name}"
-    GenServer.call(element.pid, {:query_selector_all, query})
+    GenServer.call(element_pid, {:query_selector_all, query})
   end
 
   @doc """
@@ -938,19 +940,20 @@ defmodule GenDOM.Element do
 
   ## Parameters
 
-  - `element` - The element to check for the attribute
+  - `element_pid` - The PID of the element to check for the attribute
   - `name` - The name of the attribute to check for
 
   ## Examples
 
-      iex> element = %SomeElement{attributes: %{"class" => "btn", "disabled" => "true"}}
-      iex> GenDOM.Element.has_attribute?(element, "class")
+      iex> element = GenDOM.Element.new([attributes: %{"class" => "btn", "disabled" => "true"}])
+      iex> GenDOM.Element.has_attribute?(element.pid, "class")
       true
-      iex> GenDOM.Element.has_attribute?(element, "nonexistent")
+      iex> GenDOM.Element.has_attribute?(element.pid, "nonexistent")
       false
 
   """
-  def has_attribute?(%{attributes: attributes} = _node, name) do
+  def has_attribute?(element_pid, name) do
+    %{attributes: attributes} = get(element_pid)
     Map.has_key?(attributes, name)
   end
 
@@ -1081,8 +1084,9 @@ defmodule GenDOM.Element do
   - element - The element to match upon
   - slectors - A string containing valid CSS selectors to test the Element against.
   """
-  def matches?(%{} = element, selectors) do
+  def matches?(element_pid, selectors) do
     selectors = Selector.parse(selectors)
+    element = get(element_pid)
     !!GenDOM.Matcher.match(element, selectors, await: &GenDOM.Task.await_one/1, recursive: false)
   end
 
@@ -1103,46 +1107,6 @@ defmodule GenDOM.Element do
   """
   def prepend(%__MODULE__{} = element, nodes) when is_list(nodes) do
 
-  end
-
-  @doc """
-  Returns the first descendant element that matches the specified group of selectors.
-
-  This method implements the DOM `querySelector()` specification.
-
-  ## Parameters
-
-  - `element` - The element to search within
-  - `selectors` - A CSS selector string
-
-  ## Examples
-
-      first_button = GenDOM.Element.query_selector(element, "button.primary")
-      first_input = GenDOM.Element.query_selector(element, "input[type='text']")
-
-  """
-  def query_selector(%__MODULE__{} = element, selectors) when is_binary(selectors) do
-  end
-
-  @doc """
-  Returns a static NodeList representing a list of elements that match the specified group of selectors.
-
-  This method implements the DOM `querySelectorAll()` specification.
-
-  ## Parameters
-
-  - `element` - The element to search within
-  - `selectors` - A CSS selector string
-
-  ## Examples
-
-      all_buttons = GenDOM.Element.query_selector_all(element, "button")
-      inputs = GenDOM.Element.query_selector_all(element, "input[type='text'], input[type='email']")
-
-  """
-  def query_selector_all(%__MODULE__{} = element, selectors) when is_binary(selectors) do
-    selectors = Selector.parse(selectors)
-    GenServer.call(element.pid, {:query_selector_all, selectors})
   end
 
   @doc """
@@ -1198,9 +1162,10 @@ defmodule GenDOM.Element do
       GenDOM.Element.remove_attribute(element, "disabled")
 
   """
-  def remove_attribute(%__MODULE__{} = element, attribute_name) do
-    attributes = Map.delete(element.attributes, attribute_name)
-    GenServer.cast(element.pid, {:put, :attributes, attributes})
+  def remove_attribute(element_pid, attribute_name) do
+    %{attributes: attributes} = get(element_pid)
+    attributes = Map.delete(attributes, attribute_name)
+    GenServer.cast(element_pid, {:put, :attributes, attributes})
   end
 
   @doc """
@@ -1461,19 +1426,20 @@ defmodule GenDOM.Element do
 
   ## Parameters
 
-  - `element` - The element to set the attribute on
+  - `element_pid` - The PID of the element to set the attribute on
   - `name` - The name of the attribute to set
   - `value` - The value to assign to the attribute
 
   ## Examples
 
-      iex> element = %SomeElement{attributes: %{}}
-      iex> GenDOM.Element.set_attribute(element, "class", "btn primary")
-      %SomeElement{attributes: %{"class" => "btn primary"}}
+      iex> element = GenDOM.Element.new([])
+      iex> GenDOM.Element.set_attribute(element.pid, "class", "btn primary")
+      :ok
 
   """
-  def set_attribute(%{attributes: attributes} = node, name, value) do
-    GenDOM.Element.put(node, :attributes, Map.put(attributes, name, value))
+  def set_attribute(element_pid, name, value) do
+    %{attributes: attributes} = get(element_pid)
+    GenDOM.Element.put(element_pid, :attributes, Map.put(attributes, name, value))
   end
 
   @doc """
@@ -1591,9 +1557,10 @@ defmodule GenDOM.Element do
       # => true if attribute was added, false if removed
 
   """
-  def toggle_attribute(%{attributes: attributes} = node, name) do
+  def toggle_attribute(element_pid, name) do
+    %{attributes: attributes} = get(element_pid)
     value = !Map.get(attributes, name, false)
-    GenDOM.Element.put!(node, :attributes, Map.put(attributes, name, value))
+    GenDOM.Element.put!(element_pid, :attributes, Map.put(attributes, name, value))
 
     value
   end
@@ -1616,9 +1583,10 @@ defmodule GenDOM.Element do
       # => Always adds the attribute and returns true
 
   """
-  def toggle_attribute(%{attributes: attributes} = node, name, true) do
+  def toggle_attribute(element_pid, name, true) do
+    %{attributes: attributes} = get(element_pid)
     value = Map.get(attributes, name, true)
-    GenDOM.Element.put!(node, :attributes, Map.put(attributes, name, value))
+    GenDOM.Element.put!(element_pid, :attributes, Map.put(attributes, name, value))
 
     true
   end
@@ -1641,8 +1609,9 @@ defmodule GenDOM.Element do
       # => Always removes the attribute and returns false
 
   """
-  def toggle_attribute(%{attributes: attributes} = node, name, false) do
-    GenDOM.Element.put!(node, :attributes, Map.put(attributes, name, false))
+  def toggle_attribute(element_pid, name, false) do
+    %{attributes: attributes} = get(element_pid)
+    GenDOM.Element.put!(element_pid, :attributes, Map.put(attributes, name, false))
 
     false
   end

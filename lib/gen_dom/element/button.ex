@@ -6,6 +6,27 @@ defmodule GenDOM.Element.Button do
 
   This module implements the ButtonElement interface as defined in the DOM specification.
   Button elements inherit from Element and include button-specific properties and behaviors.
+
+  ## Usage
+
+  ```elixir
+  # Create a new button element
+  button = GenDOM.Element.Button.new([
+    tag_name: "button",
+    type: "submit",
+    value: "Submit Form"
+  ])
+
+  # All Element methods work with PIDs
+  GenDOM.Element.Button.set_attribute(button.pid, "disabled", "true")
+  ```
+
+  ## Features
+
+  - Full ButtonElement specification compliance
+  - Form submission capabilities
+  - Validation support
+  - All inherited Element functionality
   """
 
   use GenDOM.Element, [

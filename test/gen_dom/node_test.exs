@@ -36,11 +36,12 @@ defmodule GenDOM.NodeTest do
     test "assigning a value to the assigns in the Node" do
       node = Node.new([])
 
-      Node.assign(node, :test_key, "test_value")
+      Node.assign(node.pid, :test_key, "test_value")
       updated_node = Node.get(node.pid)
       assert updated_node.assigns.test_key == "test_value"
 
-      updated_node = Node.assign(node, %{key1: "value1", key2: "value2"})
+      updated_node_pid = Node.assign(node.pid, %{key1: "value1", key2: "value2"})
+      updated_node = Node.get(updated_node_pid)
       assert updated_node.assigns.key1 == "value1"
       assert updated_node.assigns.key2 == "value2"
     end
@@ -48,7 +49,7 @@ defmodule GenDOM.NodeTest do
     test "putting a value in the Node struct" do
       node = Node.new([])
 
-      Node.put(node, :text_content, "Hello, world!")
+      Node.put(node.pid, :text_content, "Hello, world!")
       updated_node = Node.get(node.pid)
       assert updated_node.text_content == "Hello, world!"
     end
@@ -56,7 +57,7 @@ defmodule GenDOM.NodeTest do
     test "merging a map of values into the Node" do
       node = Node.new([])
 
-      Node.merge(node, %{
+      Node.merge(node.pid, %{
         node_type: 1,
         text_content: "Merged content"
       })
@@ -72,7 +73,8 @@ defmodule GenDOM.NodeTest do
 
       child = Node.new([])
 
-      updated_parent = Node.append_child(parent, child)
+      Node.append_child(parent.pid, child.pid)
+      updated_parent = Node.get(parent.pid)
 
       assert Enum.member?(updated_parent.child_nodes, child.pid)
 
@@ -84,14 +86,14 @@ defmodule GenDOM.NodeTest do
 
     test "appending a child node onto a child will tell all parents" do
       parent = Node.new([])
-
       child_1 = Element.new([])
       child_2 = Element.new([])
       child_3 = Element.new([])
 
-      child_2 = Node.append_child(child_2, child_3)
-      child_1 = Node.append_child(child_1, child_2)
-      parent = Node.append_child(parent, child_1, receiver: self())
+      Node.append_child(child_2.pid, child_3.pid)
+
+      Node.append_child(child_1.pid, child_2.pid)
+      Node.append_child(parent.pid, child_1.pid, receiver: self())
 
       assert_received {:append_child, parent_pid, %{
         pid: child_1_pid,
@@ -109,7 +111,7 @@ defmodule GenDOM.NodeTest do
           }
         ],
         owner_document: nil,
-        parent_element: nil
+        parent_element: nil 
       }}
 
       assert parent_pid == parent.pid
@@ -127,11 +129,8 @@ defmodule GenDOM.NodeTest do
       assert Enum.member?(:pg.get_members(child_2.pid), child_3.pid)
 
       child_4 = Node.new([])
-      child_3 = Node.append_child(child_3, child_4, receiver: self())
 
-      Node.append_child(child_1, child_4, receiver: self())
-
-      child_4 = GenServer.call(child_4.pid, :get)
+      Node.append_child(child_3.pid, child_4.pid, receiver: self())
 
       assert_received {:append_child, ^child_3_pid, %{
         pid: child_4_pid,
@@ -142,9 +141,7 @@ defmodule GenDOM.NodeTest do
 
       assert child_4_pid == child_4.pid
 
-      child_2 = Node.get(child_2.pid)
-      child_1 = Node.get(child_1.pid)
-      parent = Node.get(parent.pid)
+      :timer.sleep(1)
 
       assert Enum.member?(:pg.get_members(child_3.pid), child_4.pid)
       assert Enum.member?(:pg.get_members(child_2.pid), child_4.pid)
@@ -157,11 +154,13 @@ defmodule GenDOM.NodeTest do
 
       child_1 = Node.new([])
 
-      parent = Node.append_child(parent, child_1)
+      Node.append_child(parent.pid, child_1)
 
       child_2 = Node.new([])
 
-      parent = Node.insert_before(parent, child_2, child_1, receiver: self())
+      Node.insert_before(parent.pid, child_2.pid, child_1.pid, receiver: self())
+
+      parent = Node.get(parent.pid)
 
       assert_received {:insert_before, parent_pid, %{
         pid: child_2_pid,
@@ -188,12 +187,13 @@ defmodule GenDOM.NodeTest do
 
       child = Node.new([])
 
-      parent = Node.append_child(parent, child)
+      Node.append_child(parent.pid, child)
+      parent = Node.get(parent.pid)
       assert Enum.member?(parent.child_nodes, child.pid)
 
       # Remove child
-      parent = Node.remove_child(parent, child, receiver: self())
-
+      Node.remove_child(parent.pid, child, receiver: self())
+      parent = Node.get(parent.pid)
       assert_received {:remove_child, parent_pid, child_pid}
 
       assert parent_pid == parent.pid
@@ -209,10 +209,14 @@ defmodule GenDOM.NodeTest do
       child_1 = Node.new([])
       child_2 = Node.new([])
 
-      child_1 = Node.append_child(child_1, child_2)
-      parent = Node.append_child(parent, child_1)
+      Node.append_child(child_1.pid, child_2.pid)
+      child_1 = Node.get(child_1.pid)
 
-      child_1 = Node.remove_child(child_1, child_2)
+      Node.append_child(parent.pid, child_1.pid)
+      parent = Node.get(parent.pid)
+
+      Node.remove_child(child_1.pid, child_2.pid)
+      child_1 = Node.get(child_1.pid)
 
       refute Enum.member?(:pg.get_members(child_1.pid), child_2.pid)
       refute Enum.member?(:pg.get_members(parent.pid), child_2.pid)
@@ -225,12 +229,15 @@ defmodule GenDOM.NodeTest do
 
       old_child = Node.new([])
 
-      parent = Node.append_child(parent, child_1)
-      child_1 = Element.append_child(child_1, old_child)
+      Node.append_child(parent.pid, child_1.pid)
+      parent = Node.get(parent.pid)
+      Element.append_child(child_1.pid, old_child.pid)
+      child_1 = Node.get(child_1.pid)
 
       new_child = Node.new([])
 
-      child_1 = Node.replace_child(child_1, new_child, old_child, receiver: self())
+      Node.replace_child(child_1.pid, new_child.pid, old_child.pid, receiver: self())
+      child_1 = Node.get(child_1.pid)
 
       assert_received {:replace_child, child_1_pid, %{
         pid: new_child_pid,
@@ -287,7 +294,9 @@ defmodule GenDOM.NodeTest do
       node = Node.new([])
       child = TestNode.new(test_property: "other")
 
-      node = Node.append_child(node, child)
+      Node.append_child(node.pid, child)
+
+      node = Node.get(node.pid)
 
       encoded_node = Node.encode(node)
 
