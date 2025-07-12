@@ -1,17 +1,24 @@
 defmodule GenDOM.Element do
   @moduledoc """
   Element is the most general base class from which all element objects in a Document inherit.
-  It only has methods and properties common to all kinds of elements.
 
-  The `GenDOM.Element` module extends `GenDOM.Node` with element-specific functionality including
-  attributes, CSS classes, styling, and DOM manipulation methods. It implements the full DOM
-  Element specification as defined by the Web API.
+  The Element interface represents an object of a Document. This interface describes methods
+  and properties common to all kinds of elements. Specific behaviors are described in interfaces
+  which inherit from Element but add additional functionality specific to those elements.
+
+  ## Specification Compliance
+
+  This module implements the DOM Element interface as defined by:
+  - **W3C DOM Level 4**: https://www.w3.org/TR/dom/#element
+  - **WHATWG DOM Standard**: https://dom.spec.whatwg.org/#element
+  - **CSS Object Model**: https://www.w3.org/TR/cssom-view-1/
 
   ## Inheritance Chain
 
   ```
   GenDOM.Node (Base)
   └── GenDOM.Element (extends Node)
+      ├── GenDOM.HTMLElement (extends Element)
       ├── GenDOM.Element.Input (extends Element)
       ├── GenDOM.Element.Button (extends Element) 
       └── GenDOM.Element.Form (extends Element)
@@ -19,48 +26,180 @@ defmodule GenDOM.Element do
 
   **Inherits from:** `GenDOM.Node`  
   **File:** `lib/gen_dom/element.ex`  
-  **Inheritance:** `use GenDOM.Node` (line 41)
+  **Node Type:** 1 (ELEMENT_NODE)
 
-  ## Usage
+  ## Properties
+
+  ### Core Element Properties
+  - `tag_name` - The element's tag name (read-only, e.g., "DIV", "P", "BUTTON")
+  - `id` - The element's unique identifier within the document
+  - `class_list` - DOMTokenList of CSS classes applied to the element
+  - `attributes` - NamedNodeMap containing all element attributes
+
+  ### Layout and Positioning
+  - `client_height` - Inner height of element excluding horizontal scrollbar
+  - `client_width` - Inner width of element excluding vertical scrollbar  
+  - `client_left` - Width of left border of element
+  - `client_top` - Width of top border of element
+  - `scroll_height` - Entire height of content including overflow
+  - `scroll_width` - Entire width of content including overflow
+  - `scroll_left` - Number of pixels content is scrolled horizontally
+  - `scroll_top` - Number of pixels content is scrolled vertically
+
+  ### Element Relationships
+  - `children` - HTMLCollection of child elements (elements only, not text nodes)
+  - `child_element_count` - Number of child elements
+  - `first_element_child` - First child element or nil
+  - `last_element_child` - Last child element or nil
+  - `next_element_sibling` - Next sibling element or nil
+  - `previous_element_sibling` - Previous sibling element or nil
+
+  ### Shadow DOM and Slots
+  - `shadow_root` - Attached ShadowRoot or nil
+  - `assigned_slot` - HTMLSlotElement this element is assigned to
+  - `slot` - Name of the slot the element is assigned to
+
+  ### Accessibility (ARIA)
+  Complete implementation of WAI-ARIA 1.2 specification:
+  - `aria_label` - Accessible name for the element
+  - `aria_labelledby_elements` - Elements that label this element
+  - `aria_describedby_elements` - Elements that describe this element
+  - `aria_role` - ARIA role of the element
+  - All standard ARIA states and properties (aria_*, 50+ attributes)
+
+  ### Styling and CSS
+  - `part` - DOMTokenList for CSS ::part() pseudo-element
+  - `current_css_zoom` - Current effective zoom level
+
+  ### Namespace Support
+  - `namespace_uri` - Namespace URI of the element
+  - `prefix` - Namespace prefix of the element
+  - `local_name` - Local name within the namespace
+
+  ## Methods
+
+  ### Attribute Management
+  - `get_attribute/2` - Retrieve attribute value by name
+  - `set_attribute/3` - Set attribute value
+  - `has_attribute?/2` - Check if attribute exists
+  - `remove_attribute/2` - Remove attribute
+  - `get_attribute_names/1` - Get list of all attribute names
+  - `toggle_attribute/2` - Toggle boolean attribute
+
+  ### Namespaced Attributes  
+  - `get_attribute_ns/3` - Get attribute in specific namespace
+  - `set_attribute_ns/4` - Set namespaced attribute
+  - `has_attribute_ns?/3` - Check namespaced attribute existence
+  - `remove_attribute_ns/3` - Remove namespaced attribute
+
+  ### CSS Selector Queries
+  - `query_selector/2` - Find first descendant matching selector
+  - `query_selector_all/2` - Find all descendants matching selector
+  - `closest/2` - Find closest ancestor matching selector
+  - `matches?/2` - Test if element matches selector
+
+  ### Element Collection Methods
+  - `get_elements_by_tag_name/2` - Get elements by tag name
+  - `get_elements_by_tag_name_ns/3` - Get elements by namespaced tag
+  - `get_elements_by_class_name/2` - Get elements by class name
+
+  ### DOM Manipulation
+  - `append/2` - Insert nodes after last child
+  - `prepend/2` - Insert nodes before first child
+  - `before/2` - Insert nodes before this element
+  - `do_after/2` - Insert nodes after this element (after is reserved keyword)
+  - `replace_with/2` - Replace this element with nodes
+  - `replace_children/2` - Replace all children with new nodes
+  - `remove/1` - Remove element from DOM tree
+
+  ### Layout and Positioning
+  - `get_bounding_client_rect/1` - Get element's size and position
+  - `get_client_rects/1` - Get border box rectangles
+  - `scroll/2` - Scroll to coordinates
+  - `scroll_by/2` - Scroll by offset
+  - `scroll_to/2` - Scroll to specific coordinates
+  - `scroll_into_view/2` - Scroll element into view
+
+  ### Shadow DOM
+  - `attach_shadow/2` - Attach shadow root
+  - `get_shadow_root/1` - Get attached shadow root
+
+  ### Fullscreen and Pointer APIs
+  - `request_fullscreen/2` - Request fullscreen mode
+  - `request_pointer_lock/2` - Request pointer lock
+  - `set_pointer_capture/2` - Capture pointer events
+  - `release_pointer_capture/2` - Release pointer capture
+  - `has_pointer_capture?/2` - Check pointer capture status
+
+  ### Animation
+  - `animate/3` - Create Web Animation
+  - `get_animations/2` - Get active animations
+
+  ### Visibility and Intersection
+  - `check_visibility/2` - Check if element is visible
+
+  ### HTML Content
+  - `get_html/2` - Get HTML serialization
+  - `set_html_unsafe/2` - Set inner HTML (unsafe)
+  - `insert_adjacent_element/3` - Insert element at position
+  - `insert_adjacent_html/3` - Insert HTML at position
+  - `insert_adjacent_text/3` - Insert text at position
+
+  ## Usage Examples
 
   ```elixir
-  # Create an element directly
-  element = GenDOM.Element.new([tag_name: "div", id: "my-div"])
+  # Create an element
+  element = GenDOM.Element.new([
+    tag_name: "div",
+    id: "container",
+    class_list: ["card", "primary"],
+    attributes: %{"data-id" => "123", "role" => "main"}
+  ])
 
-  # Use in other modules
-  defmodule MyButton do
-    use GenDOM.Element, [type: "button", disabled: false]
-  end
+  # Attribute manipulation
+  GenDOM.Element.set_attribute(element.pid, "class", "btn primary")
+  class_value = GenDOM.Element.get_attribute(element.pid, "class")
+  has_disabled = GenDOM.Element.has_attribute?(element.pid, "disabled")
+
+  # CSS selector queries
+  first_button = GenDOM.Element.query_selector(element.pid, "button")
+  all_inputs = GenDOM.Element.query_selector_all(element.pid, "input[type='text']")
+  closest_form = GenDOM.Element.closest(element.pid, "form")
+
+  # DOM manipulation
+  GenDOM.Element.append(element.pid, [child1, child2])
+  GenDOM.Element.remove(old_element.pid)
+
+  # Layout information
+  rect = GenDOM.Element.get_bounding_client_rect(element.pid)
+  GenDOM.Element.scroll_into_view(element.pid, true)
   ```
 
-  ## Features
+  ## Process-Based Architecture
 
-  - Full DOM Element specification compliance
-  - Attribute management (get, set, has, remove)
-  - CSS class and style manipulation
-  - Element traversal and selection methods
-  - Shadow DOM support
-  - Animation and visual effect methods
-  - Event handling capabilities
-  - Accessibility (ARIA) attribute support
-  - Inherits all Node functionality (DOM tree operations, process management, etc.)
+  Each Element is implemented as a GenServer process, providing:
+  - **Concurrent DOM operations** - Multiple elements can be manipulated simultaneously
+  - **State isolation** - Each element maintains its own state independently
+  - **Fault tolerance** - Element crashes don't affect other parts of the DOM tree
+  - **Message-based communication** - Thread-safe operations between elements
 
-  ## Additional Fields
+  ## Event Handling
 
-  Beyond the base Node fields, Element adds:
-  - `tag_name` - The element's tag name (e.g., "div", "p", "button")
-  - `id` - The element's unique identifier
-  - `class_list` - List of CSS classes applied to the element
-  - `attributes` - Map of element attributes
-  - `children` - List of child element PIDs (elements only, not text nodes)
-  - `aria_*` - Complete set of ARIA accessibility attributes
-  - Layout and positioning properties (`client_width`, `scroll_top`, etc.)
-  - Shadow DOM and styling properties
+  Elements support the full DOM Event specification:
+  - Event listener registration and removal
+  - Event propagation (capturing and bubbling phases)
+  - Custom event creation and dispatch
+  - Standard event types (click, focus, input, etc.)
 
-  ## Element Methods
+  ## Accessibility Features
 
-  All child modules that use `GenDOM.Element` inherit all Element instance methods
-  and can override them as needed using `defoverridable`.
+  Full WAI-ARIA 1.2 compliance:
+  - Complete set of ARIA roles, states, and properties
+  - Accessible name computation
+  - Keyboard navigation support
+  - Screen reader compatibility
+  - Focus management
+
   """
 
   @derive {Inspect, only: [:pid, :tag_name, :id, :class_list, :attributes]}

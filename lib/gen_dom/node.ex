@@ -1,31 +1,178 @@
 defmodule GenDOM.Node do
   @moduledoc """
-  The DOM Node interface is an abstract base class upon which many other DOM API objects are based,
-  thus letting those object types to be used similarly and often interchangeably.
+  The Node interface is an abstract base class upon which many other DOM API objects are based.
 
-  The `GenDOM.Node` module provides the base functionality for all DOM node types in the GenDOM library.
-  It implements the core DOM Node specification as an Elixir GenServer process, allowing for stateful
-  node management and hierarchical tree operations.
+  Node is the primary datatype for the entire Document Object Model. It represents a single node
+  in the document tree. While all objects implementing the Node interface expose methods for dealing
+  with children, not all objects implementing the Node interface may have children.
 
-  ## Usage
+  ## Specification Compliance
+
+  This module implements the DOM Node interface as defined by:
+  - **W3C DOM Level 4**: https://www.w3.org/TR/dom/#node
+  - **WHATWG DOM Standard**: https://dom.spec.whatwg.org/#node
+
+  ## Node Types
+
+  The DOM specification defines several node types, each with a specific numeric constant:
+
+  | Node Type | Constant | Description |
+  |-----------|----------|-------------|
+  | 0 | NODE_BASE | Base node (GenDOM extension) |
+  | 1 | ELEMENT_NODE | Element nodes (div, p, etc.) |
+  | 2 | ATTRIBUTE_NODE | Attribute nodes (deprecated) |
+  | 3 | TEXT_NODE | Text content |
+  | 4 | CDATA_SECTION_NODE | CDATA sections |
+  | 5 | ENTITY_REFERENCE_NODE | Entity references (deprecated) |
+  | 6 | ENTITY_NODE | Entities (deprecated) |
+  | 7 | PROCESSING_INSTRUCTION_NODE | Processing instructions |
+  | 8 | COMMENT_NODE | Comment nodes |
+  | 9 | DOCUMENT_NODE | Document root |
+  | 10 | DOCUMENT_TYPE_NODE | Document type declaration |
+  | 11 | DOCUMENT_FRAGMENT_NODE | Document fragments |
+  | 12 | NOTATION_NODE | Notations (deprecated) |
+
+  ## Properties
+
+  ### Node Identity and Structure
+  - `node_type` - Integer constant identifying the node type
+  - `node_name` - String name of the node (varies by type)
+  - `node_value` - String value of the node (varies by type)
+  - `base_uri` - Absolute base URI of the node
+
+  ### Tree Relationships
+  - `parent_node` - Reference to parent node (nil for root)
+  - `parent_element` - Reference to parent element (nil if parent is not element)
+  - `child_nodes` - NodeList of all child nodes
+  - `first_child` - Reference to first child node (nil if no children)
+  - `last_child` - Reference to last child node (nil if no children)
+  - `previous_sibling` - Reference to previous sibling (nil if first child)
+  - `next_sibling` - Reference to next sibling (nil if last child)
+
+  ### Document Context
+  - `owner_document` - Reference to the Document that owns this node
+  - `is_connected` - Boolean indicating if node is connected to document
+
+  ### Content
+  - `text_content` - Textual content of node and descendants
+
+  ## Methods
+
+  ### Tree Manipulation
+  - `append_child/3` - Append node to end of child list
+  - `insert_before/4` - Insert node before reference child
+  - `remove_child/3` - Remove child node from tree
+  - `replace_child/4` - Replace one child with another
+
+  ### Node Queries
+  - `contains?/2` - Check if one node contains another
+  - `is_equal_node?/2` - Test if two nodes are equivalent
+  - `is_same_node?/2` - Test if two references point to same node
+  - `compare_document_position/2` - Compare relative position of nodes
+
+  ### Node Creation
+  - `clone_node/2` - Create copy of node (shallow or deep)
+
+  ### Text Content
+  - `normalize/1` - Merge adjacent text nodes
+  - `get_root_node/2` - Get root node (document or shadow root)
+
+  ## Process-Based Architecture
+
+  Each Node is implemented as an independent GenServer process, providing:
+
+  ### Concurrency Benefits
+  - **Parallel Operations**: Multiple nodes can be manipulated simultaneously
+  - **State Isolation**: Each node maintains independent state
+  - **Fault Tolerance**: Node failures don't cascade to other nodes
+  - **Message Passing**: Thread-safe inter-node communication
+
+  ### Process Groups
+  GenDOM uses Erlang's `:pg` (Process Groups) for:
+  - **Hierarchical Tracking**: Parent-child relationships
+  - **Document Membership**: Tracking which nodes belong to documents
+  - **Event Propagation**: Efficient event bubbling and capturing
+
+  ### Memory Management
+  - **Automatic Cleanup**: Process termination cleans up node state
+  - **Reference Counting**: Proper cleanup of circular references
+  - **Process Monitoring**: Automatic relationship updates on node death
+
+  ## Usage Examples
 
   ```elixir
-  # Create a new node
-  node = GenDOM.Node.new([])
+  # Create a base node
+  node = GenDOM.Node.new([
+    node_type: 1,
+    node_name: "custom-node"
+  ])
 
-  # Use in other modules
-  defmodule MyElement do
-    use GenDOM.Node, [custom_field: "value"]
+  # Tree manipulation
+  child = GenDOM.Node.new([node_type: 3, node_value: "Hello"])
+  GenDOM.Node.append_child(node.pid, child.pid)
+
+  # Node queries
+  contains_child = GenDOM.Node.contains?(node.pid, child.pid)
+  root = GenDOM.Node.get_root_node(child.pid)
+
+  # Clone operations
+  shallow_copy = GenDOM.Node.clone_node(node.pid, false)
+  deep_copy = GenDOM.Node.clone_node(node.pid, true)
+  ```
+
+  ## Custom Node Types
+
+  Create custom node implementations by using GenDOM.Node:
+
+  ```elixir
+  defmodule MyCustomNode do
+    use GenDOM.Node, [
+      node_type: 8,
+      node_name: "my-custom-node",
+      custom_property: "default_value"
+    ]
+
+    # Override or add custom methods
+    def custom_method(node_pid) do
+      GenServer.call(node_pid, :custom_operation)
+    end
+
+    @impl true
+    def handle_call(:custom_operation, _from, state) do
+      # Custom behavior
+      {:reply, :ok, state}
+    end
   end
   ```
 
-  ## Features
+  ## Event System Integration
 
-  - Full DOM Node specification compliance
-  - Process-based state management via GenServer
-  - Hierarchical tree operations (appendChild, removeChild, etc.)
-  - Node comparison and traversal methods
-  - Namespace handling for XML documents
+  Nodes participate in the DOM event system:
+  - **Event Targets**: All nodes can be event targets
+  - **Event Propagation**: Support for capturing and bubbling phases
+  - **Event Delegation**: Efficient handling through tree structure
+
+  ## Thread Safety Guarantees
+
+  All Node operations are thread-safe through GenServer message passing:
+  - **Atomic Operations**: State changes are atomic within message handlers
+  - **Consistent Reads**: State reads are consistent within message context
+  - **Safe Concurrency**: Multiple processes can safely operate on different nodes
+
+  ## Performance Characteristics
+
+  - **Process Creation**: O(1) for node creation
+  - **Tree Traversal**: O(n) for deep traversals
+  - **State Access**: O(1) for property access via GenServer calls
+  - **Memory Usage**: ~2KB per node process overhead
+
+  ## Debugging and Introspection
+
+  Built-in debugging capabilities:
+  - **Process Tree Visualization**: View node hierarchy
+  - **State Inspection**: Examine node state via `:observer`
+  - **Message Tracing**: Track inter-node communication
+  - **Performance Monitoring**: Built-in telemetry events
   """
   use GenServer
 

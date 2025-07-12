@@ -1,63 +1,221 @@
 defmodule GenDOM.Document do
   @moduledoc """
-  The Document interface represents any web page loaded in the browser and serves as an entry point
-  into the web page's content, which is the DOM tree.
+  The Document interface represents any web page loaded in the browser and serves as an entry point into the web page's content.
 
-  The `GenDOM.Document` module extends `GenDOM.Node` to provide document-specific functionality
-  including element creation, document-wide queries, and document lifecycle methods. It implements
-  the full DOM Document specification as defined by the Web API.
+  The Document interface describes the common properties and methods for any kind of document.
+  Depending on the document's type (e.g., HTML, XML, SVG), a larger API is available.
+  HTML documents implement the HTMLDocument interface.
+
+  ## Specification Compliance
+
+  This module implements the DOM Document interface as defined by:
+  - **W3C DOM Level 4**: https://www.w3.org/TR/dom/#document
+  - **WHATWG DOM Standard**: https://dom.spec.whatwg.org/#document
+  - **HTML Standard**: https://html.spec.whatwg.org/multipage/dom.html#document
 
   ## Inheritance Chain
 
   ```
   GenDOM.Node (Base)
   └── GenDOM.Document (extends Node)
+      └── GenDOM.HTMLDocument (extends Document)
   ```
 
   **Inherits from:** `GenDOM.Node`  
   **File:** `lib/gen_dom/document.ex`  
-  **Inheritance:** `use GenDOM.Node` (line 40)
+  **Node Type:** 9 (DOCUMENT_NODE)
 
-  ## Usage
+  ## Properties
+
+  ### Document Metadata
+  - `title` - The document title as shown in browser title bar
+  - `url` - The complete URL of the document
+  - `document_uri` - The URI of the document (same as URL)
+  - `base_uri` - The base URI used for resolving relative URLs
+  - `origin` - The origin of the document (protocol + domain + port)
+  - `character_set` - Character encoding of the document (e.g., "UTF-8")
+  - `content_type` - MIME type of the document (e.g., "text/html")
+  - `doctype` - Reference to the document's DOCTYPE declaration
+
+  ### Document Structure
+  - `document_element` - Root element of the document (html element)
+  - `head` - Reference to the document head element
+  - `body` - Reference to the document body element
+  - `children` - HTMLCollection of child elements
+  - `child_element_count` - Number of child elements
+  - `first_element_child` - First child element
+  - `last_element_child` - Last child element
+
+  ### Document State
+  - `ready_state` - Document loading state ("loading", "interactive", "complete")
+  - `compat_mode` - Compatibility mode ("CSS1Compat" or "BackCompat")
+  - `design_mode` - Whether document is in design mode ("on" or "off")
+  - `hidden` - Whether document is hidden (tab in background)
+  - `visibility_state` - Visibility state ("visible", "hidden", "prerender")
+
+  ### Collections
+  - `forms` - HTMLCollection of all form elements
+  - `images` - HTMLCollection of all img elements
+  - `links` - HTMLCollection of all link and area elements with href
+  - `scripts` - HTMLCollection of all script elements
+  - `embeds` - HTMLCollection of all embed elements
+  - `plugins` - HTMLCollection of all object elements
+  - `anchors` - HTMLCollection of all anchor elements with name attribute
+
+  ### Styling
+  - `style_sheets` - StyleSheetList of all style sheets
+  - `adopted_style_sheets` - Array of adopted CSSStyleSheet objects
+  - `fonts` - FontFaceSet for font loading
+
+  ### Focus and Selection
+  - `active_element` - Currently focused element
+  - `has_focus` - Whether document has focus
+
+  ### Fullscreen and Picture-in-Picture
+  - `fullscreen_enabled` - Whether fullscreen is available
+  - `fullscreen_element` - Element currently in fullscreen
+  - `picture_in_picture_enabled` - Whether picture-in-picture is available
+  - `picture_in_picture_element` - Element currently in picture-in-picture
+
+  ### Pointer Lock
+  - `pointer_lock_element` - Element that has captured the pointer
+
+  ### Timeline and Navigation
+  - `timeline` - DocumentTimeline for animations
+  - `last_modified` - Date document was last modified
+
+  ## Methods
+
+  ### Element Creation
+  - `create_element/3` - Create new element with specified tag name
+  - `create_element_ns/4` - Create namespaced element
+  - `create_text_node/2` - Create new text node
+  - `create_comment/2` - Create new comment node
+  - `create_document_fragment/1` - Create new document fragment
+  - `create_processing_instruction/3` - Create processing instruction
+
+  ### Element Selection and Querying
+  - `get_element_by_id/2` - Find element by ID attribute
+  - `get_elements_by_tag_name/2` - Find elements by tag name
+  - `get_elements_by_tag_name_ns/3` - Find elements by namespaced tag name
+  - `get_elements_by_class_name/2` - Find elements by class name
+  - `get_elements_by_name/2` - Find elements by name attribute
+
+  ### CSS Selector Queries
+  - `query_selector/2` - Find first element matching CSS selector
+  - `query_selector_all/2` - Find all elements matching CSS selector
+
+  ### XPath Support
+  - `create_expression/3` - Create XPath expression
+  - `create_ns_resolver/2` - Create namespace resolver
+  - `evaluate/6` - Evaluate XPath expression
+
+  ### Document Lifecycle
+  - `open/1` - Open document for writing
+  - `close/1` - Close document after writing
+  - `write/2` - Write string to document
+  - `writeln/2` - Write string with newline to document
+
+  ### Import and Adoption
+  - `import_node/3` - Import node from another document
+  - `adopt_node/2` - Adopt node from another document
+
+  ### Event Methods
+  - `has_focus/1` - Check if document has focus
+  - `get_selection/1` - Get current text selection
+
+  ### Fullscreen API
+  - `exit_fullscreen/1` - Exit fullscreen mode
+  - `request_storage_access/1` - Request storage access
+
+  ### Picture-in-Picture API
+  - `exit_picture_in_picture/1` - Exit picture-in-picture mode
+
+  ### Pointer Lock API
+  - `exit_pointer_lock/1` - Exit pointer lock mode
+
+  ## Usage Examples
 
   ```elixir
   # Create a new document
-  document = GenDOM.Document.new([])
+  document = GenDOM.Document.new([
+    title: "My Document",
+    character_set: "UTF-8",
+    content_type: "text/html"
+  ])
 
-  # Create elements within the document
-  element = GenDOM.Document.create_element(document.pid, "div", id: "content")
+  # Create elements
+  html_element = GenDOM.Document.create_element(document.pid, "html")
+  head_element = GenDOM.Document.create_element(document.pid, "head")
+  body_element = GenDOM.Document.create_element(document.pid, "body")
+
+  # Build document structure
+  GenDOM.Node.append_child(document.pid, html_element.pid)
+  GenDOM.Node.append_child(html_element.pid, head_element.pid)
+  GenDOM.Node.append_child(html_element.pid, body_element.pid)
+
+  # Element queries
+  my_element = GenDOM.Document.get_element_by_id(document.pid, "my-id")
+  buttons = GenDOM.Document.get_elements_by_tag_name(document.pid, "button")
+  primary_elements = GenDOM.Document.query_selector_all(document.pid, ".primary")
+
+  # Document operations
+  text_node = GenDOM.Document.create_text_node(document.pid, "Hello World")
+  imported_node = GenDOM.Document.import_node(document.pid, external_node.pid, true)
   ```
 
-  ## Features
+  ## Document Lifecycle
 
-  - Full DOM Document specification compliance
-  - Element creation and management
-  - Document-wide element selection and querying
-  - Document lifecycle methods (open, close, write)
-  - Fullscreen and pointer lock APIs
-  - Storage access and permissions
-  - View transitions and animations
-  - Focus and selection management
-  - Inherits all Node functionality (DOM tree operations, process management, etc.)
+  Documents progress through several ready states:
 
-  ## Document Type
+  1. **Loading** - Document is still loading resources
+  2. **Interactive** - Document has finished loading but resources may still be loading
+  3. **Complete** - Document and all resources have finished loading
 
-  Documents have a `node_type` of 10 (DOCUMENT_NODE) as per the DOM specification.
+  ```elixir
+  # Check document ready state
+  case GenDOM.Document.get(document.pid).ready_state do
+    "loading" -> # Document still loading
+    "interactive" -> # DOM ready, resources may still load
+    "complete" -> # Everything loaded
+  end
+  ```
 
-  ## Additional Fields
+  ## Security Model
 
-  Beyond the base Node fields, Document adds:
-  - `title` - The document title
-  - `body` - Reference to the document body element
-  - `head` - Reference to the document head element
-  - `url` - The document URL
-  - `style_sheets` - List of style sheets attached to the document
-  - `forms` - Collection of form elements in the document
-  - `images` - Collection of image elements in the document
-  - `links` - Collection of link elements in the document
-  - `scripts` - Collection of script elements in the document
-  - Fullscreen, pointer lock, and picture-in-picture state
-  - Document metadata (character set, content type, etc.)
+  Documents enforce the same-origin policy:
+  - Cross-origin access is restricted
+  - Storage access requires user permission
+  - Fullscreen requires user activation
+
+  ## Performance Considerations
+
+  - **Element Creation**: O(1) for basic elements
+  - **ID Queries**: O(1) with internal ID index
+  - **Tag/Class Queries**: O(n) where n is number of elements
+  - **CSS Selector Queries**: O(n×m) where m is selector complexity
+
+  ## Event Integration
+
+  Documents are event targets and support:
+  - **Document Events**: DOMContentLoaded, readystatechange
+  - **Focus Events**: focusin, focusout
+  - **Visibility Events**: visibilitychange
+  - **Fullscreen Events**: fullscreenchange, fullscreenerror
+
+  ## Threading Model
+
+  Document operations are thread-safe:
+  - **Element Creation**: Safe across threads
+  - **Query Operations**: Consistent snapshots
+  - **State Updates**: Atomic through GenServer
+
+  ## Memory Management
+
+  Documents manage element lifecycle:
+  - **Automatic Cleanup**: Orphaned elements are cleaned up
+  - **Reference Tracking**: Prevents memory leaks
+  - **Process Supervision**: Failed elements don't corrupt document
   """
 
   alias GenDOM.{
@@ -198,7 +356,7 @@ defmodule GenDOM.Document do
       adopted_node = GenDOM.Document.adopt_node(document, external_node)
 
   """
-  def adopt_node(%__MODULE__{} = _document, _node) do
+  def adopt_node(document_pid, _node) do
 
   end
 
@@ -217,7 +375,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.append(document, [new_element, "Some text"])
 
   """
-  def append(%__MODULE__{} = document, nodes) when is_list(nodes) do
+  def append(document_pid, nodes) when is_list(nodes) do
 
   end
 
@@ -257,7 +415,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.close(document)
 
   """
-  def close(%__MODULE__{} = document) do
+  def close(document_pid) do
 
   end
 
@@ -276,7 +434,7 @@ defmodule GenDOM.Document do
       attr = GenDOM.Document.create_attribute(document, "class")
 
   """
-  def create_attribute(%__MODULE__{} = document, name) do
+  def create_attribute(document_pid, name) do
 
   end
 
@@ -296,7 +454,7 @@ defmodule GenDOM.Document do
       attr = GenDOM.Document.create_attribute_ns(document, "http://www.w3.org/1999/xlink", "xlink:href")
 
   """
-  def create_attribute_ns(%__MODULE__{} = document, namespace_uri, qualified_name) do
+  def create_attribute_ns(document_pid, namespace_uri, qualified_name) do
 
   end
 
@@ -315,7 +473,7 @@ defmodule GenDOM.Document do
       cdata = GenDOM.Document.create_CDATA_section(document, "<some>xml data</some>")
 
   """
-  def create_CDATA_section(%__MODULE__{} = document, data) do
+  def create_CDATA_section(document_pid, data) do
 
   end
 
@@ -334,7 +492,7 @@ defmodule GenDOM.Document do
       comment = GenDOM.Document.create_comment(document, "This is a comment")
 
   """
-  def create_comment(%__MODULE__{} = document, data) do
+  def create_comment(document_pid, data) do
 
   end
 
@@ -352,7 +510,7 @@ defmodule GenDOM.Document do
       fragment = GenDOM.Document.create_document_fragment(document)
 
   """
-  def create_document_fragment(%__MODULE__{} = document) do
+  def create_document_fragment(document_pid) do
 
   end
 
@@ -376,7 +534,7 @@ defmodule GenDOM.Document do
       "div"
 
   """
-  def create_element(%__MODULE__{} = document, local_name, options \\ []) do
+  def create_element(document_pid, local_name, options \\ []) do
     
   end
 
@@ -397,7 +555,7 @@ defmodule GenDOM.Document do
       svg_element = GenDOM.Document.create_element_ns(document, "http://www.w3.org/2000/svg", "svg:rect")
 
   """
-  def create_element_ns(%__MODULE__{} = document, namespace_uri, qualified_name, options \\ []) do
+  def create_element_ns(document_pid, namespace_uri, qualified_name, options \\ []) do
 
   end
 
@@ -417,7 +575,7 @@ defmodule GenDOM.Document do
       expr = GenDOM.Document.create_expression(document, "//div[@class='content']", namespace_resolver)
 
   """
-  def create_expression(%__MODULE__{} = document, xpath_text, namespace_url_mapper) do
+  def create_expression(document_pid, xpath_text, namespace_url_mapper) do
 
   end
 
@@ -438,7 +596,7 @@ defmodule GenDOM.Document do
       iterator = GenDOM.Document.create_node_iterator(document, document, :show_element, nil)
 
   """
-  def create_node_iterator(%__MODULE__{} = document, root, what_to_show, filter) do
+  def create_node_iterator(document_pid, root, what_to_show, filter) do
 
   end
 
@@ -458,7 +616,7 @@ defmodule GenDOM.Document do
       pi = GenDOM.Document.create_processing_instruction(document, "xml-stylesheet", "type='text/xsl' href='style.xsl'")
 
   """
-  def create_processing_instruction(%__MODULE__{} = document, target, data) do
+  def create_processing_instruction(document_pid, target, data) do
 
   end
 
@@ -476,7 +634,7 @@ defmodule GenDOM.Document do
       range = GenDOM.Document.create_range(document)
 
   """
-  def create_range(%__MODULE__{} = document) do
+  def create_range(document_pid) do
 
   end
 
@@ -499,7 +657,7 @@ defmodule GenDOM.Document do
       "Hello, World!"
 
   """
-  def create_text_node(%__MODULE__{} = document, data) do
+  def create_text_node(document_pid, data) do
 
   end
 
@@ -520,7 +678,7 @@ defmodule GenDOM.Document do
       walker = GenDOM.Document.create_tree_walker(document, document, :show_element, nil)
 
   """
-  def create_tree_walker(%__MODULE__{} = document, root, what_to_show, filter) do
+  def create_tree_walker(document_pid, root, what_to_show, filter) do
 
   end
 
@@ -540,7 +698,7 @@ defmodule GenDOM.Document do
       element = GenDOM.Document.element_from_point(document, 100, 200)
 
   """
-  def element_from_point(%__MODULE__{} = document, x, y) do
+  def element_from_point(document_pid, x, y) do
 
   end
 
@@ -560,7 +718,7 @@ defmodule GenDOM.Document do
       elements = GenDOM.Document.elements_from_point(document, 100, 200)
 
   """
-  def elements_from_point(%__MODULE__{} = document, x, y) do
+  def elements_from_point(document_pid, x, y) do
 
   end
 
@@ -583,7 +741,7 @@ defmodule GenDOM.Document do
       result = GenDOM.Document.evaluate(document, "//div", document, nil, :ordered_node_snapshot_type, nil)
 
   """
-  def evaluate(%__MODULE__{} = document, xpath_expression, context_node, namespace_resolver, result_type, result) do
+  def evaluate(document_pid, xpath_expression, context_node, namespace_resolver, result_type, result) do
 
   end
 
@@ -601,7 +759,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.exit_fullscreen(document)
 
   """
-  def exit_fullscreen(%__MODULE__{} = document) do
+  def exit_fullscreen(document_pid) do
 
   end
 
@@ -619,7 +777,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.exit_picture_in_picture(document)
 
   """
-  def exit_picture_in_picture(%__MODULE__{} = document) do
+  def exit_picture_in_picture(document_pid) do
 
   end
 
@@ -637,7 +795,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.exit_pointer_lock(document)
 
   """
-  def exit_pointer_lock(%__MODULE__{} = document) do
+  def exit_pointer_lock(document_pid) do
 
   end
 
@@ -655,7 +813,7 @@ defmodule GenDOM.Document do
       animations = GenDOM.Document.get_animations(document)
 
   """
-  def get_animations(%__MODULE__{} = document) do
+  def get_animations(document_pid) do
 
   end
 
@@ -815,7 +973,7 @@ defmodule GenDOM.Document do
       selection = GenDOM.Document.get_selection(document)
 
   """
-  def get_selection(%__MODULE__{} = document) do
+  def get_selection(document_pid) do
 
   end
 
@@ -834,7 +992,7 @@ defmodule GenDOM.Document do
       # => true or false
 
   """
-  def has_focus?(%__MODULE__{} = document) do
+  def has_focus?(document_pid) do
 
   end
 
@@ -853,7 +1011,7 @@ defmodule GenDOM.Document do
       # => true or false
 
   """
-  def has_storage_access?(%__MODULE__{} = document) do
+  def has_storage_access?(document_pid) do
 
   end
 
@@ -872,7 +1030,7 @@ defmodule GenDOM.Document do
       # => true or false
 
   """
-  def has_unpartitioned_cookie_access?(%__MODULE__{} = document) do
+  def has_unpartitioned_cookie_access?(document_pid) do
 
   end
 
@@ -892,7 +1050,7 @@ defmodule GenDOM.Document do
       imported_node = GenDOM.Document.import_node(document, external_node, true)
 
   """
-  def import_node(%__MODULE__{} = document, external_node, deep?) do
+  def import_node(document_pid, external_node, deep?) do
 
   end
 
@@ -911,7 +1069,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.open(document)
 
   """
-  def open(%__MODULE__{} = document) do
+  def open(document_pid) do
 
   end
 
@@ -930,7 +1088,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.prepend(document, [doctype_node, processing_instruction])
 
   """
-  def prepend(%__MODULE__{} = document, nodes) when is_list(nodes) do
+  def prepend(document_pid, nodes) when is_list(nodes) do
 
   end
 
@@ -949,7 +1107,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.replace_children(document, [new_doctype, new_root_element])
 
   """
-  def replace_children(%__MODULE__{} = document, children) when is_list(children) do
+  def replace_children(document_pid, children) when is_list(children) do
 
   end
 
@@ -968,7 +1126,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.request_storage_access(document, %{cookies: true})
 
   """
-  def request_storage_access(%__MODULE__{} = document, types \\ %{all: true}) do
+  def request_storage_access(document_pid, types \\ %{all: true}) do
 
   end
 
@@ -989,7 +1147,7 @@ defmodule GenDOM.Document do
       end)
 
   """
-  def start_view_transition(%__MODULE__{} = document, update_callback) do
+  def start_view_transition(document_pid, update_callback) do
 
   end
 
@@ -1008,7 +1166,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.writeln(document, "<p>Hello World!</p>")
 
   """
-  def writeln(%__MODULE__{} = document, line) when is_binary(line) do
+  def writeln(document_pid, line) when is_binary(line) do
 
   end
 end

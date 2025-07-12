@@ -302,6 +302,8 @@ defmodule GenDOM.NodeTest do
       Node.remove_child(child_1.pid, child_2.pid)
       child_1 = Node.get(child_1.pid)
 
+      :timer.sleep(10)
+
       refute Enum.member?(:pg.get_members(child_1.pid), child_2.pid)
       refute Enum.member?(:pg.get_members(parent.pid), child_2.pid)
     end
