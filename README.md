@@ -320,8 +320,6 @@ GenDOM.Node (base)
 ### Utility Modules
 
 - **`GenDOM.Parser`** 🔧 - Parse templates and convert to DOM structures
-- **`GenDOM.QuerySelector`** 🎯 - CSS selector parsing and matching
-- **`GenDOM.Matcher`** 🔍 - Element matching and filtering logic
 
 ## 🔍 CSS Selector Support
 

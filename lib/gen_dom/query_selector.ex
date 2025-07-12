@@ -31,11 +31,6 @@ defmodule GenDOM.QuerySelector do
   """
 
   import GenDOM.Task
-  alias GenDOM.{
-    Matcher,
-    Node,
-    Text
-  }
 
   defmacro __using__(_opts) do
     quote location: :keep do
@@ -70,12 +65,16 @@ defmodule GenDOM.QuerySelector do
       """
       def query_selector(node_pid, selectors) when is_binary(selectors) do
         selectors = Selector.parse(selectors)
+        query_selector(node_pid, selectors)
+      end
+
+      def query_selector(node_pid, selectors) do
         all_descendants = :pg.get_members(node_pid)
 
         tasks = Enum.map(all_descendants, fn(pid) ->
           Task.async(fn ->
             element = GenServer.call(pid, :get)
-            Matcher.match(element, selectors, await: &await_one/1)
+            GenDOM.Matcher.match(element, selectors, await: &await_one/1)
           end)
         end)
 
@@ -118,6 +117,10 @@ defmodule GenDOM.QuerySelector do
       """
       def query_selector_all(node_pid, selectors) when is_binary(selectors) do
         selectors = Selector.parse(selectors)
+        query_selector_all(node_pid, selectors)
+      end
+
+      def query_selector_all(node_pid, selectors) do
         all_descendants = :pg.get_members(node_pid)
 
         tasks = Enum.map(all_descendants, fn(pid) ->
@@ -125,7 +128,7 @@ defmodule GenDOM.QuerySelector do
             node = GenServer.call(pid, :get)
 
             if node.is_element?,
-              do: Matcher.match(node, selectors, await: &await_many/1),
+              do: GenDOM.Matcher.match(node, selectors, await: &await_many/1),
               else: nil
           end)
         end)

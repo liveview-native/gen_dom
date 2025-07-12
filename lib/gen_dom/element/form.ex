@@ -7,6 +7,65 @@ defmodule GenDOM.Element.Form do
   This module implements the FormElement interface properties and methods
   as defined in the DOM specification. Form elements are the only elements
   that implement the FormElement interface.
+
+  ## Inheritance Chain
+
+  ```
+  GenDOM.Node (Base)
+  └── GenDOM.Element (extends Node)
+      └── GenDOM.Element.Form (extends Element)
+  ```
+
+  **Inherits from:** `GenDOM.Element`  
+  **File:** `lib/gen_dom/element/form.ex`  
+  **Inheritance:** `use GenDOM.Element` (line 12)
+
+  ## Usage
+
+  ```elixir
+  # Create a new form element
+  form = GenDOM.Element.Form.new([
+    tag_name: "form",
+    action: "/submit",
+    method: "post",
+    name: "user_form"
+  ])
+
+  # Add form controls
+  input = GenDOM.Element.Input.new([type: "text", name: "username"])
+  GenDOM.Node.append_child(form.pid, input.pid)
+  ```
+
+  ## Features
+
+  - Full FormElement specification compliance
+  - Form submission and validation
+  - Form control management
+  - All inherited Element functionality (attributes, classes, DOM operations)
+  - All inherited Node functionality (DOM tree operations, process management)
+
+  ## Form Methods
+
+  This module provides all standard form methods:
+  - `submit()` - Submit the form bypassing validation
+  - `request_submit()` - Submit with validation and events
+  - `reset()` - Reset all form controls to initial values
+  - `check_validity()` - Check if all form controls are valid
+  - `report_validity()` - Check validity and report issues
+
+  ## Additional Fields
+
+  Beyond the base Element fields, Form adds:
+  - `action` - The URI to process form submission
+  - `method` - HTTP method for submission (get, post, etc.)
+  - `name` - The form's name attribute
+  - `accept_charset` - Character encodings accepted by the server
+  - `autocomplete` - Whether browser should autocomplete form values
+  - `enctype` - Content type for form data encoding
+  - `novalidate` - Whether to skip form validation
+  - `target` - Where to display submission results
+  - `elements` - Collection of all form controls
+  - `length` - Number of controls in the form
   """
 
   use GenDOM.Element, [
@@ -146,6 +205,26 @@ defmodule GenDOM.Element.Form do
     # Implementation to be added
   end
 
+  @doc """
+  Encodes the form element into a serializable format.
+
+  This method overrides the base Element `encode/1` to include form-specific fields
+  in the encoded representation. Used for serialization and communication.
+
+  ## Parameters
+
+  - `form` - The form element struct to encode
+
+  ## Examples
+
+      iex> form = GenDOM.Element.Form.new([action: "/submit", method: "post"])
+      iex> encoded = GenDOM.Element.Form.encode(form)
+      iex> encoded.action
+      "/submit"
+      iex> encoded.method
+      "post"
+
+  """
   def encode(form) do
     Map.merge(super(form), %{
       action: form.action,

@@ -46,7 +46,7 @@ defmodule GenDOM.NodeTest do
       assert updated_node.assigns.key2 == "value2"
     end
 
-    test "putting a value in the Node struct" do
+    test "put" do
       node = Node.new([])
 
       Node.put(node.pid, :text_content, "Hello, world!")
@@ -54,7 +54,39 @@ defmodule GenDOM.NodeTest do
       assert updated_node.text_content == "Hello, world!"
     end
 
-    test "merging a map of values into the Node" do
+    test "put!" do
+      node = Node.new([])
+
+      Node.put!(node.pid, :text_content, "Hello, world!")
+      updated_node = Node.get(node.pid)
+      assert updated_node.text_content == "Hello, world!"
+    end
+
+    test "put_lazy" do
+      node = Node.new([
+        text_content: "Hello, world!"
+      ])
+
+      Node.put_lazy(node.pid, :text_content, fn(node) ->
+        node.text_content <> "!"
+      end)
+      updated_node = Node.get(node.pid)
+      assert updated_node.text_content == "Hello, world!!"
+    end
+
+    test "put_lazy!" do
+      node = Node.new([
+        text_content: "Hello, world!"
+      ])
+
+      Node.put_lazy!(node.pid, :text_content, fn(node) ->
+        node.text_content <> "!"
+      end)
+      updated_node = Node.get(node.pid)
+      assert updated_node.text_content == "Hello, world!!"
+    end
+
+    test "merge" do
       node = Node.new([])
 
       Node.merge(node.pid, %{
@@ -66,6 +98,58 @@ defmodule GenDOM.NodeTest do
 
       assert updated_node.node_type == 1
       assert updated_node.text_content == "Merged content"
+    end
+
+    test "merge!" do
+      node = Node.new([])
+
+      Node.merge!(node.pid, %{
+        node_type: 1,
+        text_content: "Merged content"
+      })
+
+      updated_node = Node.get(node.pid)
+
+      assert updated_node.node_type == 1
+      assert updated_node.text_content == "Merged content"
+    end
+
+    test "merge_lazy" do
+      node = Node.new([
+        node_type: 1,
+        text_content: "Merged content"
+      ])
+
+      Node.merge_lazy(node.pid, fn(node) ->
+        %{
+          node_type: node.node_type + 1,
+          text_content: node.text_content <> "!"
+        }
+      end)
+
+      updated_node = Node.get(node.pid)
+
+      assert updated_node.node_type == 2
+      assert updated_node.text_content == "Merged content!"
+    end
+
+    test "merge_lazy!" do
+      node = Node.new([
+        node_type: 1,
+        text_content: "Merged content"
+      ])
+
+      Node.merge_lazy!(node.pid, fn(node) ->
+        %{
+          node_type: node.node_type + 1,
+          text_content: node.text_content <> "!"
+        }
+      end)
+
+      updated_node = Node.get(node.pid)
+
+      assert updated_node.node_type == 2
+      assert updated_node.text_content == "Merged content!"
     end
 
     test "appending a child node" do

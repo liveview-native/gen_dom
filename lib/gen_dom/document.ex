@@ -7,6 +7,17 @@ defmodule GenDOM.Document do
   including element creation, document-wide queries, and document lifecycle methods. It implements
   the full DOM Document specification as defined by the Web API.
 
+  ## Inheritance Chain
+
+  ```
+  GenDOM.Node (Base)
+  └── GenDOM.Document (extends Node)
+  ```
+
+  **Inherits from:** `GenDOM.Node`  
+  **File:** `lib/gen_dom/document.ex`  
+  **Inheritance:** `use GenDOM.Node` (line 40)
+
   ## Usage
 
   ```elixir
@@ -27,10 +38,26 @@ defmodule GenDOM.Document do
   - Storage access and permissions
   - View transitions and animations
   - Focus and selection management
+  - Inherits all Node functionality (DOM tree operations, process management, etc.)
 
   ## Document Type
 
   Documents have a `node_type` of 10 (DOCUMENT_NODE) as per the DOM specification.
+
+  ## Additional Fields
+
+  Beyond the base Node fields, Document adds:
+  - `title` - The document title
+  - `body` - Reference to the document body element
+  - `head` - Reference to the document head element
+  - `url` - The document URL
+  - `style_sheets` - List of style sheets attached to the document
+  - `forms` - Collection of form elements in the document
+  - `images` - Collection of image elements in the document
+  - `links` - Collection of link elements in the document
+  - `scripts` - Collection of script elements in the document
+  - Fullscreen, pointer lock, and picture-in-picture state
+  - Document metadata (character set, content type, etc.)
   """
 
   alias GenDOM.{
@@ -632,6 +659,27 @@ defmodule GenDOM.Document do
 
   end
 
+  @doc """
+  Returns the element that has the ID attribute with the specified value.
+
+  This method implements the DOM `getElementById()` specification. It searches through
+  all descendant elements in the document for an element with the matching ID.
+
+  ## Parameters
+
+  - `document_pid` - The PID of the document to search in
+  - `id` - The ID value to search for
+
+  ## Examples
+
+      iex> document = GenDOM.Document.new([])
+      iex> element = GenDOM.Element.new([tag_name: "div", id: "content"])
+      iex> GenDOM.Node.append_child(document.pid, element.pid)
+      iex> found_element = GenDOM.Document.get_element_by_id(document.pid, "content")
+      iex> found_element.id
+      "content"
+
+  """
   def get_element_by_id(document_pid, id) do
     all_descendants = :pg.get_members(document_pid)
 
@@ -645,6 +693,27 @@ defmodule GenDOM.Document do
     await_one(tasks)
   end
 
+  @doc """
+  Returns a list of all elements in the document that have all the given class names.
+
+  This method implements the DOM `getElementsByClassName()` specification. It searches through
+  all descendant elements in the document for elements that have all the specified class names.
+
+  ## Parameters
+
+  - `document_pid` - The PID of the document to search in
+  - `names` - A string containing one or more class names separated by spaces
+
+  ## Examples
+
+      iex> document = GenDOM.Document.new([])
+      iex> element = GenDOM.Element.new([tag_name: "div", class_list: ["btn", "primary"]])
+      iex> GenDOM.Node.append_child(document.pid, element.pid)
+      iex> found_elements = GenDOM.Document.get_elements_by_class_name(document.pid, "btn primary")
+      iex> length(found_elements)
+      1
+
+  """
   def get_elements_by_class_name(document_pid, names) do
     names = String.split(names)
     all_descendants = :pg.get_members(document_pid)
@@ -678,6 +747,27 @@ defmodule GenDOM.Document do
     query_selector_all(document_pid, ~s([name="#{name}"]))
   end
 
+  @doc """
+  Returns a list of all elements in the document that have the given tag name.
+
+  This method implements the DOM `getElementsByTagName()` specification. It searches through
+  all descendant elements in the document for elements with the specified tag name.
+
+  ## Parameters
+
+  - `document_pid` - The PID of the document to search in
+  - `tag_name` - The tag name to search for (case-insensitive)
+
+  ## Examples
+
+      iex> document = GenDOM.Document.new([])
+      iex> element = GenDOM.Element.new([tag_name: "div"])
+      iex> GenDOM.Node.append_child(document.pid, element.pid)
+      iex> found_elements = GenDOM.Document.get_elements_by_tag_name(document.pid, "div")
+      iex> length(found_elements)
+      1
+
+  """
   def get_elements_by_tag_name(document_pid, tag_name) do
     all_descendants = :pg.get_members(document_pid)
 

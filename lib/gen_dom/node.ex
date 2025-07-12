@@ -182,7 +182,9 @@ defmodule GenDOM.Node do
       def handle_call(:get, from, node), do: GenDOM.Node.handle_call(:get, from, node)
       def handle_call({:assign, assigns}, from, node), do: GenDOM.Node.handle_call({:assign, assigns}, from, node)
       def handle_call({:merge, fields}, from, node), do: GenDOM.Node.handle_call({:merge, fields}, from, node)
+      def handle_call({:merge_lazy, func}, from, node) when is_function(func), do: GenDOM.Node.handle_call({:merge_lazy, func}, from, node)
       def handle_call({:put, field, value}, from, node), do: GenDOM.Node.handle_call({:put, field, value}, from, node)
+      def handle_call({:put_lazy, field, func}, from, node) when is_function(func), do: GenDOM.Node.handle_call({:put_lazy, field, func}, from, node)
 
       def handle_call({:append_child, child, opts}, from, node), do: GenDOM.Node.handle_call({:append_child, child, opts}, from, node)
       def handle_call({:insert_before, new_node, reference_node, opts}, from, node), do: GenDOM.Node.handle_call({:insert_before, new_node, reference_node, opts}, from, node)
@@ -192,14 +194,14 @@ defmodule GenDOM.Node do
       def handle_call({:track, child_pid_or_pids}, from, node), do: GenDOM.Node.handle_call({:track, child_pid_or_pids}, from, node)
       def handle_call({:untrack, child_pid_or_pids}, from, node), do: GenDOM.Node.handle_call({:untrack, child_pid_or_pids}, from, node)
 
-      def handle_call({:update, func}, from, node), do: GenDOM.Node.handle_call({:update, func}, from, node)
-
       defoverridable handle_call: 3
 
       @impl true
       def handle_cast({:assign, assigns}, node), do: GenDOM.Node.handle_cast({:assign, assigns}, node)
       def handle_cast({:merge, fields}, node), do: GenDOM.Node.handle_cast({:merge, fields}, node)
+      def handle_cast({:merge_lazy, func}, node) when is_function(func), do: GenDOM.Node.handle_cast({:merge_lazy, func}, node)
       def handle_cast({:put, field, value}, node), do: GenDOM.Node.handle_cast({:put, field, value}, node)
+      def handle_cast({:put_lazy, field, func}, node) when is_function(func), do: GenDOM.Node.handle_cast({:put_lazy, field, func}, node)
 
       def handle_cast({:append_child, child, opts}, node), do: GenDOM.Node.handle_cast({:append_child, child, opts}, node)
       def handle_cast({:insert_before, new_node, reference_node, opts}, node), do: GenDOM.Node.handle_cast({:insert_before, new_node, reference_node, opts}, node)
@@ -209,8 +211,6 @@ defmodule GenDOM.Node do
       def handle_cast({:track, child}, node), do: GenDOM.Node.handle_cast({:track, child}, node)
       def handle_cast({:untrack, child}, node), do: GenDOM.Node.handle_cast({:untrack, child}, node)
       def handle_cast({:send_to_receiver, msg}, node), do: GenDOM.Node.handle_cast({:send_to_receiver, msg}, node)
-
-      def handle_cast({:update, func}, node), do: GenDOM.Node.handle_cast({:update, func}, node)
 
       defoverridable handle_cast: 2
 
@@ -277,7 +277,19 @@ defmodule GenDOM.Node do
     {:reply, node, node}
   end
 
+  def handle_call({:merge_lazy, func}, _from, node) when is_function(func) do
+    fields = func.(node)
+    node = do_merge(node, fields)
+    {:reply, node, node}
+  end
+
   def handle_call({:put, field, value}, _from, node) do
+    node = do_put(node, field, value)
+    {:reply, node, node}
+  end
+
+  def handle_call({:put_lazy, field, func}, _from, node) when is_function(func) do
+    value = func.(node)
     node = do_put(node, field, value)
     {:reply, node, node}
   end
@@ -313,10 +325,6 @@ defmodule GenDOM.Node do
     {:reply, node, node}
   end
 
-  def handle_call({:update, func}, _from, node) when is_function(func) do
-    func.(node)
-  end
-
   @impl true
   def handle_cast({:assign, assigns}, node) when is_list(assigns) do
     handle_cast({:assign, Map.new(assigns)}, node)
@@ -331,7 +339,18 @@ defmodule GenDOM.Node do
     {:noreply, do_merge(node, fields)}
   end
 
+  def handle_cast({:merge_lazy, func}, node) when is_function(func) do
+    fields = func.(node)
+    {:noreply, do_merge(node, fields)}
+  end
+
   def handle_cast({:put, field, value}, node) do
+    node = do_put(node, field, value)
+    {:noreply, node}
+  end
+
+  def handle_cast({:put_lazy, field, func}, node) when is_function(func) do
+    value = func.(node)
     node = do_put(node, field, value)
     {:noreply, node}
   end
@@ -374,10 +393,6 @@ defmodule GenDOM.Node do
     {:noreply, node}
   end
 
-  def handle_cast({:update, func}, node) when is_function(func) do
-    func.(node)
-  end
-
   @impl true
   def handle_info({_ref, :leave, pid, _children}, %{pid: pid} = node) do
     {:noreply, node}
@@ -387,29 +402,176 @@ defmodule GenDOM.Node do
     {:noreply, node}
   end
 
+  @doc """
+  Retrieves the current state of a node.
+
+  This function returns the current Node struct for the given PID.
+
+  ## Parameters
+
+  - `pid` - The PID of the node or a struct containing a PID
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([])
+      iex> current_state = GenDOM.Node.get(node.pid)
+      iex> %GenDOM.Node{} = current_state
+
+  """
   def get(pid) when is_pid(pid),
     do: GenServer.call(pid, :get)
   def get(%{pid: pid}),
     do: get(pid)
 
+  @doc """
+  Assigns values to the node's assigns map and returns the node PID.
+
+  This function merges the given assigns with the node's existing assigns map.
+  Use this for setting arbitrary key-value pairs that are specific to your application.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `key` - An atom key (when providing a single key-value pair)
+  - `value` - The value to assign to the key
+  - `assigns` - A map or keyword list of assigns to merge
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([])
+      iex> node_pid = GenDOM.Node.assign(node.pid, :user_id, 123)
+      iex> node_pid = GenDOM.Node.assign(node.pid, %{name: "John", age: 30})
+      iex> updated_node = GenDOM.Node.get(node_pid)
+      iex> updated_node.assigns
+      %{user_id: 123, name: "John", age: 30}
+
+  """
   def assign(node_pid, key, value) when is_atom(key),
     do: assign(node_pid, %{key => value})
   def assign(node_pid, assigns) do
     GenServer.call(node_pid, {:assign, assigns})
   end
 
+  @doc """
+  Assigns values to the node's assigns map asynchronously without returning a value.
+
+  This function is the asynchronous version of `assign/2` and `assign/3`. It merges
+  the given assigns with the node's existing assigns map but doesn't wait for a response.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `key` - An atom key (when providing a single key-value pair)
+  - `value` - The value to assign to the key
+  - `assigns` - A map or keyword list of assigns to merge
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([])
+      iex> GenDOM.Node.assign!(node.pid, :user_id, 123)
+      iex> GenDOM.Node.assign!(node.pid, %{name: "John", age: 30})
+
+  """
   def assign!(node_pid, key, value) when is_atom(key),
     do: assign!(node_pid, %{key => value})
   def assign!(node_pid, assigns) do
     GenServer.cast(node_pid, {:assign, assigns})
   end
 
+  @doc """
+  Updates a specific field in the node struct and returns the updated node.
+
+  This function directly modifies a field in the node's struct, unlike `assign/3` which
+  operates on the assigns map. Use this for updating DOM node properties.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `field` - The field name to update
+  - `value` - The new value for the field
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([])
+      iex> updated_node = GenDOM.Node.put(node.pid, :text_content, "Hello World")
+      iex> updated_node.text_content
+      "Hello World"
+
+  """
   def put(node_pid, field, value) do
     GenServer.call(node_pid, {:put, field, value})
   end
 
+  @doc """
+  Updates a specific field in the node struct asynchronously without returning a value.
+
+  This function is the asynchronous version of `put/3`. It directly modifies a field in the
+  node's struct but doesn't wait for a response.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `field` - The field name to update
+  - `value` - The new value for the field
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([])
+      iex> GenDOM.Node.put!(node.pid, :text_content, "Hello World")
+
+  """
   def put!(node_pid, field, value) do
     GenServer.cast(node_pid, {:put, field, value})
+  end
+
+  @doc """
+  Updates a specific field in the node struct using a function and returns the updated node.
+
+  This function allows you to update a field based on the current state of the node.
+  The function receives the current node as an argument and should return the new value.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `field` - The field name to update
+  - `func` - A function that takes the current node and returns the new value
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([text_content: "Hello"])
+      iex> updated_node = GenDOM.Node.put_lazy(node.pid, :text_content, fn node -> 
+      ...>   node.text_content <> " World"
+      ...> end)
+      iex> updated_node.text_content
+      "Hello World"
+
+  """
+  def put_lazy(node_pid, field, func) when is_function(func) do
+    GenServer.call(node_pid, {:put_lazy, field, func})
+  end
+
+  @doc """
+  Updates a specific field in the node struct using a function asynchronously without returning a value.
+
+  This function is the asynchronous version of `put_lazy/3`. It allows you to update a field
+  based on the current state of the node but doesn't wait for a response.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `field` - The field name to update
+  - `func` - A function that takes the current node and returns the new value
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([text_content: "Hello"])
+      iex> GenDOM.Node.put_lazy!(node.pid, :text_content, fn node -> 
+      ...>   node.text_content <> " World"
+      ...> end)
+
+  """
+  def put_lazy!(node_pid, field, func) when is_function(func) do
+    GenServer.cast(node_pid, {:put_lazy, field, func})
   end
 
   defp do_put(node, field, value) do
@@ -424,12 +586,111 @@ defmodule GenDOM.Node do
     node
   end
 
+  @doc """
+  Merges multiple fields into the node struct and returns the updated node.
+
+  This function updates multiple fields in the node struct at once, similar to `struct/2`
+  but for live nodes. Use this when you need to update several fields simultaneously.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `fields` - A map or keyword list of field-value pairs to merge
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([])
+      iex> updated_node = GenDOM.Node.merge(node.pid, %{
+      ...>   text_content: "Hello World",
+      ...>   node_name: "text"
+      ...> })
+      iex> updated_node.text_content
+      "Hello World"
+      iex> updated_node.node_name
+      "text"
+
+  """
   def merge(node_pid, fields) do
     GenServer.call(node_pid, {:merge, fields})
   end
 
+  @doc """
+  Merges multiple fields into the node struct asynchronously without returning a value.
+
+  This function is the asynchronous version of `merge/2`. It updates multiple fields in the
+  node struct at once but doesn't wait for a response.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `fields` - A map or keyword list of field-value pairs to merge
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([])
+      iex> GenDOM.Node.merge!(node.pid, %{
+      ...>   text_content: "Hello World",
+      ...>   node_name: "text"
+      ...> })
+
+  """
   def merge!(node_pid, fields) do
     GenServer.cast(node_pid, {:merge, fields})
+  end
+
+  @doc """
+  Merges multiple fields into the node struct using a function and returns the updated node.
+
+  This function allows you to merge fields based on the current state of the node.
+  The function receives the current node as an argument and should return a map of
+  field-value pairs to merge.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `func` - A function that takes the current node and returns a map of fields to merge
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([text_content: "Hello"])
+      iex> updated_node = GenDOM.Node.merge_lazy(node.pid, fn node -> 
+      ...>   %{
+      ...>     text_content: node.text_content <> " World",
+      ...>     node_name: String.downcase(node.text_content)
+      ...>   }
+      ...> end)
+      iex> updated_node.text_content
+      "Hello World"
+
+  """
+  def merge_lazy(node_pid, func) when is_function(func) do
+    GenServer.call(node_pid, {:merge_lazy, func})
+  end
+
+  @doc """
+  Merges multiple fields into the node struct using a function asynchronously without returning a value.
+
+  This function is the asynchronous version of `merge_lazy/2`. It allows you to merge fields
+  based on the current state of the node but doesn't wait for a response.
+
+  ## Parameters
+
+  - `node_pid` - The PID of the node
+  - `func` - A function that takes the current node and returns a map of fields to merge
+
+  ## Examples
+
+      iex> node = GenDOM.Node.new([text_content: "Hello"])
+      iex> GenDOM.Node.merge_lazy!(node.pid, fn node -> 
+      ...>   %{
+      ...>     text_content: node.text_content <> " World",
+      ...>     node_name: String.downcase(node.text_content)
+      ...>   }
+      ...> end)
+
+  """
+  def merge_lazy!(node_pid, func) when is_function(func) do
+    GenServer.cast(node_pid, {:merge_lazy, func})
   end
 
   defp do_merge(node, fields) do

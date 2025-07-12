@@ -7,6 +7,20 @@ defmodule GenDOM.Element do
   attributes, CSS classes, styling, and DOM manipulation methods. It implements the full DOM
   Element specification as defined by the Web API.
 
+  ## Inheritance Chain
+
+  ```
+  GenDOM.Node (Base)
+  └── GenDOM.Element (extends Node)
+      ├── GenDOM.Element.Input (extends Element)
+      ├── GenDOM.Element.Button (extends Element) 
+      └── GenDOM.Element.Form (extends Element)
+  ```
+
+  **Inherits from:** `GenDOM.Node`  
+  **File:** `lib/gen_dom/element.ex`  
+  **Inheritance:** `use GenDOM.Node` (line 41)
+
   ## Usage
 
   ```elixir
@@ -29,6 +43,19 @@ defmodule GenDOM.Element do
   - Animation and visual effect methods
   - Event handling capabilities
   - Accessibility (ARIA) attribute support
+  - Inherits all Node functionality (DOM tree operations, process management, etc.)
+
+  ## Additional Fields
+
+  Beyond the base Node fields, Element adds:
+  - `tag_name` - The element's tag name (e.g., "div", "p", "button")
+  - `id` - The element's unique identifier
+  - `class_list` - List of CSS classes applied to the element
+  - `attributes` - Map of element attributes
+  - `children` - List of child element PIDs (elements only, not text nodes)
+  - `aria_*` - Complete set of ARIA accessibility attributes
+  - Layout and positioning properties (`client_width`, `scroll_top`, etc.)
+  - Shadow DOM and styling properties
 
   ## Element Methods
 
@@ -226,12 +253,6 @@ defmodule GenDOM.Element do
 
       defdelegate prepend(element, nodes), to: GenDOM.Element
       defoverridable prepend: 2
-
-      defdelegate query_selector(element, selectors), to: GenDOM.Element
-      defoverridable query_selector: 2
-
-      defdelegate query_selector_all(element, selectors), to: GenDOM.Element
-      defoverridable query_selector_all: 2
 
       defdelegate release_pointer_capture(element, pointer_id), to: GenDOM.Element
       defoverridable release_pointer_capture: 2
@@ -664,8 +685,21 @@ defmodule GenDOM.Element do
       button = GenDOM.Element.closest(element, "button[type='submit']")
 
   """
-  def closest(%__MODULE__{} = element, selectors) when is_binary(selectors) do
+  def closest(nil, _selectors),
+    do: nil
 
+  def closest(element_pid, selectors) when is_binary(selectors) do
+    closest(element_pid, Selector.parse(selectors))
+  end
+
+  def closest(element_pid, selectors) do
+    element = get(element_pid)
+
+    if closest_pid = query_selector(element_pid, selectors) do
+      closest_pid
+    else
+      closest(element.parent_element || element.owner_document, selectors)
+    end
   end
 
   @doc """

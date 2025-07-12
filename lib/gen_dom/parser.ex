@@ -5,7 +5,7 @@ defmodule GenDOM.Parser do
     Text
   }
 
-  def parse_from_string(template, mime_type \\ nil, opts)
+  def parse_from_string(template, mime_type \\ nil, opts \\ [])
 
   def parse_from_string(html, "text/html", opts) do
     {:ok, children} =
