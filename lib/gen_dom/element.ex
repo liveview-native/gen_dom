@@ -296,174 +296,6 @@ defmodule GenDOM.Element do
     slot: nil,
   ]
 
-  defmacro __using__(fields \\ []) do
-    quote do
-      Module.register_attribute(__MODULE__, :fields, accumulate: true)
-
-      @fields unquote(Macro.escape(@fields))
-      @fields unquote(Macro.escape(fields))
-
-      use GenDOM.Node
-
-      # Element instance method delegations
-      defdelegate do_after(element, nodes), to: GenDOM.Element
-      defoverridable do_after: 2
-
-      defdelegate animate(element, keyframes, options \\ []), to: GenDOM.Element
-      defoverridable animate: 3
-
-      defdelegate append(element, nodes), to: GenDOM.Element
-      defoverridable append: 2
-
-      defdelegate attach_shadow(element, options \\ []), to: GenDOM.Element
-      defoverridable attach_shadow: 2
-
-      defdelegate before(element, nodes), to: GenDOM.Element
-      defoverridable before: 2
-
-      defdelegate check_visibility(element, options \\ []), to: GenDOM.Element
-      defoverridable check_visibility: 2
-
-      defdelegate closest(element, selectors), to: GenDOM.Element
-      defoverridable closest: 2
-
-      defdelegate computed_style_map(element), to: GenDOM.Element
-      defoverridable computed_style_map: 1
-
-      defdelegate get_animations(element, options \\ []), to: GenDOM.Element
-      defoverridable get_animations: 2
-
-      defdelegate get_attribute(element, attribute_name), to: GenDOM.Element
-      defoverridable get_attribute: 2
-
-      defdelegate get_attribute_names(element), to: GenDOM.Element
-      defoverridable get_attribute_names: 1
-
-      defdelegate get_attribute_node(element, attribute_name), to: GenDOM.Element
-      defoverridable get_attribute_node: 2
-
-      defdelegate get_attribute_node_ns(element, namespace, node_name), to: GenDOM.Element
-      defoverridable get_attribute_node_ns: 3
-
-      defdelegate get_attribute_ns(element, namespace, name), to: GenDOM.Element
-      defoverridable get_attribute_ns: 3
-
-      defdelegate get_bounding_client_rect(element), to: GenDOM.Element
-      defoverridable get_bounding_client_rect: 1
-
-      defdelegate get_client_rects(element), to: GenDOM.Element
-      defoverridable get_client_rects: 1
-
-      defdelegate get_elements_by_class_name(element, names), to: GenDOM.Element
-      defoverridable get_elements_by_class_name: 2
-
-      defdelegate get_elements_by_tag_name(element, tag_name), to: GenDOM.Element
-      defoverridable get_elements_by_tag_name: 2
-
-      defdelegate get_elements_by_tag_name_ns(element, namespace, local_name), to: GenDOM.Element
-      defoverridable get_elements_by_tag_name_ns: 3
-
-      defdelegate get_html(element, options \\ []), to: GenDOM.Element
-      defoverridable get_html: 2
-
-      defdelegate has_attribute?(element, name), to: GenDOM.Element
-      defoverridable has_attribute?: 2
-
-      defdelegate has_attribute_ns?(element, namespace, local_name), to: GenDOM.Element
-      defoverridable has_attribute_ns?: 3
-
-      defdelegate has_attributes?(element), to: GenDOM.Element
-      defoverridable has_attributes?: 1
-
-      defdelegate has_pointer_capture?(element, pointer_id), to: GenDOM.Element
-      defoverridable has_pointer_capture?: 2
-
-      defdelegate insert_adjacent_element(element, position, other_element), to: GenDOM.Element
-      defoverridable insert_adjacent_element: 3
-
-      defdelegate insert_adjacent_html(element, position, text), to: GenDOM.Element
-      defoverridable insert_adjacent_html: 3
-
-      defdelegate insert_adjacent_text(element, where, data), to: GenDOM.Element
-      defoverridable insert_adjacent_text: 3
-
-      defdelegate matches?(element, selectors), to: GenDOM.Element
-      defoverridable matches?: 2
-
-      defdelegate prepend(element, nodes), to: GenDOM.Element
-      defoverridable prepend: 2
-
-      defdelegate release_pointer_capture(element, pointer_id), to: GenDOM.Element
-      defoverridable release_pointer_capture: 2
-
-      defdelegate remove(element), to: GenDOM.Element
-      defoverridable remove: 1
-
-      defdelegate remove_attribute(element, attribute_name), to: GenDOM.Element
-      defoverridable remove_attribute: 2
-
-      defdelegate remove_attribute_node(element, attribute_node), to: GenDOM.Element
-      defoverridable remove_attribute_node: 2
-
-      defdelegate remove_attribute_ns(element, namespace, attribute_node), to: GenDOM.Element
-      defoverridable remove_attribute_ns: 3
-
-      defdelegate replace_children(element, children), to: GenDOM.Element
-      defoverridable replace_children: 2
-
-      defdelegate replace_with(element, nodes), to: GenDOM.Element
-      defoverridable replace_with: 2
-
-      defdelegate request_fullscreen(element, options \\ []), to: GenDOM.Element
-      defoverridable request_fullscreen: 2
-
-      defdelegate request_pointer_lock(element, options \\ []), to: GenDOM.Element
-      defoverridable request_pointer_lock: 2
-
-      defdelegate scroll(element, options), to: GenDOM.Element
-      defdelegate scroll(element, x_coord, y_coord), to: GenDOM.Element
-      defoverridable scroll: 2
-      defoverridable scroll: 3
-
-      defdelegate scroll_by(element, options), to: GenDOM.Element
-      defoverridable scroll_by: 2
-
-      defdelegate scroll_into_view(element, align_to_top), to: GenDOM.Element
-      defoverridable scroll_into_view: 2
-
-      defdelegate scroll_to(element, options), to: GenDOM.Element
-      defdelegate scroll_to(element, x_coord, y_coord), to: GenDOM.Element
-      defoverridable scroll_to: 2
-      defoverridable scroll_to: 3
-
-      defdelegate set_attribute(element, name, value), to: GenDOM.Element
-      defoverridable set_attribute: 3
-
-      defdelegate set_attribute_node(element, attribute), to: GenDOM.Element
-      defoverridable set_attribute_node: 2
-
-      defdelegate set_attribute_node_ns(element, attribute_node), to: GenDOM.Element
-      defoverridable set_attribute_node_ns: 2
-
-      defdelegate set_attribute_ns(element, namespace, name, value), to: GenDOM.Element
-      defoverridable set_attribute_ns: 4
-
-      defdelegate set_html_unsafe(element, html), to: GenDOM.Element
-      defoverridable set_html_unsafe: 2
-
-      defdelegate set_pointer_capture(element, pointer_id), to: GenDOM.Element
-      defoverridable set_pointer_capture: 2
-
-      defdelegate toggle_attribute(element, name), to: GenDOM.Element
-      defdelegate toggle_attribute(element, name, force), to: GenDOM.Element
-      defoverridable toggle_attribute: 2
-      defoverridable toggle_attribute: 3
-
-      defdelegate encode(node), to: GenDOM.Element
-      defoverridable encode: 1
-    end
-  end
-
   def encode(element) do
     Map.merge(super(element), %{
       class_list: element.class_list,
@@ -473,7 +305,6 @@ defmodule GenDOM.Element do
     })
   end
 
-  @impl true
   def init(opts) do
     {:ok, element} = super(opts)
 
@@ -482,7 +313,6 @@ defmodule GenDOM.Element do
     {:ok, struct(element, fields)}
   end
 
-  @impl true
   def handle_call({:append_child, child, opts} = msg, from, element) do
     {:reply, element, element} = super(msg, from, element)
 
@@ -519,7 +349,6 @@ defmodule GenDOM.Element do
     super(msg, from, element)
   end
 
-  @impl true
   def handle_cast({:append_child, child, opts} = msg, element) do
     {:noreply, element} = super(msg, element)
 
@@ -652,25 +481,24 @@ defmodule GenDOM.Element do
     end
   end
 
-  defp extract_fields_from_attributes(attributes) do
+  def extract_fields_from_attributes(attributes) do
     Enum.reduce(attributes, %{}, &extract_fields_from_attribute(&1, &2))
   end
 
-  defp extract_fields_from_attribute({"id", id}, fields) do
+  def extract_fields_from_attribute({"id", id}, fields) do
     Map.put(fields, :id, id)
   end
 
-  defp extract_fields_from_attribute({"class", class_name}, fields) do
+  def extract_fields_from_attribute({"class", class_name}, fields) do
     Map.merge(fields, %{
       class_list: String.split(class_name)
     })
   end
 
-  defp extract_fields_from_attribute(_attributes, fields) do
+  def extract_fields_from_attribute(_attributes, fields) do
     fields
   end
 
-  @impl true
   def handle_info({:DOWN, ref, :process, pid, :normal}, element) when is_reference(ref) and is_pid(pid) do
     {:noreply, element}
   end
@@ -700,7 +528,7 @@ defmodule GenDOM.Element do
 
   """
   # Elixir has `after` as a reserved keyword so this must be called `do_after`
-  def do_after(%__MODULE__{} = element, nodes) when is_list(nodes) do
+  def do_after(element, nodes) when is_list(nodes) do
 
   end
 
@@ -724,7 +552,7 @@ defmodule GenDOM.Element do
       )
 
   """
-  def animate(%__MODULE__{} = element, keyframes, options \\ []) do
+  def animate(element, keyframes, options \\ []) do
 
   end
 
@@ -744,7 +572,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.append(parent_element, [child_element, "Some text"])
 
   """
-  def append(%__MODULE__{} = element, nodes) when is_list(nodes) do
+  def append(element, nodes) when is_list(nodes) do
 
   end
 
@@ -763,7 +591,7 @@ defmodule GenDOM.Element do
       shadow_root = GenDOM.Element.attach_shadow(element, mode: :open)
 
   """
-  def attach_shadow(%__MODULE__{} = element, options \\ []) do
+  def attach_shadow(element, options \\ []) do
 
   end
 
@@ -782,7 +610,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.before(element, [new_element, "Some text"])
 
   """
-  def before(%__MODULE__{} = element, nodes) when is_list(nodes) do
+  def before(element, nodes) when is_list(nodes) do
 
   end
 
@@ -803,7 +631,7 @@ defmodule GenDOM.Element do
       # => true or false
 
   """
-  def check_visibility(%__MODULE__{} = element, options \\ []) do
+  def check_visibility(element, options \\ []) do
 
   end
 
@@ -855,7 +683,7 @@ defmodule GenDOM.Element do
       style_map = GenDOM.Element.computed_style_map(element)
 
   """
-  def computed_style_map(%__MODULE__{} = element) do
+  def computed_style_map(element) do
 
   end
 
@@ -875,7 +703,7 @@ defmodule GenDOM.Element do
       running_animations = GenDOM.Element.get_animations(element, subtree: true)
 
   """
-  def get_animations(%__MODULE__{} = element, options \\ []) do
+  def get_animations(element, options \\ []) do
 
   end
 
@@ -940,7 +768,7 @@ defmodule GenDOM.Element do
       attr_node = GenDOM.Element.get_attribute_node(element, "class")
 
   """
-  def get_attribute_node(%__MODULE__{} = element, attribute_name) do
+  def get_attribute_node(element, attribute_name) do
 
   end
 
@@ -960,7 +788,7 @@ defmodule GenDOM.Element do
       attr_node = GenDOM.Element.get_attribute_node_ns(element, "http://www.w3.org/1999/xlink", "href")
 
   """
-  def get_attribute_node_ns(%__MODULE__{} = element, namespace, node_name) do
+  def get_attribute_node_ns(element, namespace, node_name) do
 
   end
 
@@ -980,7 +808,7 @@ defmodule GenDOM.Element do
       value = GenDOM.Element.get_attribute_ns(element, "http://www.w3.org/1999/xlink", "href")
 
   """
-  def get_attribute_ns(%__MODULE__{} = element, namespace, name) do
+  def get_attribute_ns(element, namespace, name) do
 
   end
 
@@ -1000,7 +828,7 @@ defmodule GenDOM.Element do
       # => %{x: 0, y: 0, width: 100, height: 50, top: 0, right: 100, bottom: 50, left: 0}
 
   """
-  def get_bounding_client_rect(%__MODULE__{} = element) do
+  def get_bounding_client_rect(element) do
 
   end
 
@@ -1019,7 +847,7 @@ defmodule GenDOM.Element do
       # => [%{x: 0, y: 0, width: 100, height: 25}, %{x: 0, y: 25, width: 100, height: 25}]
 
   """
-  def get_client_rects(%__MODULE__{} = element) do
+  def get_client_rects(element) do
 
   end
 
@@ -1102,7 +930,7 @@ defmodule GenDOM.Element do
       # => "<div class='container'><p>Hello</p></div>"
 
   """
-  def get_html(%__MODULE__{} = element, options \\ []) do
+  def get_html(element, options \\ []) do
 
   end
 
@@ -1147,7 +975,7 @@ defmodule GenDOM.Element do
       # => true or false
 
   """
-  def has_attribute_ns?(%__MODULE__{} = element, namespace, local_name) do
+  def has_attribute_ns?(element, namespace, local_name) do
 
   end
 
@@ -1166,7 +994,7 @@ defmodule GenDOM.Element do
       # => true or false
 
   """
-  def has_attributes?(%__MODULE__{} = element) do
+  def has_attributes?(element) do
 
   end
 
@@ -1186,7 +1014,7 @@ defmodule GenDOM.Element do
       # => true or false
 
   """
-  def has_pointer_capture?(%__MODULE__{} = element, pointer_id) do
+  def has_pointer_capture?(element, pointer_id) do
 
   end
 
@@ -1206,7 +1034,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.insert_adjacent_element(element, :afterend, new_element)
 
   """
-  def insert_adjacent_element(%__MODULE__{} = element, position, %__MODULE__{} = other_element) do
+  def insert_adjacent_element(element, position, other_element) do
 
   end
 
@@ -1226,7 +1054,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.insert_adjacent_html(element, :beforeend, "<p>New content</p>")
 
   """
-  def insert_adjacent_html(%__MODULE__{} = element, position, text) when is_binary(text) do
+  def insert_adjacent_html(element, position, text) when is_binary(text) do
 
   end
 
@@ -1246,7 +1074,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.insert_adjacent_text(element, :afterend, "Some text content")
 
   """
-  def insert_adjacent_text(%__MODULE__{} = element, where, data) when is_binary(data) do
+  def insert_adjacent_text(element, where, data) when is_binary(data) do
 
   end
 
@@ -1278,7 +1106,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.prepend(parent_element, [header_element, "Title: "])
 
   """
-  def prepend(%__MODULE__{} = element, nodes) when is_list(nodes) do
+  def prepend(element, nodes) when is_list(nodes) do
 
   end
 
@@ -1297,7 +1125,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.release_pointer_capture(element, pointer_id)
 
   """
-  def release_pointer_capture(%__MODULE__{} = element, pointer_id) do
+  def release_pointer_capture(element, pointer_id) do
 
   end
 
@@ -1316,7 +1144,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.remove(element)
 
   """
-  def remove(%__MODULE__{} = element) do
+  def remove(element) do
 
   end
 
@@ -1356,7 +1184,7 @@ defmodule GenDOM.Element do
       removed_attr = GenDOM.Element.remove_attribute_node(element, attr_node)
 
   """
-  def remove_attribute_node(%__MODULE__{} = element, attribute_node) do
+  def remove_attribute_node(element, attribute_node) do
 
   end
 
@@ -1376,7 +1204,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.remove_attribute_ns(element, "http://www.w3.org/1999/xlink", "href")
 
   """
-  def remove_attribute_ns(%__MODULE__{} = element, namespace, attribute_node) do
+  def remove_attribute_ns(element, namespace, attribute_node) do
 
   end
 
@@ -1395,7 +1223,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.replace_children(element, [new_child1, new_child2])
 
   """
-  def replace_children(%__MODULE__{} = element, children) when is_list(children) do
+  def replace_children(element, children) when is_list(children) do
 
   end
 
@@ -1414,7 +1242,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.replace_with(old_element, [new_element, "Some text"])
 
   """
-  def replace_with(%__MODULE__{} = element, nodes) when is_list(nodes) do
+  def replace_with(element, nodes) when is_list(nodes) do
 
   end
 
@@ -1433,7 +1261,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.request_fullscreen(video_element, navigation_ui: :hide)
 
   """
-  def request_fullscreen(%__MODULE__{} = element, options \\ []) do
+  def request_fullscreen(element, options \\ []) do
 
   end
 
@@ -1452,7 +1280,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.request_pointer_lock(canvas_element)
 
   """
-  def request_pointer_lock(%__MODULE__{} = element, options \\ []) do
+  def request_pointer_lock(element, options \\ []) do
 
   end
 
@@ -1471,7 +1299,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll(element, top: 100, left: 0, behavior: :smooth)
 
   """
-  def scroll(%__MODULE__{} = element, options \\ []) do
+  def scroll(element, options \\ []) do
 
   end
 
@@ -1491,7 +1319,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll(element, 0, 100)
 
   """
-  def scroll(%__MODULE__{} = element, x_coord, y_coord) do
+  def scroll(element, x_coord, y_coord) do
 
   end
 
@@ -1510,7 +1338,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_by(element, top: 50, left: 0, behavior: :smooth)
 
   """
-  def scroll_by(%__MODULE__{} = element, options \\ []) do
+  def scroll_by(element, options \\ []) do
 
   end
 
@@ -1529,7 +1357,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_into_view(element, true)
 
   """
-  def scroll_into_view(%__MODULE__{} = element, align_to_top) when is_boolean(align_to_top) do
+  def scroll_into_view(element, align_to_top) when is_boolean(align_to_top) do
 
   end
 
@@ -1548,7 +1376,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_into_view(element, %{behavior: :smooth, block: :center})
 
   """
-  def scroll_into_view(%__MODULE__{} = element, scroll_into_view_options) when is_map(scroll_into_view_options) do
+  def scroll_into_view(element, scroll_into_view_options) when is_map(scroll_into_view_options) do
 
   end
 
@@ -1567,7 +1395,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_to(element, top: 0, left: 0, behavior: :smooth)
 
   """
-  def scroll_to(%__MODULE__{} = element, options \\ []) when is_list(options) do
+  def scroll_to(element, options \\ []) when is_list(options) do
 
   end
 
@@ -1587,7 +1415,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_to(element, 0, 100)
 
   """
-  def scroll_to(%__MODULE__{} = element, x_coord, y_coord) do
+  def scroll_to(element, x_coord, y_coord) do
 
   end
 
@@ -1630,7 +1458,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_attribute_node(element, attr_node)
 
   """
-  def set_attribute_node(%__MODULE__{} = element, attribute) do
+  def set_attribute_node(element, attribute) do
 
   end
 
@@ -1649,7 +1477,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_attribute_node_ns(element, namespaced_attr_node)
 
   """
-  def set_attribute_node_ns(%__MODULE__{} = element, attribute_node) do
+  def set_attribute_node_ns(element, attribute_node) do
 
   end
 
@@ -1670,7 +1498,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_attribute_ns(element, "http://www.w3.org/1999/xlink", "href", "#target")
 
   """
-  def set_attribute_ns(%__MODULE__{} = element, namespace, name, value) do
+  def set_attribute_ns(element, namespace, name, value) do
 
   end
 
@@ -1690,7 +1518,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_html_unsafe(element, "<p>Unsafe markup</p>")
 
   """
-  def set_html_unsafe(%__MODULE__{} = element, html) do
+  def set_html_unsafe(element, html) do
 
   end
 
@@ -1709,7 +1537,7 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_pointer_capture(element, pointer_id)
 
   """
-  def set_pointer_capture(%__MODULE__{} = element, pointer_id) do
+  def set_pointer_capture(element, pointer_id) do
 
   end
 

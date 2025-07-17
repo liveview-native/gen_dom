@@ -1,12 +1,12 @@
-defmodule GenDOM.Element.ButtonTest do
+defmodule GenDOM.HTMLButtonElementTest do
   use ExUnit.Case, async: true
 
-  alias GenDOM.Element.Button
+  alias GenDOM.HTMLButtonElement
 
   describe "inheritance from Element" do
     test "inherits all Element fields" do
-      button = Button.new(
-        # Button-specific fields
+      button = HTMLButtonElement.new(
+        # HTMLButtonElement-specific fields
         type: "submit",
         value: "Submit Form",
         disabled: true,
@@ -30,7 +30,7 @@ defmodule GenDOM.Element.ButtonTest do
       assert button.class_list == ["btn", "btn-primary"]
       assert button.attributes == %{}
 
-      # Should have Button-specific fields
+      # Should have HTMLButtonElement-specific fields
       assert button.type == "submit"
       assert button.value == "Submit Form"
       assert button.disabled == true
@@ -39,54 +39,54 @@ defmodule GenDOM.Element.ButtonTest do
     end
 
     test "can use Node methods" do
-      button = Button.new(tag_name: "button", type: "button")
+      button = HTMLButtonElement.new(tag_name: "button", type: "button")
       
       # Should be able to call Node methods
-      assert Button.has_child_nodes?(button.pid) == false
-      assert Button.is_same_node?(button.pid, button.pid) == true
+      assert HTMLButtonElement.has_child_nodes?(button.pid) == false
+      assert HTMLButtonElement.is_same_node?(button.pid, button.pid) == true
       
       # Test cloning
-      cloned_button_pid = Button.clone_node(button.pid)
-      cloned_button = Button.get(cloned_button_pid)
+      cloned_button_pid = HTMLButtonElement.clone_node(button.pid)
+      cloned_button = HTMLButtonElement.get(cloned_button_pid)
       assert cloned_button.type == "button"
       assert cloned_button.pid != button.pid
     end
 
     test "can use Element methods" do
-      button = Button.new(
+      button = HTMLButtonElement.new(
         tag_name: "button",
         type: "submit",
         attributes: %{"class" => "btn-primary", "data-action" => "submit"}
       )
       
       # Should be able to call Element methods
-      assert Button.get_attribute(button.pid, "class") == "btn-primary"
-      assert Button.get_attribute(button.pid, "data-action") == "submit"
-      assert Button.has_attribute?(button.pid, "class") == true
-      assert Button.has_attribute?(button.pid, "nonexistent") == false
+      assert HTMLButtonElement.get_attribute(button.pid, "class") == "btn-primary"
+      assert HTMLButtonElement.get_attribute(button.pid, "data-action") == "submit"
+      assert HTMLButtonElement.has_attribute?(button.pid, "class") == true
+      assert HTMLButtonElement.has_attribute?(button.pid, "nonexistent") == false
 
       # Test setting attributes
-      Button.set_attribute(button.pid, "disabled", "true")
-      assert Button.get_attribute(button.pid, "disabled") == "true"
+      HTMLButtonElement.set_attribute(button.pid, "disabled", "true")
+      assert HTMLButtonElement.get_attribute(button.pid, "disabled") == "true"
     end
 
   end
 
-  describe "Button-specific functionality" do
+  describe "HTMLButtonElement-specific functionality" do
     test "sets button-specific default values" do
-      button = Button.new(tag_name: "button")
+      button = HTMLButtonElement.new(tag_name: "button")
       
-      # Button-specific fields should have appropriate defaults
-      assert button.autofocus == nil
-      assert button.command == nil
-      assert button.disabled == nil
+      # HTMLButtonElement-specific fields should have appropriate defaults
+      assert button.autofocus == false
+      assert button.command == ""
+      assert button.disabled == false
       assert button.form == nil
-      assert button.type == nil
-      assert button.value == nil
+      assert button.type == "submit"
+      assert button.value == ""
     end
 
     test "supports button-specific attributes" do
-      button = Button.new(
+      button = HTMLButtonElement.new(
         tag_name: "button",
         name: "my-button",
         type: "submit",
@@ -105,7 +105,7 @@ defmodule GenDOM.Element.ButtonTest do
 
   describe "encoding" do
     test "encodes all inherited fields correctly" do
-      button = Button.new(
+      button = HTMLButtonElement.new(
         tag_name: "button",
         type: "submit",
         value: "Submit",
@@ -114,7 +114,7 @@ defmodule GenDOM.Element.ButtonTest do
         name: "submit-button"
       )
 
-      encoded = Button.encode(button)
+      encoded = HTMLButtonElement.encode(button)
       
       # Should include Node fields
       assert Map.has_key?(encoded, :node_type)
@@ -126,7 +126,7 @@ defmodule GenDOM.Element.ButtonTest do
       assert encoded[:tag_name] == "button"
       assert encoded[:id] == "submit-btn"
       
-      # Should include Button-specific fields
+      # Should include HTMLButtonElement-specific fields
       assert encoded[:type] == "submit"
       assert encoded[:value] == "Submit"
       assert encoded[:disabled] == true
@@ -136,17 +136,17 @@ defmodule GenDOM.Element.ButtonTest do
 
   describe "method inheritance chain" do
     test "has access to all methods from inheritance chain" do
-      button = Button.new(tag_name: "button", type: "button")
+      button = HTMLButtonElement.new(tag_name: "button", type: "button")
       
       # Node methods
-      assert function_exported?(Button, :append_child, 2)
-      assert function_exported?(Button, :clone_node, 1)
-      assert function_exported?(Button, :contains?, 2)
+      assert function_exported?(HTMLButtonElement, :append_child, 2)
+      assert function_exported?(HTMLButtonElement, :clone_node, 1)
+      assert function_exported?(HTMLButtonElement, :contains?, 2)
       
       # Element methods  
-      assert function_exported?(Button, :get_attribute, 2)
-      assert function_exported?(Button, :set_attribute, 3)
-      assert function_exported?(Button, :query_selector, 2)
+      assert function_exported?(HTMLButtonElement, :get_attribute, 2)
+      assert function_exported?(HTMLButtonElement, :set_attribute, 3)
+      assert function_exported?(HTMLButtonElement, :query_selector, 2)
     end
   end
 end

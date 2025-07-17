@@ -1,4 +1,4 @@
-defmodule GenDom.HTMLElement do
+defmodule GenDOM.HTMLElement do
   @moduledoc """
   HTMLElement represents any HTML element.
 
@@ -11,7 +11,7 @@ defmodule GenDom.HTMLElement do
   ```
   GenDOM.Node (Base)
   └── GenDOM.Element (extends Node)
-      └── GenDom.HTMLElement (extends Element)
+      └── GenDOM.HTMLElement (extends Element)
   ```
 
   **Inherits from:** `GenDOM.Element`
@@ -62,7 +62,7 @@ defmodule GenDom.HTMLElement do
 
   ```elixir
   # Create an HTMLElement
-  html_element = GenDom.HTMLElement.new([
+  html_element = GenDOM.HTMLElement.new([
     tag_name: "div",
     content_editable: "true",
     draggable: true,
@@ -70,10 +70,10 @@ defmodule GenDom.HTMLElement do
   ])
 
   # Focus the element
-  GenDom.HTMLElement.focus(html_element.pid)
+  GenDOM.HTMLElement.focus(html_element.pid)
 
   # Make it editable
-  GenDom.HTMLElement.set_content_editable(html_element.pid, "true")
+  GenDOM.HTMLElement.set_content_editable(html_element.pid, "true")
   ```
 
   ## Specification Compliance
@@ -127,7 +127,7 @@ defmodule GenDom.HTMLElement do
 
   ## Examples
 
-      internals = GenDom.HTMLElement.attach_internals(custom_element_pid)
+      internals = GenDOM.HTMLElement.attach_internals(custom_element_pid)
 
   ## Specification
 
@@ -154,7 +154,7 @@ defmodule GenDom.HTMLElement do
 
   ## Examples
 
-      GenDom.HTMLElement.blur(input_element_pid)
+      GenDOM.HTMLElement.blur(input_element_pid)
 
   ## Specification
 
@@ -183,8 +183,8 @@ defmodule GenDom.HTMLElement do
 
   ## Examples
 
-      GenDom.HTMLElement.click(button_element_pid)
-      GenDom.HTMLElement.click(link_element_pid)
+      GenDOM.HTMLElement.click(button_element_pid)
+      GenDOM.HTMLElement.click(link_element_pid)
 
   ## Specification
 
@@ -228,8 +228,8 @@ defmodule GenDom.HTMLElement do
 
   ## Examples
 
-      GenDom.HTMLElement.focus(input_element_pid)
-      GenDom.HTMLElement.focus(button_element_pid)
+      GenDOM.HTMLElement.focus(input_element_pid)
+      GenDOM.HTMLElement.focus(button_element_pid)
 
   ## Specification
 
@@ -265,7 +265,7 @@ defmodule GenDom.HTMLElement do
 
   ## Examples
 
-      GenDom.HTMLElement.hide_popover(popover_element_pid)
+      GenDOM.HTMLElement.hide_popover(popover_element_pid)
 
   ## Specification
 
@@ -298,7 +298,7 @@ defmodule GenDom.HTMLElement do
 
   ## Examples
 
-      GenDom.HTMLElement.show_popover(popover_element_pid)
+      GenDOM.HTMLElement.show_popover(popover_element_pid)
 
   ## Specification
 
@@ -343,13 +343,13 @@ defmodule GenDom.HTMLElement do
   ## Examples
 
       # Toggle current state
-      is_showing = GenDom.HTMLElement.toggle_popover(popover_element_pid)
+      is_showing = GenDOM.HTMLElement.toggle_popover(popover_element_pid)
 
       # Force show
-      GenDom.HTMLElement.toggle_popover(popover_element_pid, true)
+      GenDOM.HTMLElement.toggle_popover(popover_element_pid, true)
 
       # Force hide  
-      GenDom.HTMLElement.toggle_popover(popover_element_pid, false)
+      GenDOM.HTMLElement.toggle_popover(popover_element_pid, false)
 
   ## Specification
 

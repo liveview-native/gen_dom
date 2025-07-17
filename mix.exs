@@ -62,9 +62,9 @@ defmodule GenDOM.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:benchee, "~> 1.4"},
       {:live_view_native, github: "liveview-native/live_view_native"},
       {:selector, github: "liveview-native/selector"},
+      {:inherit, github: "dockyard/inherit"},
       {:floki, "~> 0.38"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false},
       # {:dep_from_hexpm, "~> 0.3.0"},

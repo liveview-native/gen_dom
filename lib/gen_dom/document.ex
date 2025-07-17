@@ -218,9 +218,7 @@ defmodule GenDOM.Document do
   - **Process Supervision**: Failed elements don't corrupt document
   """
 
-  alias GenDOM.{
-    Matcher
-  }
+  alias GenDOM.Matcher
 
   use GenDOM.Node, [
     node_type: 10,
@@ -286,8 +284,6 @@ defmodule GenDOM.Document do
 
   def allowed_fields,
     do: super() ++ [:title, :body, :head]
-
-  @impl true
 
   def handle_info({:DOWN, ref, :process, pid, :normal}, document) when is_reference(ref) and is_pid(pid) do
     {:noreply, document}

@@ -1,4 +1,6 @@
 defmodule GenDOM.Node do
+  require Logger
+
   @moduledoc """
   The Node interface is an abstract base class upon which many other DOM API objects are based.
 
@@ -175,8 +177,9 @@ defmodule GenDOM.Node do
   - **Performance Monitoring**: Built-in telemetry events
   """
   use GenServer
+  use GenDOM.QuerySelector
 
-  @fields [
+  use Inherit, [
     assigns: %{},
     pid: nil,
     receiver: nil,
@@ -199,53 +202,20 @@ defmodule GenDOM.Node do
   ]
 
   defmacro __using__(fields \\ []) do
-    quote do
-      use GenServer
-
-      Module.register_attribute(__MODULE__, :fields, accumulate: true)
-
-      @fields unquote(fields)
-      @fields unquote(Macro.escape(@fields))
-
-      # Flatten and resolve field conflicts (later fields override earlier ones)
-      all_fields = List.flatten(@fields)
-      |> Enum.reverse()
-      |> Enum.uniq_by(fn 
-        {key, _} -> key
-        key -> key
-      end)
-      |> Enum.reverse()
-
-      defstruct all_fields
-
+    quote location: :keep do
       use GenDOM.QuerySelector
 
-      def start_link(opts) do
+      unquote(Inherit.setup(__CALLER__, __MODULE__, fields))
+
+      def start_link(opts \\ []) do
         GenServer.start_link(__MODULE__, opts)
       end
+      defoverridable start_link: 1
 
-      def start(opts) do
+      def start(opts \\ []) do
         GenServer.start(__MODULE__, opts)
       end
-
-      @impl true
-      def init(opts) do
-        pid = self()
-        :pg.start_link()
-        :pg.monitor(pid)
-
-        mod = __MODULE__
-
-        {:ok, struct(%__MODULE__{}, Keyword.put(opts, :pid, pid))}
-      end
-
-      defoverridable init: 1
-
-      defdelegate encode(node), to: GenDOM.Node
-      defoverridable encode: 1
-
-      defdelegate allowed_fields(), to: GenDOM.Node
-      defoverridable allowed_fields: 0
+      defoverridable start: 1
 
       def new(opts \\ []) when is_list(opts) do
         case start(opts) do
@@ -255,127 +225,26 @@ defmodule GenDOM.Node do
       end
       defoverridable new: 1
 
-      defdelegate append_child(node, child), to: GenDOM.Node
-      defoverridable append_child: 2
-      defdelegate append_child(node, child, opts), to: GenDOM.Node
-      defoverridable append_child: 3
-      defdelegate append_child!(node, child), to: GenDOM.Node
-      defoverridable append_child!: 2
-      defdelegate append_child!(node, child, opts), to: GenDOM.Node
-      defoverridable append_child!: 3
-      defdelegate clone_node(node), to: GenDOM.Node
-      defoverridable clone_node: 1
-      defdelegate clone_node(node, deep?), to: GenDOM.Node
-      defoverridable clone_node: 2
-      defdelegate compare_document_position(node, other_node), to: GenDOM.Node
-      defoverridable compare_document_position: 2
-      defdelegate contains?(node, other_node), to: GenDOM.Node
-      defoverridable contains?: 2
-      defdelegate has_child_nodes?(node), to: GenDOM.Node
-      defoverridable has_child_nodes?: 1
-      defdelegate insert_before(node, new_node, reference_node), to: GenDOM.Node
-      defoverridable insert_before: 3
-      defdelegate insert_before(node, new_node, reference_node, opts), to: GenDOM.Node
-      defoverridable insert_before: 4
-      defdelegate insert_before!(node, new_node, reference_node), to: GenDOM.Node
-      defoverridable insert_before!: 3
-      defdelegate insert_before!(node, new_node, reference_node, opts), to: GenDOM.Node
-      defoverridable insert_before!: 4
-      defdelegate is_default_namespace?(node, uri), to: GenDOM.Node
-      defoverridable is_default_namespace?: 2
-      defdelegate is_equal_node?(node, other_node), to: GenDOM.Node
-      defoverridable is_equal_node?: 2
-      defdelegate is_same_node?(node, other_node), to: GenDOM.Node
-      defoverridable is_same_node?: 2
-      defdelegate lookup_namespace_uri(node, prefix), to: GenDOM.Node
-      defoverridable lookup_namespace_uri: 2
-      defdelegate lookup_prefix(node, namespace), to: GenDOM.Node
-      defoverridable lookup_prefix: 2
-      defdelegate normalize(node), to: GenDOM.Node
-      defoverridable normalize: 1
-      defdelegate remove_child(node, child), to: GenDOM.Node
-      defoverridable remove_child: 2
-      defdelegate remove_child(node, child, opts), to: GenDOM.Node
-      defoverridable remove_child: 3
-      defdelegate remove_child!(node, child), to: GenDOM.Node
-      defoverridable remove_child!: 2
-      defdelegate remove_child!(node, child, opts), to: GenDOM.Node
-      defoverridable remove_child!: 3
-      defdelegate replace_child(node, new_child, old_child), to: GenDOM.Node
-      defoverridable replace_child: 3
-      defdelegate replace_child(node, new_child, old_child, opts), to: GenDOM.Node
-      defoverridable replace_child: 4
-      defdelegate replace_child!(node, new_child, old_child), to: GenDOM.Node
-      defoverridable replace_child!: 3
-      defdelegate replace_child!(node, new_child, old_child, opts), to: GenDOM.Node
-      defoverridable replace_child!: 4
+      def init(opts) do
+        pid = self()
+        :pg.start_link()
+        :pg.monitor(pid)
 
-      defdelegate get(node), to: GenDOM.Node
-      defoverridable get: 1
-      defdelegate assign(node, assigns), to: GenDOM.Node
-      defoverridable assign: 2
-      defdelegate assign!(node, assigns), to: GenDOM.Node
-      defoverridable assign!: 2
-      defdelegate put(node, key, value), to: GenDOM.Node
-      defoverridable put: 3
-      defdelegate put!(node, key, value), to: GenDOM.Node
-      defoverridable put!: 3
-      defdelegate merge(node, fields), to: GenDOM.Node
-      defoverridable merge: 2
-      defdelegate merge!(node, fields), to: GenDOM.Node
-      defoverridable merge!: 2
-
-      @impl true
-      def handle_call(:get, from, node), do: GenDOM.Node.handle_call(:get, from, node)
-      def handle_call({:assign, assigns}, from, node), do: GenDOM.Node.handle_call({:assign, assigns}, from, node)
-      def handle_call({:merge, fields}, from, node), do: GenDOM.Node.handle_call({:merge, fields}, from, node)
-      def handle_call({:merge_lazy, func}, from, node) when is_function(func), do: GenDOM.Node.handle_call({:merge_lazy, func}, from, node)
-      def handle_call({:put, field, value}, from, node), do: GenDOM.Node.handle_call({:put, field, value}, from, node)
-      def handle_call({:put_lazy, field, func}, from, node) when is_function(func), do: GenDOM.Node.handle_call({:put_lazy, field, func}, from, node)
-
-      def handle_call({:append_child, child, opts}, from, node), do: GenDOM.Node.handle_call({:append_child, child, opts}, from, node)
-      def handle_call({:insert_before, new_node, reference_node, opts}, from, node), do: GenDOM.Node.handle_call({:insert_before, new_node, reference_node, opts}, from, node)
-      def handle_call({:remove_child, child, opts}, from, node), do: GenDOM.Node.handle_call({:remove_child, child, opts}, from, node)
-      def handle_call({:replace_child, new_child, old_child, opts}, from, node), do: GenDOM.Node.handle_call({:replace_child, new_child, old_child, opts}, from, node)
-
-      def handle_call({:track, child_pid_or_pids}, from, node), do: GenDOM.Node.handle_call({:track, child_pid_or_pids}, from, node)
-      def handle_call({:untrack, child_pid_or_pids}, from, node), do: GenDOM.Node.handle_call({:untrack, child_pid_or_pids}, from, node)
-
-      defoverridable handle_call: 3
-
-      @impl true
-      def handle_cast({:assign, assigns}, node), do: GenDOM.Node.handle_cast({:assign, assigns}, node)
-      def handle_cast({:merge, fields}, node), do: GenDOM.Node.handle_cast({:merge, fields}, node)
-      def handle_cast({:merge_lazy, func}, node) when is_function(func), do: GenDOM.Node.handle_cast({:merge_lazy, func}, node)
-      def handle_cast({:put, field, value}, node), do: GenDOM.Node.handle_cast({:put, field, value}, node)
-      def handle_cast({:put_lazy, field, func}, node) when is_function(func), do: GenDOM.Node.handle_cast({:put_lazy, field, func}, node)
-
-      def handle_cast({:append_child, child, opts}, node), do: GenDOM.Node.handle_cast({:append_child, child, opts}, node)
-      def handle_cast({:insert_before, new_node, reference_node, opts}, node), do: GenDOM.Node.handle_cast({:insert_before, new_node, reference_node, opts}, node)
-      def handle_cast({:remove_child, child, opts}, node), do: GenDOM.Node.handle_cast({:remove_child, child, opts}, node)
-      def handle_cast({:replace_child, new_child, old_child, opts}, node), do: GenDOM.Node.handle_cast({:replace_child, new_child, old_child, opts}, node)
-
-      def handle_cast({:track, child}, node), do: GenDOM.Node.handle_cast({:track, child}, node)
-      def handle_cast({:untrack, child}, node), do: GenDOM.Node.handle_cast({:untrack, child}, node)
-      def handle_cast({:send_to_receiver, msg}, node), do: GenDOM.Node.handle_cast({:send_to_receiver, msg}, node)
-
-      defoverridable handle_cast: 2
-
-      @impl true
-      def handle_info({ref, msg, group, children}, node), do: GenDOM.Node.handle_info({ref, msg, group, children}, node)
-
-      defoverridable handle_info: 2
+        {:ok, struct(__MODULE__, Keyword.put(opts, :pid, pid))}
+      end
+      defoverridable init: 1
     end
   end
+  defoverridable __using__: 1
 
-  defstruct @fields
-
-  def start_link(opts) do
+  @doc false
+  def start_link(opts \\ []) do
     name = GenDOM.generate_name(__MODULE__)
     GenServer.start_link(__MODULE__, Keyword.put(opts, :name, name), name: name)
   end
 
-  def start(opts) do
+  @doc false
+  def start(opts \\ []) do
     name = GenDOM.generate_name(__MODULE__)
     GenServer.start(__MODULE__, Keyword.put(opts, :name, name), name: name)
   end
@@ -462,7 +331,6 @@ defmodule GenDOM.Node do
   end
 
   def handle_call({:track, child_pid_or_children_pids}, _from, node) do
-    IO.inspect(node.node_name)
     do_track(node, child_pid_or_children_pids)
     {:reply, node, node}
   end
@@ -470,6 +338,11 @@ defmodule GenDOM.Node do
   def handle_call({:untrack, child_pid_or_children_pids}, _from, node) do
     do_untrack(node, child_pid_or_children_pids)
     {:reply, node, node}
+  end
+
+  def handle_call(msg, _from, node) do
+    Logger.error("#{self()} received unexpected message in handle_call/3: #{msg}")
+    {:reply, :not_implemented, node}
   end
 
   @impl true
@@ -540,12 +413,22 @@ defmodule GenDOM.Node do
     {:noreply, node}
   end
 
+  def handle_cast(msg, node) do
+    Logger.error("#{self()} received unexpected message in handle_cast/2: #{msg}")
+    {:noreply, node}
+  end
+
   @impl true
   def handle_info({_ref, :leave, pid, _children}, %{pid: pid} = node) do
     {:noreply, node}
   end
 
   def handle_info({_ref, _msg, pid, _children}, %{pid: pid} = node) do
+    {:noreply, node}
+  end
+
+  def handle_info(msg, node) do
+    Logger.error("#{self()} received unexpected message in handle_info/2: #{msg}")
     {:noreply, node}
   end
 
