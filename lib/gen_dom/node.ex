@@ -176,8 +176,6 @@ defmodule GenDOM.Node do
   - **Message Tracing**: Track inter-node communication
   - **Performance Monitoring**: Built-in telemetry events
   """
-  use GenServer
-  use GenDOM.QuerySelector
 
   use Inherit, [
     assigns: %{},
@@ -201,20 +199,27 @@ defmodule GenDOM.Node do
     text_content: ""
   ]
 
+  use GenServer
+  use GenDOM.QuerySelector
+
   defmacro __using__(fields \\ []) do
     quote location: :keep do
+      use GenServer
       use GenDOM.QuerySelector
 
-      unquote(Inherit.setup(__CALLER__, __MODULE__, fields))
+      require Inherit
+      Inherit.setup(unquote(__MODULE__), unquote(Macro.escape(fields)))
 
       def start_link(opts \\ []) do
         GenServer.start_link(__MODULE__, opts)
       end
+      defwithhold start_link: 1
       defoverridable start_link: 1
 
       def start(opts \\ []) do
         GenServer.start(__MODULE__, opts)
       end
+      defwithhold start: 1
       defoverridable start: 1
 
       def new(opts \\ []) when is_list(opts) do
@@ -223,6 +228,7 @@ defmodule GenDOM.Node do
           _other -> {:error, "could not start"}
         end
       end
+      defwithhold new: 1
       defoverridable new: 1
 
       def init(opts) do
@@ -232,22 +238,26 @@ defmodule GenDOM.Node do
 
         {:ok, struct(__MODULE__, Keyword.put(opts, :pid, pid))}
       end
+      defwithhold init: 1
       defoverridable init: 1
     end
   end
-  defoverridable __using__: 1
 
   @doc false
   def start_link(opts \\ []) do
     name = GenDOM.generate_name(__MODULE__)
     GenServer.start_link(__MODULE__, Keyword.put(opts, :name, name), name: name)
   end
+  defwithhold start_link: 1
+  defoverridable start_link: 1
 
   @doc false
   def start(opts \\ []) do
     name = GenDOM.generate_name(__MODULE__)
     GenServer.start(__MODULE__, Keyword.put(opts, :name, name), name: name)
   end
+  defwithhold start: 1
+  defoverridable start: 1
 
   @doc """
   Creates a new Node and returns the Node struct.
@@ -265,6 +275,7 @@ defmodule GenDOM.Node do
       _other -> {:error, "could not start"}
     end
   end
+  defoverridable new: 1
 
   @impl true
   def init(opts) do
@@ -275,18 +286,20 @@ defmodule GenDOM.Node do
 
     {:ok, struct(%__MODULE__{}, Keyword.put(opts, :pid, pid))}
   end
+  defwithhold init: 1
+  defoverridable init: 1
 
   @impl true
   def handle_call(:get, _from, node),
     do: {:reply, node, node}
 
-  def handle_call({:assign, assigns}, from, node) when is_list(assigns),
-    do: handle_call({:assign, Map.new(assigns)}, from, node)
-
   def handle_call({:assign, assigns}, _from, node) when is_map(assigns) do
     node = struct(node, assigns: Map.merge(node.assigns, assigns))
     {:reply, node.pid, node}
   end
+
+  def handle_call({:assign, assigns}, from, node) when is_list(assigns),
+    do: handle_call({:assign, Map.new(assigns)}, from, node)
 
   def handle_call({:merge, fields}, _from, node) do
     node = do_merge(node, fields)
@@ -345,14 +358,16 @@ defmodule GenDOM.Node do
     {:reply, :not_implemented, node}
   end
 
-  @impl true
-  def handle_cast({:assign, assigns}, node) when is_list(assigns) do
-    handle_cast({:assign, Map.new(assigns)}, node)
-  end
+  defoverridable handle_call: 3
 
+  @impl true
   def handle_cast({:assign, assigns}, node) when is_map(assigns) do
     node = struct(node, assigns: Map.merge(node.assigns, assigns))
     {:noreply, node}
+  end
+
+  def handle_cast({:assign, assigns}, node) when is_list(assigns) do
+    handle_cast({:assign, Map.new(assigns)}, node)
   end
 
   def handle_cast({:merge, fields}, node) do
@@ -418,6 +433,8 @@ defmodule GenDOM.Node do
     {:noreply, node}
   end
 
+  defoverridable handle_cast: 2
+
   @impl true
   def handle_info({_ref, :leave, pid, _children}, %{pid: pid} = node) do
     {:noreply, node}
@@ -431,6 +448,8 @@ defmodule GenDOM.Node do
     Logger.error("#{self()} received unexpected message in handle_info/2: #{msg}")
     {:noreply, node}
   end
+
+  defoverridable handle_info: 2
 
   @doc """
   Retrieves the current state of a node.
@@ -820,9 +839,11 @@ defmodule GenDOM.Node do
       child_nodes: Enum.map(node.child_nodes, &encode(&1)),
     }
   end
+  defoverridable encode: 1
 
   def allowed_fields,
     do: []
+  defoverridable allowed_fields: 0
 
   @doc """
   Clone a Node, and optionally, all of its contents.
@@ -867,6 +888,7 @@ defmodule GenDOM.Node do
       new_node.pid
     end
   end
+  defoverridable clone_node: 2
 
   @doc """
   Compares the position of the current node against another node in any other document.

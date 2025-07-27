@@ -158,7 +158,7 @@ defmodule GenDOM.HTMLVideoElement do
   ```elixir
   # Get playback quality metrics
   quality = GenDOM.HTMLVideoElement.get_video_playback_quality(video.pid)
-  
+
   # Example quality metrics:
   # %{
   #   creation_time: 1234567890,
@@ -388,14 +388,14 @@ defmodule GenDOM.HTMLVideoElement do
   """
   def request_picture_in_picture(video_pid) do
     video = GenDOM.Node.get(video_pid)
-    
+
     cond do
       video.disable_picture_in_picture ->
         {:error, :disabled}
-      
+
       video.video_width == 0 or video.video_height == 0 ->
         {:error, :no_video}
-      
+
       true ->
         # Implementation would:
         # 1. Check if PiP is supported
@@ -432,7 +432,7 @@ defmodule GenDOM.HTMLVideoElement do
 
       video = GenDOM.HTMLVideoElement.new([src: "video.mp4"])
       quality = GenDOM.HTMLVideoElement.get_video_playback_quality(video.pid)
-      
+
       %{
         creation_time: creation_time,
         total_video_frames: total_frames,
@@ -484,7 +484,7 @@ defmodule GenDOM.HTMLVideoElement do
   ## Examples
 
       video = GenDOM.HTMLVideoElement.new([src: "video.mp4"])
-      
+
       callback_id = GenDOM.HTMLVideoElement.request_video_frame_callback(
         video.pid,
         fn frame_data ->
@@ -499,7 +499,7 @@ defmodule GenDOM.HTMLVideoElement do
               media_time: media_time
             }
           } = frame_data
-          
+
           # Custom frame processing here
         end
       )
@@ -528,10 +528,10 @@ defmodule GenDOM.HTMLVideoElement do
     # 2. Return unique callback ID
     # 3. Call callback with frame metadata
     callback_id = :erlang.make_ref()
-    
+
     # Store callback for frame processing
     # In real implementation, this would integrate with video frame events
-    
+
     callback_id
   end
 
@@ -551,7 +551,7 @@ defmodule GenDOM.HTMLVideoElement do
         video.pid, 
         fn _frame -> :ok end
       )
-      
+
       # Cancel the callback
       GenDOM.HTMLVideoElement.cancel_video_frame_callback(video.pid, callback_id)
 
@@ -645,10 +645,10 @@ defmodule GenDOM.HTMLVideoElement do
   ## Examples
 
       video = GenDOM.HTMLVideoElement.new([src: "video.mp4"])
-      
+
       # Disable picture-in-picture
       GenDOM.HTMLVideoElement.set_picture_in_picture_disabled(video.pid, true)
-      
+
       # Enable picture-in-picture
       GenDOM.HTMLVideoElement.set_picture_in_picture_disabled(video.pid, false)
   """
@@ -670,7 +670,7 @@ defmodule GenDOM.HTMLVideoElement do
   ## Examples
 
       video = GenDOM.HTMLVideoElement.new([src: "video.mp4"])
-      
+
       # Enable auto picture-in-picture
       GenDOM.HTMLVideoElement.set_auto_picture_in_picture(video.pid, true)
   """
@@ -694,7 +694,7 @@ defmodule GenDOM.HTMLVideoElement do
   ## Examples
 
       video = GenDOM.HTMLVideoElement.new([src: "video.mp4"])
-      
+
       if GenDOM.HTMLVideoElement.has_video_dimensions?(video.pid) do
         {width, height} = GenDOM.HTMLVideoElement.get_video_size(video.pid)
         # Use video dimensions

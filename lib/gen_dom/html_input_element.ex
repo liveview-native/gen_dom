@@ -258,7 +258,7 @@ defmodule GenDOM.HTMLInputElement do
   use GenDOM.HTMLElement, [
     # Override HTMLElement defaults for input-specific behavior
     tag_name: "input",
-    
+
     # Core properties
     type: "text",
     name: "",
@@ -277,7 +277,7 @@ defmodule GenDOM.HTMLInputElement do
     validity: nil, # ValidityState object
     validation_message: "",
     will_validate: true,
-    
+
     # Validation constraints
     pattern: "",
     min: "",
@@ -406,7 +406,7 @@ defmodule GenDOM.HTMLInputElement do
   """
   def check_validity(input_pid) do
     input = GenDOM.Node.get(input_pid)
-    
+
     # Basic validation checks
     cond do
       input.required and input.value == "" -> false
@@ -432,13 +432,13 @@ defmodule GenDOM.HTMLInputElement do
   """
   def report_validity(input_pid) do
     is_valid = check_validity(input_pid)
-    
+
     unless is_valid do
       # In real implementation would show validation UI
       input = GenDOM.Node.get(input_pid)
       # Fire 'invalid' event and show validation message
     end
-    
+
     is_valid
   end
 
@@ -474,7 +474,7 @@ defmodule GenDOM.HTMLInputElement do
   def select(input_pid) do
     input = GenDOM.Node.get(input_pid)
     text_length = String.length(input.value)
-    
+
     GenDOM.Node.merge(input_pid, %{
       selection_start: 0,
       selection_end: text_length,
@@ -521,12 +521,12 @@ defmodule GenDOM.HTMLInputElement do
   """
   def step_up(input_pid, n \\ 1) when is_integer(n) do
     input = GenDOM.Node.get(input_pid)
-    
+
     if input.type in ["number", "range", "date", "time", "datetime-local", "month", "week"] do
       current_value = parse_numeric_value(input.value, input.type)
       step_size = parse_step(input.step, input.type)
       new_value = current_value + (step_size * n)
-      
+
       # Apply max constraint
       final_value = if input.max != "" do
         max_val = parse_numeric_value(input.max, input.type)
@@ -534,7 +534,7 @@ defmodule GenDOM.HTMLInputElement do
       else
         new_value
       end
-      
+
       formatted_value = format_numeric_value(final_value, input.type)
       GenDOM.Node.put(input_pid, :value, formatted_value)
     end
@@ -571,7 +571,7 @@ defmodule GenDOM.HTMLInputElement do
   """
   def show_picker(input_pid) do
     input = GenDOM.Node.get(input_pid)
-    
+
     # In real implementation would trigger browser picker
     case input.type do
       "file" -> :show_file_picker

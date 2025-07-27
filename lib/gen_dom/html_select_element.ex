@@ -249,7 +249,7 @@ defmodule GenDOM.HTMLSelectElement do
   use GenDOM.HTMLElement, [
     # Override HTMLElement defaults for select-specific behavior
     tag_name: "select",
-    
+
     # Core selection properties
     selected_index: -1, # -1 means no selection
     value: "",
@@ -306,7 +306,7 @@ defmodule GenDOM.HTMLSelectElement do
   def add(select_pid, element, before \\ nil) do
     select = GenDOM.Node.get(select_pid)
     current_options = select.options
-    
+
     new_options = case before do
       nil -> 
         # Append to end
@@ -319,12 +319,12 @@ defmodule GenDOM.HTMLSelectElement do
         # Insert before specific element (simplified for now)
         current_options ++ [element]
     end
-    
+
     GenDOM.Node.merge(select_pid, %{
       options: new_options,
       length: length(new_options)
     })
-    
+
     # Update type based on multiple attribute
     update_type(select_pid)
   end
@@ -351,23 +351,23 @@ defmodule GenDOM.HTMLSelectElement do
   """
   def remove(select_pid, index) when is_integer(index) and index >= 0 do
     select = GenDOM.Node.get(select_pid)
-    
+
     if index < length(select.options) do
       new_options = List.delete_at(select.options, index)
-      
+
       # Update selected_index if needed
       new_selected_index = cond do
         select.selected_index == index -> -1 # Removed the selected option
         select.selected_index > index -> select.selected_index - 1 # Shift down
         true -> select.selected_index # No change
       end
-      
+
       GenDOM.Node.merge(select_pid, %{
         options: new_options,
         length: length(new_options),
         selected_index: new_selected_index
       })
-      
+
       # Update value if selection changed
       update_value_from_selection(select_pid)
     end
@@ -420,7 +420,7 @@ defmodule GenDOM.HTMLSelectElement do
   """
   def named_item(select_pid, name) when is_binary(name) do
     select = GenDOM.Node.get(select_pid)
-    
+
     Enum.find(select.options, fn option ->
       # In a real implementation, would check option's name and id attributes
       # This is a simplified version
@@ -453,7 +453,7 @@ defmodule GenDOM.HTMLSelectElement do
   """
   def check_validity(select_pid) do
     select = GenDOM.Node.get(select_pid)
-    
+
     cond do
       select.required and select.selected_index == -1 -> false
       select.required and select.value == "" -> false
@@ -483,13 +483,13 @@ defmodule GenDOM.HTMLSelectElement do
   """
   def report_validity(select_pid) do
     is_valid = check_validity(select_pid)
-    
+
     unless is_valid do
       # In real implementation would show validation UI
       select = GenDOM.Node.get(select_pid)
       # Fire 'invalid' event and show validation message
     end
-    
+
     is_valid
   end
 
@@ -508,7 +508,7 @@ defmodule GenDOM.HTMLSelectElement do
 
       select = GenDOM.HTMLSelectElement.new([name: "rating", required: true])
       GenDOM.HTMLSelectElement.set_custom_validity(select.pid, "Please select a rating")
-      
+
       # Clear custom validity
       GenDOM.HTMLSelectElement.set_custom_validity(select.pid, "")
   """
@@ -538,7 +538,7 @@ defmodule GenDOM.HTMLSelectElement do
   """
   def show_picker(select_pid) do
     select = GenDOM.Node.get(select_pid)
-    
+
     unless select.disabled do
       # In real implementation would trigger browser picker
       :show_select_picker
@@ -562,13 +562,13 @@ defmodule GenDOM.HTMLSelectElement do
   """
   def set_selected_index(select_pid, index) when is_integer(index) do
     select = GenDOM.Node.get(select_pid)
-    
+
     valid_index = if index >= 0 and index < length(select.options) do
       index
     else
       -1
     end
-    
+
     GenDOM.Node.put(select_pid, :selected_index, valid_index)
     update_value_from_selection(select_pid)
     update_selected_options(select_pid)
@@ -591,19 +591,19 @@ defmodule GenDOM.HTMLSelectElement do
   """
   def set_value(select_pid, new_value) when is_binary(new_value) do
     select = GenDOM.Node.get(select_pid)
-    
+
     # Find option with matching value
     index = Enum.find_index(select.options, fn option ->
       # In real implementation would check option.value
       false # Simplified for now
     end)
-    
+
     GenDOM.Node.put(select_pid, :value, new_value)
-    
+
     if index do
       GenDOM.Node.put(select_pid, :selected_index, index)
     end
-    
+
     update_selected_options(select_pid)
   end
 
@@ -897,7 +897,7 @@ defmodule GenDOM.HTMLSelectElement do
 
   defp update_value_from_selection(select_pid) do
     select = GenDOM.Node.get(select_pid)
-    
+
     new_value = if select.selected_index >= 0 and select.selected_index < length(select.options) do
       # In real implementation would get option.value
       # For now, simplified
@@ -905,17 +905,17 @@ defmodule GenDOM.HTMLSelectElement do
     else
       ""
     end
-    
+
     GenDOM.Node.put(select_pid, :value, new_value)
   end
 
   defp update_selected_options(select_pid) do
     select = GenDOM.Node.get(select_pid)
-    
+
     # In real implementation would collect all selected options
     # For now, simplified to empty list
     selected = []
-    
+
     GenDOM.Node.put(select_pid, :selected_options, selected)
   end
 end

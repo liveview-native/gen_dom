@@ -198,7 +198,7 @@ defmodule GenDOM.HTMLFormElement do
   ```elixir
   # Provide clear validation feedback
   form = GenDOM.HTMLFormElement.new([action: "/submit"])
-  
+
   # Use report_validity to show accessible error messages
   GenDOM.HTMLFormElement.report_validity(form.pid)
   ```
@@ -239,7 +239,7 @@ defmodule GenDOM.HTMLFormElement do
   use GenDOM.HTMLElement, [
     # Override HTMLElement defaults for form-specific behavior
     tag_name: "form",
-    
+
     # Form configuration
     action: "",
     method: "get", # "get" | "post" | "dialog"
@@ -321,7 +321,7 @@ defmodule GenDOM.HTMLFormElement do
   """
   def check_validity(form_pid) do
     form = GenDOM.Node.get(form_pid)
-    
+
     # In real implementation would validate all form controls
     # For now, return true if no validation issues
     Enum.all?(form.elements, fn element_pid ->
@@ -359,7 +359,7 @@ defmodule GenDOM.HTMLFormElement do
   def report_validity(form_pid) do
     form = GenDOM.Node.get(form_pid)
     is_valid = check_validity(form_pid)
-    
+
     unless is_valid do
       # In real implementation would show validation UI for each invalid control
       Enum.each(form.elements, fn element_pid ->
@@ -371,7 +371,7 @@ defmodule GenDOM.HTMLFormElement do
         end
       end)
     end
-    
+
     is_valid
   end
 
@@ -402,12 +402,12 @@ defmodule GenDOM.HTMLFormElement do
   """
   def submit(form_pid) do
     form = GenDOM.Node.get(form_pid)
-    
+
     # In real implementation would:
     # 1. Construct form data from form controls
     # 2. Submit using configured method and action
     # 3. Handle response according to target
-    
+
     case form.method do
       "get" -> :submit_get
       "post" -> :submit_post
@@ -450,20 +450,20 @@ defmodule GenDOM.HTMLFormElement do
   """
   def request_submit(form_pid, submitter_pid \\ nil) do
     form = GenDOM.Node.get(form_pid)
-    
+
     # Run validation unless disabled
     if form.no_validate or check_validity(form_pid) do
       # In real implementation would:
       # 1. Fire submit event (cancelable)
       # 2. If not prevented, submit form
       # 3. Use submitter's form attributes if provided
-      
+
       submitter = if submitter_pid, do: GenDOM.Node.get(submitter_pid), else: nil
-      
+
       # Use submitter's form attributes if available
       action = if submitter && submitter.form_action != "", do: submitter.form_action, else: form.action
       method = if submitter && submitter.form_method != "", do: submitter.form_method, else: form.method
-      
+
       case method do
         "get" -> :request_submit_get
         "post" -> :request_submit_post
@@ -502,11 +502,11 @@ defmodule GenDOM.HTMLFormElement do
   """
   def reset(form_pid) do
     form = GenDOM.Node.get(form_pid)
-    
+
     # In real implementation would:
     # 1. Fire reset event (cancelable)
     # 2. If not prevented, reset all form controls
-    
+
     # Reset all form controls to default values
     Enum.each(form.elements, fn element_pid ->
       element = GenDOM.Node.get(element_pid)

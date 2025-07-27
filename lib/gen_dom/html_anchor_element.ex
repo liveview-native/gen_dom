@@ -230,7 +230,7 @@ defmodule GenDOM.HTMLAnchorElement do
   use GenDOM.HTMLElement, [
     # Override HTMLElement defaults for anchor-specific behavior
     tag_name: "a",
-    
+
     # Core link properties
     href: "",
     target: "",
@@ -302,7 +302,7 @@ defmodule GenDOM.HTMLAnchorElement do
 
       anchor = GenDOM.HTMLAnchorElement.new([])
       GenDOM.HTMLAnchorElement.set_href(anchor.pid, "https://example.com:8080/path?q=test#section")
-      
+
       # URL components are automatically parsed:
       # protocol: "https:"
       # hostname: "example.com"  
@@ -314,7 +314,7 @@ defmodule GenDOM.HTMLAnchorElement do
   def set_href(anchor_pid, url) when is_binary(url) do
     # Parse URL components
     uri = URI.parse(url)
-    
+
     components = %{
       href: url,
       protocol: if(uri.scheme, do: "#{uri.scheme}:", else: ""),
@@ -335,7 +335,7 @@ defmodule GenDOM.HTMLAnchorElement do
         {scheme, host, port} -> "#{scheme}://#{host}:#{port}"
       end
     }
-    
+
     GenDOM.Node.merge(anchor_pid, components)
   end
 

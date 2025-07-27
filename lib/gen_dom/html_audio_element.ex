@@ -547,11 +547,11 @@ defmodule GenDOM.HTMLAudioElement do
   """
   def fade_volume(audio_pid, target_volume, duration_ms) do
     current_volume = get(audio_pid).volume
-    
+
     # Implementation would use timer to gradually adjust volume
     # For now, set target volume immediately
     set_volume(audio_pid, target_volume)
-    
+
     # In real implementation:
     # 1. Calculate volume step size
     # 2. Use timer to incrementally adjust volume
@@ -625,7 +625,7 @@ defmodule GenDOM.HTMLAudioElement do
   """
   def get_remaining_time(audio_pid) do
     audio = get(audio_pid)
-    
+
     case audio.duration do
       duration when is_number(duration) ->
         max(0.0, duration - audio.current_time)

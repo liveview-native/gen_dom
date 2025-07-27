@@ -231,7 +231,7 @@ defmodule GenDOM.HTMLButtonElement do
   use GenDOM.HTMLElement, [
     # Override HTMLElement defaults for button-specific behavior
     tag_name: "button",
-    
+
     # Button behavior
     type: "submit", # "submit" | "reset" | "button" | "menu"
     disabled: false,
@@ -354,13 +354,13 @@ defmodule GenDOM.HTMLButtonElement do
   """
   def report_validity(button_pid) do
     is_valid = check_validity(button_pid)
-    
+
     unless is_valid do
       # In real implementation would show validation UI
       button = GenDOM.Node.get(button_pid)
       # Fire 'invalid' event and show validation message
     end
-    
+
     is_valid
   end
 
@@ -379,7 +379,7 @@ defmodule GenDOM.HTMLButtonElement do
 
       button = GenDOM.HTMLButtonElement.new([type: "submit"])
       GenDOM.HTMLButtonElement.set_custom_validity(button.pid, "Please wait...")
-      
+
       # Clear custom validity
       GenDOM.HTMLButtonElement.set_custom_validity(button.pid, "")
   """
@@ -639,7 +639,7 @@ defmodule GenDOM.HTMLButtonElement do
   """
   def click(button_pid) do
     button = GenDOM.Node.get(button_pid)
-    
+
     unless button.disabled do
       case button.type do
         "submit" -> 

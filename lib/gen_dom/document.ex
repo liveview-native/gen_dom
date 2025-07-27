@@ -218,7 +218,7 @@ defmodule GenDOM.Document do
   - **Process Supervision**: Failed elements don't corrupt document
   """
 
-  alias GenDOM.Matcher
+  # alias GenDOM.Matcher
 
   use GenDOM.Node, [
     node_type: 10,
@@ -268,6 +268,8 @@ defmodule GenDOM.Document do
     url: nil,
     visibility_state: nil
   ]
+
+  use GenDOM.QuerySelector
 
   import GenDOM.Task
 
@@ -531,7 +533,7 @@ defmodule GenDOM.Document do
 
   """
   def create_element(document_pid, local_name, options \\ []) do
-    
+
   end
 
   @doc """

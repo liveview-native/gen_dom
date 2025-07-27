@@ -159,7 +159,7 @@ defmodule GenDOM.HTMLTextAreaElement do
     name: "document",
     value: "Hello, World!"
   ])
-  
+
   # Replace "World" with "Universe"
   GenDOM.HTMLTextAreaElement.set_range_text(textarea.pid, "Universe", 7, 12)
   # Result: "Hello, Universe!"
@@ -315,7 +315,7 @@ defmodule GenDOM.HTMLTextAreaElement do
   use GenDOM.HTMLElement, [
     # Override HTMLElement defaults for textarea-specific behavior
     tag_name: "textarea",
-    
+
     # Text content and value
     value: "",
     default_value: "",
@@ -384,13 +384,13 @@ defmodule GenDOM.HTMLTextAreaElement do
   def select(textarea_pid) do
     textarea = GenDOM.Node.get(textarea_pid)
     text_length = String.length(textarea.value)
-    
+
     GenDOM.Node.merge(textarea_pid, %{
       selection_start: 0,
       selection_end: text_length,
       selection_direction: "forward"
     })
-    
+
     # In real implementation would fire 'select' event and focus element
   end
 
@@ -413,7 +413,7 @@ defmodule GenDOM.HTMLTextAreaElement do
         name: "editor",
         value: "The quick brown fox jumps over the lazy dog."
       ])
-      
+
       # Select "quick"
       GenDOM.HTMLTextAreaElement.set_selection_range(textarea.pid, 4, 9, "forward")
 
@@ -426,17 +426,17 @@ defmodule GenDOM.HTMLTextAreaElement do
            direction in ["forward", "backward", "none"] do
     textarea = GenDOM.Node.get(textarea_pid)
     text_length = String.length(textarea.value)
-    
+
     # Clamp values to valid range
     clamped_start = max(0, min(start, text_length))
     clamped_end = max(clamped_start, min(end_pos, text_length))
-    
+
     GenDOM.Node.merge(textarea_pid, %{
       selection_start: clamped_start,
       selection_end: clamped_end,
       selection_direction: direction
     })
-    
+
     # In real implementation would fire 'selectionchange' event
   end
 
@@ -459,7 +459,7 @@ defmodule GenDOM.HTMLTextAreaElement do
         name: "document",
         value: "Hello, World!"
       ])
-      
+
       # Replace "World" with "Universe"
       GenDOM.HTMLTextAreaElement.set_range_text(textarea.pid, "Universe", 7, 12)
       # Result: "Hello, Universe!"
@@ -474,22 +474,22 @@ defmodule GenDOM.HTMLTextAreaElement do
   def set_range_text(textarea_pid, replacement, start \\ nil, end_pos \\ nil) 
       when is_binary(replacement) do
     textarea = GenDOM.Node.get(textarea_pid)
-    
+
     # Use current selection if start/end not provided
     actual_start = start || textarea.selection_start
     actual_end = end_pos || textarea.selection_end
-    
+
     # Perform text replacement
     {before, rest} = String.split_at(textarea.value, actual_start)
     {_replaced, after_text} = String.split_at(rest, actual_end - actual_start)
-    
+
     new_value = before <> replacement <> after_text
     replacement_length = String.length(replacement)
-    
+
     # Update selection to end of replacement
     new_selection_start = actual_start + replacement_length
     new_selection_end = new_selection_start
-    
+
     GenDOM.Node.merge(textarea_pid, %{
       value: new_value,
       text_length: String.length(new_value),
@@ -497,7 +497,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       selection_end: new_selection_end,
       selection_direction: "none"
     })
-    
+
     # In real implementation would fire 'input' and 'selectionchange' events
   end
 
@@ -531,7 +531,7 @@ defmodule GenDOM.HTMLTextAreaElement do
   def check_validity(textarea_pid) do
     textarea = GenDOM.Node.get(textarea_pid)
     text_length = String.length(textarea.value)
-    
+
     cond do
       textarea.required and textarea.value == "" -> false
       textarea.min_length and text_length < textarea.min_length -> false
@@ -566,13 +566,13 @@ defmodule GenDOM.HTMLTextAreaElement do
   """
   def report_validity(textarea_pid) do
     is_valid = check_validity(textarea_pid)
-    
+
     unless is_valid do
       # In real implementation would show validation UI
       textarea = GenDOM.Node.get(textarea_pid)
       # Fire 'invalid' event and show validation message
     end
-    
+
     is_valid
   end
 
@@ -592,7 +592,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       textarea = GenDOM.HTMLTextAreaElement.new([name: "review"])
       GenDOM.HTMLTextAreaElement.set_custom_validity(textarea.pid, 
         "Please provide constructive feedback")
-      
+
       # Clear custom validity
       GenDOM.HTMLTextAreaElement.set_custom_validity(textarea.pid, "")
   """
@@ -621,7 +621,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       value: new_value,
       text_length: String.length(new_value)
     })
-    
+
     # Reset selection to end of text
     text_length = String.length(new_value)
     GenDOM.Node.merge(textarea_pid, %{
@@ -1076,7 +1076,7 @@ defmodule GenDOM.HTMLTextAreaElement do
     textarea = GenDOM.Node.get(textarea_pid)
     start_pos = textarea.selection_start
     end_pos = textarea.selection_end
-    
+
     if start_pos != end_pos do
       String.slice(textarea.value, start_pos, end_pos - start_pos)
     else

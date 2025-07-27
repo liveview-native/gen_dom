@@ -12,7 +12,7 @@ defmodule GenDOM.EventRegistry do
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts)
   end
- 
+
   @impl true
   def init(opts) do
     {:ok, struct(%__MODULE__{}, window: opts[:window])}
@@ -23,15 +23,15 @@ defmodule GenDOM.EventRegistry do
     # Store listener centrally, monitor node for cleanup
     existing_listeners = get_in(registry.listeners, [node_pid, type]) || []
     listener_record = %{listener: listener, options: options, id: generate_id()}
-    
+
     # Build updated listeners structure
     node_listeners = Map.get(registry.listeners, node_pid, %{})
     updated_node_listeners = Map.put(node_listeners, type, [listener_record | existing_listeners])
     updated_listeners = Map.put(registry.listeners, node_pid, updated_node_listeners)
-    
+
     # Monitor node for cleanup
     cleanup_refs = maybe_monitor_node(registry.cleanup_refs, node_pid)
-    
+
     {:noreply, struct(registry, listeners: updated_listeners, cleanup_refs: cleanup_refs)}
   end
 
@@ -39,13 +39,13 @@ defmodule GenDOM.EventRegistry do
     case get_in(registry.listeners, [node_pid, type]) do
       nil -> 
         {:noreply, registry}
-      
+
       listeners ->
         # Remove matching listener (same listener and options)
         updated_listeners = Enum.reject(listeners, fn record ->
           record.listener == listener and options_match?(record.options, options)
         end)
-        
+
         # Update registry
         listeners_map = if updated_listeners == [] do
           # Remove empty type key
@@ -61,7 +61,7 @@ defmodule GenDOM.EventRegistry do
           node_listeners = Map.put(registry.listeners[node_pid], type, updated_listeners)
           Map.put(registry.listeners, node_pid, node_listeners)
         end
-        
+
         {:noreply, struct(registry, listeners: listeners_map)}
     end
   end

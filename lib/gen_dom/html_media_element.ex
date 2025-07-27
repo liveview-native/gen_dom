@@ -140,7 +140,7 @@ defmodule GenDOM.HTMLMediaElement do
 
   ```elixir
   media_state = GenDOM.HTMLMediaElement.get(media.pid)
-  
+
   case media_state.ready_state do
     0 -> # HAVE_NOTHING - No data
     1 -> # HAVE_METADATA - Duration and dimensions known
@@ -557,11 +557,11 @@ defmodule GenDOM.HTMLMediaElement do
       mode: "disabled", # "disabled" | "hidden" | "showing"
       cues: []
     }
-    
+
     media = GenDOM.Node.get(media_pid)
     updated_tracks = [track | media.text_tracks]
     GenDOM.Node.put(media_pid, :text_tracks, updated_tracks)
-    
+
     track
   end
 
@@ -635,7 +635,7 @@ defmodule GenDOM.HTMLMediaElement do
     media = GenDOM.Node.get(media_pid)
     duration = media.duration || 0.0
     clamped_time = max(0.0, min(time, duration))
-    
+
     GenDOM.Node.put(media_pid, :current_time, clamped_time)
     # Implementation would trigger seeking and fire events
   end

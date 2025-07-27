@@ -239,7 +239,7 @@ defmodule GenDOM.HTMLImageElement do
   use GenDOM.HTMLElement, [
     # Override HTMLElement defaults for img-specific behavior
     tag_name: "img",
-    
+
     # Image source and content
     src: "",
     alt: "",
@@ -341,7 +341,7 @@ defmodule GenDOM.HTMLImageElement do
         src: "default.jpg",
         srcset: "small.jpg 480w, large.jpg 1200w"
       ])
-      
+
       current_url = GenDOM.HTMLImageElement.get_current_src(image.pid)
       # Returns the URL selected by browser based on viewport
   """
@@ -367,7 +367,7 @@ defmodule GenDOM.HTMLImageElement do
   ## Examples
 
       image = GenDOM.HTMLImageElement.new([src: "photo.jpg"])
-      
+
       if GenDOM.HTMLImageElement.is_complete?(image.pid) do
         # Image finished loading
       else

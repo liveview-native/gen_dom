@@ -15,7 +15,7 @@ defmodule GenDOM.EventTarget do
 
       defmodule MyModule do
         use GenDOM.EventTarget
-        
+
         # Now you can use add_event_listener/3, remove_event_listener/3, dispatch_event/2
       end
   """
@@ -122,7 +122,7 @@ defmodule GenDOM.EventTarget do
 
   """
   def dispatch_event(node, event) do
-    
+
   end
 
   @doc """

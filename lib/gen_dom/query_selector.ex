@@ -15,7 +15,7 @@ defmodule GenDOM.QuerySelector do
 
       defmodule MyModule do
         use GenDOM.QuerySelector
-        
+
         # Now you can use query_selector/2 and query_selector_all/2
       end
 
@@ -83,6 +83,7 @@ defmodule GenDOM.QuerySelector do
           other -> other
         end
       end
+      defoverridable query_selector: 2
 
       @doc """
       Returns all elements that match the specified CSS selector.
@@ -137,6 +138,7 @@ defmodule GenDOM.QuerySelector do
         |> flat_uniq(MapSet.new([]))
         |> MapSet.to_list()
       end
+      defoverridable query_selector_all: 2
 
       defp flat_uniq([], acc) do
         acc

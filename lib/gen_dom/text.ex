@@ -227,92 +227,92 @@ defmodule GenDOM.Text do
     whole_text: nil
   ]
 
-  @doc """
-  Creates a copy of the text node.
-
-  This method overrides the base Node `clone_node/2` to properly handle text-specific
-  fields during cloning. It implements the DOM `cloneNode()` specification for text nodes.
-
-  ## Parameters
-
-  - `text_pid` - The PID of the text node to clone
-  - `deep?` - Boolean indicating whether descendants should be cloned (default: false)
-
-  ## Examples
-
-      iex> text = GenDOM.Text.new([text_content: "Hello", whole_text: "Hello World"])
-      iex> cloned_text_pid = GenDOM.Text.clone_node(text.pid)
-      iex> cloned_text = GenDOM.Node.get(cloned_text_pid)
-      iex> cloned_text.text_content
-      "Hello"
-
-  """
-  def clone_node(text_pid, deep? \\ false) do
-    text = get(text_pid)
-    fields = Map.drop(text, [
-      :__struct__,
-      :pid,
-      :receiver,
-      :owner_document,
-      :parent_element,
-      :parent_node,
-      :previous_sibling,
-      :last_child,
-      :first_child,
-      :base_node,
-      :child_nodes,
-
-      :assigned_slot
-    ]) |> Map.to_list()
-
-    new_text = apply(text.__struct__, :new, [fields])
-
-    if deep? do
-      Enum.reduce(text.child_nodes, new_text.pid, fn(child_node_pid, new_text_pid) ->
-        child_node = GenServer.call(child_node_pid, :get)
-        append_child(new_text_pid, clone_node(child_node, deep?))
-      end)
-    else
-      new_text.pid
-    end
-  end
-
-  @doc """
-  Encodes the text node into a serializable format.
-
-  This method overrides the base Node `encode/1` to include text-specific fields
-  in the encoded representation. Used for serialization and communication.
-
-  ## Parameters
-
-  - `text` - The text node struct to encode
-
-  ## Examples
-
-      iex> text = GenDOM.Text.new([text_content: "Hello", whole_text: "Hello World"])
-      iex> encoded = GenDOM.Text.encode(text)
-      iex> encoded.whole_text
-      "Hello World"
-
-  """
-  def encode(text) do
-    Map.merge(super(text), %{
-      whole_text: text.whole_text
-    })
-  end
-
-  @doc """
-  Returns the list of fields that are allowed to be updated via owner document notifications.
-
-  This method extends the base Node allowed fields to include text-specific fields
-  that should trigger notifications when modified.
-
-  ## Examples
-
-      iex> GenDOM.Text.allowed_fields()
-      [:whole_text]
-
-  """
-  def allowed_fields,
-    do: super() ++ [:whole_text] 
+  # @doc """
+  # Creates a copy of the text node.
+  #
+  # This method overrides the base Node `clone_node/2` to properly handle text-specific
+  # fields during cloning. It implements the DOM `cloneNode()` specification for text nodes.
+  #
+  # ## Parameters
+  #
+  # - `text_pid` - The PID of the text node to clone
+  # - `deep?` - Boolean indicating whether descendants should be cloned (default: false)
+  #
+  # ## Examples
+  #
+  #     iex> text = GenDOM.Text.new([text_content: "Hello", whole_text: "Hello World"])
+  #     iex> cloned_text_pid = GenDOM.Text.clone_node(text.pid)
+  #     iex> cloned_text = GenDOM.Node.get(cloned_text_pid)
+  #     iex> cloned_text.text_content
+  #     "Hello"
+  #
+  # """
+  # def clone_node(text_pid, deep? \\ false) do
+  #   text = get(text_pid)
+  #   fields = Map.drop(text, [
+  #     :__struct__,
+  #     :pid,
+  #     :receiver,
+  #     :owner_document,
+  #     :parent_element,
+  #     :parent_node,
+  #     :previous_sibling,
+  #     :last_child,
+  #     :first_child,
+  #     :base_node,
+  #     :child_nodes,
+  #
+  #     :assigned_slot
+  #   ]) |> Map.to_list()
+  #
+  #   new_text = apply(text.__struct__, :new, [fields])
+  #
+  #   if deep? do
+  #     Enum.reduce(text.child_nodes, new_text.pid, fn(child_node_pid, new_text_pid) ->
+  #       child_node = GenServer.call(child_node_pid, :get)
+  #       append_child(new_text_pid, clone_node(child_node, deep?))
+  #     end)
+  #   else
+  #     new_text.pid
+  #   end
+  # end
+  #
+  # @doc """
+  # Encodes the text node into a serializable format.
+  #
+  # This method overrides the base Node `encode/1` to include text-specific fields
+  # in the encoded representation. Used for serialization and communication.
+  #
+  # ## Parameters
+  #
+  # - `text` - The text node struct to encode
+  #
+  # ## Examples
+  #
+  #     iex> text = GenDOM.Text.new([text_content: "Hello", whole_text: "Hello World"])
+  #     iex> encoded = GenDOM.Text.encode(text)
+  #     iex> encoded.whole_text
+  #     "Hello World"
+  #
+  # """
+  # def encode(text) do
+  #   Map.merge(super(text), %{
+  #     whole_text: text.whole_text
+  #   })
+  # end
+  #
+  # @doc """
+  # Returns the list of fields that are allowed to be updated via owner document notifications.
+  #
+  # This method extends the base Node allowed fields to include text-specific fields
+  # that should trigger notifications when modified.
+  #
+  # ## Examples
+  #
+  #     iex> GenDOM.Text.allowed_fields()
+  #     [:whole_text]
+  #
+  # """
+  # def allowed_fields,
+  #   do: super() ++ [:whole_text] 
 end

@@ -304,6 +304,7 @@ defmodule GenDOM.Element do
       tag_name: element.tag_name
     })
   end
+  defoverridable encode: 1
 
   def init(opts) do
     {:ok, element} = super(opts)
@@ -339,7 +340,7 @@ defmodule GenDOM.Element do
 
   def handle_call({:replace_child, new_child, old_child, opts} = msg, from, element) do
     {:reply, element, element} = super(msg, from, element)
-  
+
     element = do_replace_child(element, new_child, old_child, opts)
 
     {:reply, element, element}
@@ -375,7 +376,7 @@ defmodule GenDOM.Element do
 
   def handle_cast({:replace_child, new_child, old_child, opts} = msg, element) do
     {:noreply, element} = super(msg, element)
-  
+
     element = do_replace_child(element, new_child, old_child, opts)
 
     {:noreply, element}
