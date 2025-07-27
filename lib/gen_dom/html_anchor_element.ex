@@ -330,7 +330,7 @@ defmodule GenDOM.HTMLAnchorElement do
       end,
       origin: case {uri.scheme, uri.host, uri.port} do
         {nil, _, _} -> ""
-        {scheme, nil, _} -> ""
+        {_scheme, nil, _} -> ""
         {scheme, host, nil} -> "#{scheme}://#{host}"
         {scheme, host, port} -> "#{scheme}://#{host}:#{port}"
       end

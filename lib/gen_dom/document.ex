@@ -218,7 +218,7 @@ defmodule GenDOM.Document do
   - **Process Supervision**: Failed elements don't corrupt document
   """
 
-  # alias GenDOM.Matcher
+  alias GenDOM.Matcher
 
   use GenDOM.Node, [
     node_type: 10,
@@ -354,8 +354,8 @@ defmodule GenDOM.Document do
       adopted_node = GenDOM.Document.adopt_node(document, external_node)
 
   """
-  def adopt_node(document_pid, _node) do
-
+  def adopt_node(_document_pid, _node) do
+    nil
   end
 
   @doc """
@@ -373,8 +373,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.append(document, [new_element, "Some text"])
 
   """
-  def append(document_pid, nodes) when is_list(nodes) do
-
+  def append(_document_pid, nodes) when is_list(nodes) do
+    nil
   end
 
   @doc """
@@ -394,8 +394,8 @@ defmodule GenDOM.Document do
       caret_pos = GenDOM.Document.caret_position_from_point(document, 100, 200)
 
   """
-  def caret_position_from_point(%__MODULE__{} = docuemnt, x, y, options \\ []) do
-
+  def caret_position_from_point(%__MODULE__{} = _document, _x, _y, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -413,8 +413,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.close(document)
 
   """
-  def close(document_pid) do
-
+  def close(_document_pid) do
+    nil
   end
 
   @doc """
@@ -432,8 +432,8 @@ defmodule GenDOM.Document do
       attr = GenDOM.Document.create_attribute(document, "class")
 
   """
-  def create_attribute(document_pid, name) do
-
+  def create_attribute(_document_pid, _name) do
+    nil
   end
 
   @doc """
@@ -452,8 +452,8 @@ defmodule GenDOM.Document do
       attr = GenDOM.Document.create_attribute_ns(document, "http://www.w3.org/1999/xlink", "xlink:href")
 
   """
-  def create_attribute_ns(document_pid, namespace_uri, qualified_name) do
-
+  def create_attribute_ns(_document_pid, _namespace_uri, _qualified_name) do
+    nil
   end
 
   @doc """
@@ -471,8 +471,8 @@ defmodule GenDOM.Document do
       cdata = GenDOM.Document.create_CDATA_section(document, "<some>xml data</some>")
 
   """
-  def create_CDATA_section(document_pid, data) do
-
+  def create_CDATA_section(_document_pid, _data) do
+    nil
   end
 
   @doc """
@@ -490,8 +490,8 @@ defmodule GenDOM.Document do
       comment = GenDOM.Document.create_comment(document, "This is a comment")
 
   """
-  def create_comment(document_pid, data) do
-
+  def create_comment(_document_pid, _data) do
+    nil
   end
 
   @doc """
@@ -508,8 +508,8 @@ defmodule GenDOM.Document do
       fragment = GenDOM.Document.create_document_fragment(document)
 
   """
-  def create_document_fragment(document_pid) do
-
+  def create_document_fragment(_document_pid) do
+    nil
   end
 
   @doc """
@@ -532,8 +532,8 @@ defmodule GenDOM.Document do
       "div"
 
   """
-  def create_element(document_pid, local_name, options \\ []) do
-
+  def create_element(_document_pid, _local_name, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -553,8 +553,8 @@ defmodule GenDOM.Document do
       svg_element = GenDOM.Document.create_element_ns(document, "http://www.w3.org/2000/svg", "svg:rect")
 
   """
-  def create_element_ns(document_pid, namespace_uri, qualified_name, options \\ []) do
-
+  def create_element_ns(_document_pid, _namespace_uri, _qualified_name, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -573,8 +573,8 @@ defmodule GenDOM.Document do
       expr = GenDOM.Document.create_expression(document, "//div[@class='content']", namespace_resolver)
 
   """
-  def create_expression(document_pid, xpath_text, namespace_url_mapper) do
-
+  def create_expression(_document_pid, _xpath_text, _namespace_url_mapper) do
+    nil
   end
 
   @doc """
@@ -594,8 +594,8 @@ defmodule GenDOM.Document do
       iterator = GenDOM.Document.create_node_iterator(document, document, :show_element, nil)
 
   """
-  def create_node_iterator(document_pid, root, what_to_show, filter) do
-
+  def create_node_iterator(_document_pid, _root, _what_to_show, _filter) do
+    nil
   end
 
   @doc """
@@ -614,8 +614,8 @@ defmodule GenDOM.Document do
       pi = GenDOM.Document.create_processing_instruction(document, "xml-stylesheet", "type='text/xsl' href='style.xsl'")
 
   """
-  def create_processing_instruction(document_pid, target, data) do
-
+  def create_processing_instruction(_document_pid, _target, _data) do
+    nil
   end
 
   @doc """
@@ -632,8 +632,8 @@ defmodule GenDOM.Document do
       range = GenDOM.Document.create_range(document)
 
   """
-  def create_range(document_pid) do
-
+  def create_range(_document_pid) do
+    nil
   end
 
   @doc """
@@ -655,8 +655,8 @@ defmodule GenDOM.Document do
       "Hello, World!"
 
   """
-  def create_text_node(document_pid, data) do
-
+  def create_text_node(_document_pid, _data) do
+    nil
   end
 
   @doc """
@@ -676,8 +676,8 @@ defmodule GenDOM.Document do
       walker = GenDOM.Document.create_tree_walker(document, document, :show_element, nil)
 
   """
-  def create_tree_walker(document_pid, root, what_to_show, filter) do
-
+  def create_tree_walker(_document_pid, _root, _what_to_show, _filter) do
+    nil
   end
 
   @doc """
@@ -696,8 +696,8 @@ defmodule GenDOM.Document do
       element = GenDOM.Document.element_from_point(document, 100, 200)
 
   """
-  def element_from_point(document_pid, x, y) do
-
+  def element_from_point(_document_pid, _x, _y) do
+    nil
   end
 
   @doc """
@@ -716,8 +716,8 @@ defmodule GenDOM.Document do
       elements = GenDOM.Document.elements_from_point(document, 100, 200)
 
   """
-  def elements_from_point(document_pid, x, y) do
-
+  def elements_from_point(_document_pid, _x, _y) do
+    nil
   end
 
   @doc """
@@ -739,8 +739,8 @@ defmodule GenDOM.Document do
       result = GenDOM.Document.evaluate(document, "//div", document, nil, :ordered_node_snapshot_type, nil)
 
   """
-  def evaluate(document_pid, xpath_expression, context_node, namespace_resolver, result_type, result) do
-
+  def evaluate(_document_pid, _xpath_expression, _context_node, _namespace_resolver, _result_type, _result) do
+    nil
   end
 
   @doc """
@@ -757,8 +757,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.exit_fullscreen(document)
 
   """
-  def exit_fullscreen(document_pid) do
-
+  def exit_fullscreen(_document_pid) do
+    nil
   end
 
   @doc """
@@ -775,8 +775,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.exit_picture_in_picture(document)
 
   """
-  def exit_picture_in_picture(document_pid) do
-
+  def exit_picture_in_picture(_document_pid) do
+    nil
   end
 
   @doc """
@@ -793,8 +793,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.exit_pointer_lock(document)
 
   """
-  def exit_pointer_lock(document_pid) do
-
+  def exit_pointer_lock(_document_pid) do
+    nil
   end
 
   @doc """
@@ -811,8 +811,8 @@ defmodule GenDOM.Document do
       animations = GenDOM.Document.get_animations(document)
 
   """
-  def get_animations(document_pid) do
-
+  def get_animations(_document_pid) do
+    nil
   end
 
   @doc """
@@ -971,8 +971,8 @@ defmodule GenDOM.Document do
       selection = GenDOM.Document.get_selection(document)
 
   """
-  def get_selection(document_pid) do
-
+  def get_selection(_document_pid) do
+    nil
   end
 
   @doc """
@@ -990,8 +990,8 @@ defmodule GenDOM.Document do
       # => true or false
 
   """
-  def has_focus?(document_pid) do
-
+  def has_focus?(_document_pid) do
+    nil
   end
 
   @doc """
@@ -1009,8 +1009,8 @@ defmodule GenDOM.Document do
       # => true or false
 
   """
-  def has_storage_access?(document_pid) do
-
+  def has_storage_access?(_document_pid) do
+    nil
   end
 
   @doc """
@@ -1028,8 +1028,8 @@ defmodule GenDOM.Document do
       # => true or false
 
   """
-  def has_unpartitioned_cookie_access?(document_pid) do
-
+  def has_unpartitioned_cookie_access?(_document_pid) do
+    nil
   end
 
   @doc """
@@ -1048,8 +1048,8 @@ defmodule GenDOM.Document do
       imported_node = GenDOM.Document.import_node(document, external_node, true)
 
   """
-  def import_node(document_pid, external_node, deep?) do
-
+  def import_node(_document_pid, _external_node, _deep?) do
+    nil
   end
 
   @doc """
@@ -1067,8 +1067,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.open(document)
 
   """
-  def open(document_pid) do
-
+  def open(_document_pid) do
+    nil
   end
 
   @doc """
@@ -1086,8 +1086,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.prepend(document, [doctype_node, processing_instruction])
 
   """
-  def prepend(document_pid, nodes) when is_list(nodes) do
-
+  def prepend(_document_pid, nodes) when is_list(nodes) do
+    nil
   end
 
   @doc """
@@ -1105,8 +1105,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.replace_children(document, [new_doctype, new_root_element])
 
   """
-  def replace_children(document_pid, children) when is_list(children) do
-
+  def replace_children(_document_pid, children) when is_list(children) do
+    nil
   end
 
   @doc """
@@ -1124,8 +1124,8 @@ defmodule GenDOM.Document do
       GenDOM.Document.request_storage_access(document, %{cookies: true})
 
   """
-  def request_storage_access(document_pid, types \\ %{all: true}) do
-
+  def request_storage_access(_document_pid, _types \\ %{all: true}) do
+    nil
   end
 
   @doc """
@@ -1145,8 +1145,8 @@ defmodule GenDOM.Document do
       end)
 
   """
-  def start_view_transition(document_pid, update_callback) do
-
+  def start_view_transition(_document_pid, _update_callback) do
+    nil
   end
 
   @doc """
@@ -1164,7 +1164,7 @@ defmodule GenDOM.Document do
       GenDOM.Document.writeln(document, "<p>Hello World!</p>")
 
   """
-  def writeln(document_pid, line) when is_binary(line) do
-
+  def writeln(_document_pid, line) when is_binary(line) do
+    nil
   end
 end

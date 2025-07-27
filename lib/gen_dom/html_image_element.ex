@@ -313,7 +313,7 @@ defmodule GenDOM.HTMLImageElement do
   - Method provides explicit control over decode timing
   - Useful for critical rendering path optimization
   """
-  def decode(image_pid) do
+  def decode(_image_pid) do
     # Implementation stub - in real implementation would:
     # 1. Check if image src is set and valid
     # 2. Initiate async decode operation

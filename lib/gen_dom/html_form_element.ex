@@ -461,7 +461,7 @@ defmodule GenDOM.HTMLFormElement do
       submitter = if submitter_pid, do: GenDOM.Node.get(submitter_pid), else: nil
 
       # Use submitter's form attributes if available
-      action = if submitter && submitter.form_action != "", do: submitter.form_action, else: form.action
+      _action = if submitter && submitter.form_action != "", do: submitter.form_action, else: form.action
       method = if submitter && submitter.form_method != "", do: submitter.form_method, else: form.method
 
       case method do

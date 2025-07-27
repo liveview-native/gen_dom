@@ -138,8 +138,9 @@ defmodule GenDOM.HTMLElement do
   - Raises if called on a built-in element (not a custom element)
   - Raises if internals have already been attached to this element
   """
-  def attach_internals(html_element_pid) do
+  def attach_internals(_html_element_pid) do
     # Implementation stub
+    nil
   end
 
   @doc """
@@ -166,8 +167,9 @@ defmodule GenDOM.HTMLElement do
   - Fires a 'blur' event on the element (if it had focus)
   - May fire 'focusout' event (bubbles)
   """
-  def blur(html_element_pid) do
+  def blur(_html_element_pid) do
     # Implementation stub
+    nil
   end
 
   @doc """
@@ -206,8 +208,9 @@ defmodule GenDOM.HTMLElement do
   - Follows links for anchor elements
   - Activates form controls appropriately
   """
-  def click(html_element_pid) do
+  def click(_html_element_pid) do
     # Implementation stub
+    nil
   end
 
   @doc """
@@ -249,8 +252,9 @@ defmodule GenDOM.HTMLElement do
   - Elements with tabindex attribute
   - Audio/video elements with controls
   """
-  def focus(html_element_pid) do
+  def focus(_html_element_pid) do
     # Implementation stub
+    nil
   end
 
   @doc """
@@ -282,8 +286,9 @@ defmodule GenDOM.HTMLElement do
   - Raises if the element doesn't have a popover attribute
   - Raises if the popover is not currently showing
   """
-  def hide_popover(html_element_pid) do
+  def hide_popover(_html_element_pid) do
     # Implementation stub
+    nil
   end
 
   @doc """
@@ -321,8 +326,9 @@ defmodule GenDOM.HTMLElement do
   - Raises if the element doesn't have a popover attribute
   - Raises if the popover is already showing
   """
-  def show_popover(html_element_pid) do
+  def show_popover(_html_element_pid) do
     # Implementation stub
+    nil
   end
 
   @doc """
@@ -365,7 +371,8 @@ defmodule GenDOM.HTMLElement do
 
   - Raises if the element doesn't have a popover attribute
   """
-  def toggle_popover(html_element_pid, force \\ nil) do
+  def toggle_popover(_html_element_pid, _force \\ nil) do
     # Implementation stub
+    nil
   end
 end

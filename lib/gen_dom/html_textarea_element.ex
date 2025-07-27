@@ -569,7 +569,7 @@ defmodule GenDOM.HTMLTextAreaElement do
 
     unless is_valid do
       # In real implementation would show validation UI
-      textarea = GenDOM.Node.get(textarea_pid)
+      _textarea = GenDOM.Node.get(textarea_pid)
       # Fire 'invalid' event and show validation message
     end
 

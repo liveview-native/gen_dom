@@ -545,8 +545,8 @@ defmodule GenDOM.HTMLAudioElement do
   This is a convenience method that would typically use a timer-based
   implementation to gradually adjust volume over time.
   """
-  def fade_volume(audio_pid, target_volume, duration_ms) do
-    current_volume = get(audio_pid).volume
+  def fade_volume(audio_pid, target_volume, _duration_ms) do
+    _current_volume = get(audio_pid).volume
 
     # Implementation would use timer to gradually adjust volume
     # For now, set target volume immediately

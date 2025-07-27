@@ -455,7 +455,7 @@ defmodule GenDOM.HTMLVideoElement do
   - Adaptive bitrate decisions
   - Performance analytics
   """
-  def get_video_playback_quality(video_pid) do
+  def get_video_playback_quality(_video_pid) do
     # Implementation would return actual metrics
     # For now, return mock data
     %{
@@ -522,7 +522,7 @@ defmodule GenDOM.HTMLVideoElement do
   - Safari 15.4+
   - Limited support in other browsers
   """
-  def request_video_frame_callback(video_pid, callback) when is_function(callback) do
+  def request_video_frame_callback(_video_pid, callback) when is_function(callback) do
     # Implementation would:
     # 1. Register callback for next frame
     # 2. Return unique callback ID

@@ -421,7 +421,7 @@ defmodule GenDOM.HTMLSelectElement do
   def named_item(select_pid, name) when is_binary(name) do
     select = GenDOM.Node.get(select_pid)
 
-    Enum.find(select.options, fn option ->
+    Enum.find(select.options, fn _option ->
       # In a real implementation, would check option's name and id attributes
       # This is a simplified version
       false
@@ -486,7 +486,7 @@ defmodule GenDOM.HTMLSelectElement do
 
     unless is_valid do
       # In real implementation would show validation UI
-      select = GenDOM.Node.get(select_pid)
+      _select = GenDOM.Node.get(select_pid)
       # Fire 'invalid' event and show validation message
     end
 
@@ -593,7 +593,7 @@ defmodule GenDOM.HTMLSelectElement do
     select = GenDOM.Node.get(select_pid)
 
     # Find option with matching value
-    index = Enum.find_index(select.options, fn option ->
+    index = Enum.find_index(select.options, fn _option ->
       # In real implementation would check option.value
       false # Simplified for now
     end)
@@ -910,7 +910,7 @@ defmodule GenDOM.HTMLSelectElement do
   end
 
   defp update_selected_options(select_pid) do
-    select = GenDOM.Node.get(select_pid)
+    _select = GenDOM.Node.get(select_pid)
 
     # In real implementation would collect all selected options
     # For now, simplified to empty list

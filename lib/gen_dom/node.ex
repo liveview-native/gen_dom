@@ -906,7 +906,7 @@ defmodule GenDOM.Node do
 
   """
   def compare_document_position(_node, _other_node) do
-
+    nil
   end
 
   @doc """
@@ -1063,7 +1063,7 @@ defmodule GenDOM.Node do
 
   """
   def is_default_namespace?(_node, _uri) do
-
+    nil
   end
 
   @doc """
@@ -1158,7 +1158,7 @@ defmodule GenDOM.Node do
 
   """
   def normalize(_node) do
-
+    nil
   end
 
   @doc """

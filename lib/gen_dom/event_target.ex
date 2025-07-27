@@ -47,8 +47,8 @@ defmodule GenDOM.EventTarget do
       :ok
 
   """
-  def add_event_listener(node, type, listener) do
-
+  def add_event_listener(_node, _type, _listener) do
+    nil
   end
 
   @doc """
@@ -74,28 +74,12 @@ defmodule GenDOM.EventTarget do
       :ok
 
   """
-  def add_event_listener(node, type, listener, options \\ []) when is_list(options) do
-
+  def add_event_listener(_node, _type, _listener, options) when is_list(options) do
+    nil
   end
 
-  @doc """
-  Registers an event handler with capture flag.
-
-  ## Parameters
-
-  - `node` - The EventTarget to register the listener on
-  - `type` - A string representing the event type to listen for
-  - `listener` - The event handler function or module
-  - `use_capture?` - Boolean indicating if events should be captured during the capture phase
-
-  ## Examples
-
-      iex> GenDOM.EventTarget.add_event_listener(node, "click", listener, true)
-      :ok
-
-  """
-  def add_event_listener(node, type, listener, use_capture?) when is_boolean(use_capture?) do
-
+  def add_event_listener(_node, _type, _listener, use_capture?) when is_boolean(use_capture?) do
+    nil
   end
 
   @doc """
@@ -121,27 +105,8 @@ defmodule GenDOM.EventTarget do
       true
 
   """
-  def dispatch_event(node, event) do
-
-  end
-
-  @doc """
-  Removes an event listener from the EventTarget.
-
-  ## Parameters
-
-  - `node` - The EventTarget to remove the listener from
-  - `type` - A string representing the event type to remove
-  - `listener` - The event handler function or module to remove
-
-  ## Examples
-
-      iex> GenDOM.EventTarget.remove_event_listener(node, "click", listener)
-      :ok
-
-  """
-  def remove_event_listener(node, type, listener) do
-
+  def dispatch_event(_node, _event) do
+    nil
   end
 
   @doc """
@@ -152,10 +117,10 @@ defmodule GenDOM.EventTarget do
   - `node` - The EventTarget to remove the listener from
   - `type` - A string representing the event type to remove
   - `listener` - The event handler function or module to remove
-  - `options` - A list of options that specify characteristics about the event listener
 
   ## Options
 
+  - `options` - A list of options that specify characteristics about the event listener
   - `:capture` - Boolean indicating if the listener was registered for the capture phase
 
   ## Examples
@@ -164,27 +129,15 @@ defmodule GenDOM.EventTarget do
       :ok
 
   """
-  def remove_event_listener(node, type, listener, options \\ []) when is_list(options) do
-
+  def remove_event_listener(_node, _type, _listener) do
+    nil
   end
 
-  @doc """
-  Removes an event listener with capture flag.
+  def remove_event_listener(_node, _type, _listener, options) when is_list(options) do
+    nil
+  end
 
-  ## Parameters
-
-  - `node` - The EventTarget to remove the listener from
-  - `type` - A string representing the event type to remove
-  - `listener` - The event handler function or module to remove
-  - `use_capture?` - Boolean indicating if the listener was registered for the capture phase
-
-  ## Examples
-
-      iex> GenDOM.EventTarget.remove_event_listener(node, "click", listener, true)
-      :ok
-
-  """
-  def remove_event_listener(node, type, listener, use_capture?) when is_boolean(use_capture?) do
-
+  def remove_event_listener(_node, _type, _listener, use_capture?) when is_boolean(use_capture?) do
+    nil
   end
 end

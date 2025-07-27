@@ -357,7 +357,7 @@ defmodule GenDOM.HTMLButtonElement do
 
     unless is_valid do
       # In real implementation would show validation UI
-      button = GenDOM.Node.get(button_pid)
+      _button = GenDOM.Node.get(button_pid)
       # Fire 'invalid' event and show validation message
     end
 

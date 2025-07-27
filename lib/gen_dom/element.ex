@@ -529,8 +529,8 @@ defmodule GenDOM.Element do
 
   """
   # Elixir has `after` as a reserved keyword so this must be called `do_after`
-  def do_after(element, nodes) when is_list(nodes) do
-
+  def do_after(_element, nodes) when is_list(nodes) do
+    nil
   end
 
   @doc """
@@ -553,8 +553,8 @@ defmodule GenDOM.Element do
       )
 
   """
-  def animate(element, keyframes, options \\ []) do
-
+  def animate(_element, _keyframes, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -573,8 +573,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.append(parent_element, [child_element, "Some text"])
 
   """
-  def append(element, nodes) when is_list(nodes) do
-
+  def append(_element, nodes) when is_list(nodes) do
+    nil
   end
 
   @doc """
@@ -592,8 +592,8 @@ defmodule GenDOM.Element do
       shadow_root = GenDOM.Element.attach_shadow(element, mode: :open)
 
   """
-  def attach_shadow(element, options \\ []) do
-
+  def attach_shadow(_element, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -611,8 +611,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.before(element, [new_element, "Some text"])
 
   """
-  def before(element, nodes) when is_list(nodes) do
-
+  def before(_element, nodes) when is_list(nodes) do
+    nil
   end
 
   @doc """
@@ -632,8 +632,8 @@ defmodule GenDOM.Element do
       # => true or false
 
   """
-  def check_visibility(element, options \\ []) do
-
+  def check_visibility(_element, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -684,8 +684,8 @@ defmodule GenDOM.Element do
       style_map = GenDOM.Element.computed_style_map(element)
 
   """
-  def computed_style_map(element) do
-
+  def computed_style_map(_element) do
+    nil
   end
 
   @doc """
@@ -704,8 +704,8 @@ defmodule GenDOM.Element do
       running_animations = GenDOM.Element.get_animations(element, subtree: true)
 
   """
-  def get_animations(element, options \\ []) do
-
+  def get_animations(_element, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -769,8 +769,8 @@ defmodule GenDOM.Element do
       attr_node = GenDOM.Element.get_attribute_node(element, "class")
 
   """
-  def get_attribute_node(element, attribute_name) do
-
+  def get_attribute_node(_element, _attribute_name) do
+    nil
   end
 
   @doc """
@@ -789,8 +789,8 @@ defmodule GenDOM.Element do
       attr_node = GenDOM.Element.get_attribute_node_ns(element, "http://www.w3.org/1999/xlink", "href")
 
   """
-  def get_attribute_node_ns(element, namespace, node_name) do
-
+  def get_attribute_node_ns(_element, _namespace, _node_name) do
+    nil
   end
 
   @doc """
@@ -809,8 +809,8 @@ defmodule GenDOM.Element do
       value = GenDOM.Element.get_attribute_ns(element, "http://www.w3.org/1999/xlink", "href")
 
   """
-  def get_attribute_ns(element, namespace, name) do
-
+  def get_attribute_ns(_element, _namespace, _name) do
+    nil
   end
 
   @doc """
@@ -829,8 +829,8 @@ defmodule GenDOM.Element do
       # => %{x: 0, y: 0, width: 100, height: 50, top: 0, right: 100, bottom: 50, left: 0}
 
   """
-  def get_bounding_client_rect(element) do
-
+  def get_bounding_client_rect(_element) do
+    nil
   end
 
   @doc """
@@ -848,8 +848,8 @@ defmodule GenDOM.Element do
       # => [%{x: 0, y: 0, width: 100, height: 25}, %{x: 0, y: 25, width: 100, height: 25}]
 
   """
-  def get_client_rects(element) do
-
+  def get_client_rects(_element) do
+    nil
   end
 
   @doc """
@@ -931,8 +931,8 @@ defmodule GenDOM.Element do
       # => "<div class='container'><p>Hello</p></div>"
 
   """
-  def get_html(element, options \\ []) do
-
+  def get_html(_element, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -976,8 +976,8 @@ defmodule GenDOM.Element do
       # => true or false
 
   """
-  def has_attribute_ns?(element, namespace, local_name) do
-
+  def has_attribute_ns?(_element, _namespace, _local_name) do
+    nil
   end
 
   @doc """
@@ -995,8 +995,8 @@ defmodule GenDOM.Element do
       # => true or false
 
   """
-  def has_attributes?(element) do
-
+  def has_attributes?(_element) do
+    nil
   end
 
   @doc """
@@ -1015,8 +1015,8 @@ defmodule GenDOM.Element do
       # => true or false
 
   """
-  def has_pointer_capture?(element, pointer_id) do
-
+  def has_pointer_capture?(_element, _pointer_id) do
+    nil
   end
 
   @doc """
@@ -1035,8 +1035,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.insert_adjacent_element(element, :afterend, new_element)
 
   """
-  def insert_adjacent_element(element, position, other_element) do
-
+  def insert_adjacent_element(_element, _position, _other_element) do
+    nil
   end
 
   @doc """
@@ -1055,8 +1055,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.insert_adjacent_html(element, :beforeend, "<p>New content</p>")
 
   """
-  def insert_adjacent_html(element, position, text) when is_binary(text) do
-
+  def insert_adjacent_html(_element, _position, text) when is_binary(text) do
+    nil
   end
 
   @doc """
@@ -1075,8 +1075,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.insert_adjacent_text(element, :afterend, "Some text content")
 
   """
-  def insert_adjacent_text(element, where, data) when is_binary(data) do
-
+  def insert_adjacent_text(_element, _where, data) when is_binary(data) do
+    nil
   end
 
   @doc """
@@ -1107,8 +1107,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.prepend(parent_element, [header_element, "Title: "])
 
   """
-  def prepend(element, nodes) when is_list(nodes) do
-
+  def prepend(_element, nodes) when is_list(nodes) do
+    nil
   end
 
   @doc """
@@ -1126,8 +1126,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.release_pointer_capture(element, pointer_id)
 
   """
-  def release_pointer_capture(element, pointer_id) do
-
+  def release_pointer_capture(_element, _pointer_id) do
+    nil
   end
 
   @doc """
@@ -1145,8 +1145,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.remove(element)
 
   """
-  def remove(element) do
-
+  def remove(_element) do
+    nil
   end
 
   @doc """
@@ -1185,8 +1185,8 @@ defmodule GenDOM.Element do
       removed_attr = GenDOM.Element.remove_attribute_node(element, attr_node)
 
   """
-  def remove_attribute_node(element, attribute_node) do
-
+  def remove_attribute_node(_element, _attribute_node) do
+    nil
   end
 
   @doc """
@@ -1205,8 +1205,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.remove_attribute_ns(element, "http://www.w3.org/1999/xlink", "href")
 
   """
-  def remove_attribute_ns(element, namespace, attribute_node) do
-
+  def remove_attribute_ns(_element, _namespace, _attribute_node) do
+    nil
   end
 
   @doc """
@@ -1224,8 +1224,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.replace_children(element, [new_child1, new_child2])
 
   """
-  def replace_children(element, children) when is_list(children) do
-
+  def replace_children(_element, children) when is_list(children) do
+    nil
   end
 
   @doc """
@@ -1243,8 +1243,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.replace_with(old_element, [new_element, "Some text"])
 
   """
-  def replace_with(element, nodes) when is_list(nodes) do
-
+  def replace_with(_element, nodes) when is_list(nodes) do
+    nil
   end
 
   @doc """
@@ -1262,8 +1262,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.request_fullscreen(video_element, navigation_ui: :hide)
 
   """
-  def request_fullscreen(element, options \\ []) do
-
+  def request_fullscreen(_element, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -1281,8 +1281,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.request_pointer_lock(canvas_element)
 
   """
-  def request_pointer_lock(element, options \\ []) do
-
+  def request_pointer_lock(_element, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -1300,8 +1300,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll(element, top: 100, left: 0, behavior: :smooth)
 
   """
-  def scroll(element, options \\ []) do
-
+  def scroll(_element, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -1320,8 +1320,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll(element, 0, 100)
 
   """
-  def scroll(element, x_coord, y_coord) do
-
+  def scroll(_element, _x_coord, _y_coord) do
+    nil
   end
 
   @doc """
@@ -1339,8 +1339,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_by(element, top: 50, left: 0, behavior: :smooth)
 
   """
-  def scroll_by(element, options \\ []) do
-
+  def scroll_by(_element, _options \\ []) do
+    nil
   end
 
   @doc """
@@ -1358,27 +1358,12 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_into_view(element, true)
 
   """
-  def scroll_into_view(element, align_to_top) when is_boolean(align_to_top) do
-
+  def scroll_into_view(_element, align_to_top) when is_boolean(align_to_top) do
+    nil
   end
 
-  @doc """
-  Scrolls the element's parent container such that the element is visible to the user.
-
-  This method implements the DOM `scrollIntoView()` specification with options.
-
-  ## Parameters
-
-  - `element` - The element to scroll into view
-  - `scroll_into_view_options` - A map containing scroll options (behavior, block, inline)
-
-  ## Examples
-
-      GenDOM.Element.scroll_into_view(element, %{behavior: :smooth, block: :center})
-
-  """
-  def scroll_into_view(element, scroll_into_view_options) when is_map(scroll_into_view_options) do
-
+  def scroll_into_view(_element, scroll_into_view_options) when is_map(scroll_into_view_options) do
+    nil
   end
 
   @doc """
@@ -1396,8 +1381,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_to(element, top: 0, left: 0, behavior: :smooth)
 
   """
-  def scroll_to(element, options \\ []) when is_list(options) do
-
+  def scroll_to(_element, options \\ []) when is_list(options) do
+    nil
   end
 
   @doc """
@@ -1416,8 +1401,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.scroll_to(element, 0, 100)
 
   """
-  def scroll_to(element, x_coord, y_coord) do
-
+  def scroll_to(_element, _x_coord, _y_coord) do
+    nil
   end
 
   @doc """
@@ -1459,8 +1444,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_attribute_node(element, attr_node)
 
   """
-  def set_attribute_node(element, attribute) do
-
+  def set_attribute_node(_element, _attribute) do
+    nil
   end
 
   @doc """
@@ -1478,8 +1463,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_attribute_node_ns(element, namespaced_attr_node)
 
   """
-  def set_attribute_node_ns(element, attribute_node) do
-
+  def set_attribute_node_ns(_element, _attribute_node) do
+    nil
   end
 
   @doc """
@@ -1499,8 +1484,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_attribute_ns(element, "http://www.w3.org/1999/xlink", "href", "#target")
 
   """
-  def set_attribute_ns(element, namespace, name, value) do
-
+  def set_attribute_ns(_element, _namespace, _name, _value) do
+    nil
   end
 
   @doc """
@@ -1519,8 +1504,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_html_unsafe(element, "<p>Unsafe markup</p>")
 
   """
-  def set_html_unsafe(element, html) do
-
+  def set_html_unsafe(_element, _html) do
+    nil
   end
 
   @doc """
@@ -1538,8 +1523,8 @@ defmodule GenDOM.Element do
       GenDOM.Element.set_pointer_capture(element, pointer_id)
 
   """
-  def set_pointer_capture(element, pointer_id) do
-
+  def set_pointer_capture(_element, _pointer_id) do
+    nil
   end
 
   @doc """
@@ -1593,24 +1578,6 @@ defmodule GenDOM.Element do
     true
   end
 
-  @doc """
-  Toggles a boolean attribute on the element with a force parameter.
-
-  This method implements the DOM `toggleAttribute()` specification with force.
-  When force is false, the attribute is removed if present.
-
-  ## Parameters
-
-  - `element` - The element to toggle the attribute on
-  - `name` - The name of the attribute to toggle
-  - `force` - When false, forces the attribute to be removed
-
-  ## Examples
-
-      GenDOM.Element.toggle_attribute(element, "disabled", false)
-      # => Always removes the attribute and returns false
-
-  """
   def toggle_attribute(element_pid, name, false) do
     %{attributes: attributes} = get(element_pid)
     GenDOM.Element.put!(element_pid, :attributes, Map.put(attributes, name, false))
