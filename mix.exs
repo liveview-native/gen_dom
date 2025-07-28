@@ -64,7 +64,7 @@ defmodule GenDOM.MixProject do
     [
       {:live_view_native, github: "liveview-native/live_view_native"},
       {:selector, github: "liveview-native/selector"},
-      {:inherit, path: "../inherit"},
+      {:inherit, github: "dockyard/inherit"},
       {:floki, "~> 0.38"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]
