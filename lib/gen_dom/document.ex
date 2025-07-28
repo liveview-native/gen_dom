@@ -269,8 +269,6 @@ defmodule GenDOM.Document do
     visibility_state: nil
   ]
 
-  use GenDOM.QuerySelector
-
   import GenDOM.Task
 
   def encode(document) do

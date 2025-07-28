@@ -213,14 +213,14 @@ defmodule GenDOM.Node do
       def start_link(opts \\ []) do
         GenServer.start_link(__MODULE__, opts)
       end
-      defwithhold start_link: 1
-      defoverridable start_link: 1
+      defwithhold start_link: 0, start_link: 1
+      defoverridable start_link: 0, start_link: 1
 
       def start(opts \\ []) do
         GenServer.start(__MODULE__, opts)
       end
-      defwithhold start: 1
-      defoverridable start: 1
+      defwithhold start: 0, start: 1
+      defoverridable start: 0, start: 1
 
       def new(opts \\ []) when is_list(opts) do
         case start(opts) do
@@ -228,8 +228,8 @@ defmodule GenDOM.Node do
           _other -> {:error, "could not start"}
         end
       end
-      defwithhold new: 1
-      defoverridable new: 1
+      defwithhold new: 0, new: 1
+      defoverridable new: 0, new: 1
 
       def init(opts) do
         pid = self()
@@ -248,16 +248,16 @@ defmodule GenDOM.Node do
     name = GenDOM.generate_name(__MODULE__)
     GenServer.start_link(__MODULE__, Keyword.put(opts, :name, name), name: name)
   end
-  defwithhold start_link: 1
-  defoverridable start_link: 1
+  defwithhold start_link: 0, start_link: 1
+  defoverridable start_link: 0, start_link: 1
 
   @doc false
   def start(opts \\ []) do
     name = GenDOM.generate_name(__MODULE__)
     GenServer.start(__MODULE__, Keyword.put(opts, :name, name), name: name)
   end
-  defwithhold start: 1
-  defoverridable start: 1
+  defwithhold start: 0, start: 1
+  defoverridable start: 0, start: 1
 
   @doc """
   Creates a new Node and returns the Node struct.
@@ -275,7 +275,7 @@ defmodule GenDOM.Node do
       _other -> {:error, "could not start"}
     end
   end
-  defoverridable new: 1
+  defoverridable new: 0, new: 1
 
   @impl true
   def init(opts) do
@@ -888,7 +888,7 @@ defmodule GenDOM.Node do
       new_node.pid
     end
   end
-  defoverridable clone_node: 2
+  defoverridable clone_node: 1, clone_node: 2
 
   @doc """
   Compares the position of the current node against another node in any other document.

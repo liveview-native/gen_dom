@@ -212,6 +212,7 @@ defmodule GenDOM.HTMLElement do
     # Implementation stub
     nil
   end
+  defoverridable click: 1
 
   @doc """
   Makes the element the current keyboard focus.

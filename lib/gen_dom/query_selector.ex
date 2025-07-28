@@ -33,7 +33,7 @@ defmodule GenDOM.QuerySelector do
   import GenDOM.Task
 
   defmacro __using__(_opts) do
-    quote location: :keep do
+    quote do
       @doc """
       Returns the first element that matches the specified CSS selector.
 
