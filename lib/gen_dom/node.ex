@@ -1020,8 +1020,13 @@ defmodule GenDOM.Node do
   end
 
   defp do_insert_before(parent, new_node, %{pid: reference_node_pid}, opts) do
-    if new_node.parent_node,
-      do: GenServer.call(new_node.parent_node, {:remove_child, new_node, []})
+    parent = cond do
+      (new_node.parent_node == self()) ->
+        do_remove_child(parent, new_node, opts)
+      is_pid(new_node.parent_node) ->
+        GenServer.call(new_node.parent_node, {:remove_child, new_node, []})
+      true -> parent
+    end
 
     all_descendants = [new_node.pid | :pg.get_members(new_node.pid)]
 
