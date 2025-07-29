@@ -111,7 +111,7 @@ defmodule GenDOM.Matcher do
       Task.async(fn ->
         case GenServer.call(pid, :get) do
           %Node{} -> nil
-          # %Text{} -> nil
+          %Text{} -> nil
           element ->
             match(element, {:rules, rules}, opts)
         end
