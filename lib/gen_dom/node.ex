@@ -1051,7 +1051,6 @@ defmodule GenDOM.Node do
       reference_node_pid
     })
 
-    kill(reference_node_pid)
     struct(parent, child_nodes: Enum.reverse(child_nodes))
   end
 
@@ -1268,6 +1267,7 @@ defmodule GenDOM.Node do
       })
     end
 
+    kill(old_child_pid)
     struct(parent, child_nodes: Enum.reverse(child_nodes))
   end
 
