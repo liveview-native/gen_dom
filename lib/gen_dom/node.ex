@@ -791,12 +791,6 @@ defmodule GenDOM.Node do
   end
 
   defp do_append_child(parent, child, opts) do
-    IO.inspect({
-      parent,
-      Process.alive?(parent.pid),
-      child,
-      Process.alive?(child.pid)
-    })
     if child.parent_node,
       do: GenServer.call(child.parent_node, {:remove_child, child, []})
 
@@ -1208,7 +1202,6 @@ defmodule GenDOM.Node do
       send(opts[:receiver], {:remove_child, parent.pid, child.pid})
     end
 
-    kill(child.pid)
     struct(parent, child_nodes: child_nodes)
   end
 
