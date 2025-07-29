@@ -1202,6 +1202,7 @@ defmodule GenDOM.Node do
       send(opts[:receiver], {:remove_child, parent.pid, child.pid})
     end
 
+    kill(child.pid)
     struct(parent, child_nodes: child_nodes)
   end
 
@@ -1258,14 +1259,12 @@ defmodule GenDOM.Node do
     # GenServer.cast(new_child.pid, {:put, :parent_element, parent.pid})
     Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
 
-    if opts[:receiver] do
-      send(opts[:receiver], {
-        :replace_child,
-        parent.pid,
-        apply(Map.get(new_child, :__struct__), :encode, [new_child]),
-        old_child.pid
-      })
-    end
+    send_to_receiver(opts[:receiver], {
+      :replace_child,
+      parent.pid,
+      apply(Map.get(new_child, :__struct__), :encode, [new_child]),
+      old_child.pid
+    })
 
     kill(old_child_pid)
     struct(parent, child_nodes: Enum.reverse(child_nodes))
