@@ -841,6 +841,7 @@ defmodule GenDOM.Document do
       Task.async(fn ->
         element = GenServer.call(pid, :get)
         Matcher.match(element, {:id, id})
+        |> Map.get(:pid)
       end)
     end)
 
@@ -876,6 +877,7 @@ defmodule GenDOM.Document do
       Task.async(fn ->
         element = GenServer.call(pid, :get)
         Matcher.match(element, {:class, names})
+        |> Map.get(:pid)
       end)
     end)
 
@@ -929,6 +931,7 @@ defmodule GenDOM.Document do
       Task.async(fn ->
         element = GenServer.call(pid, :get)
         Matcher.match(element, {:tag_name, tag_name})
+        |> Map.get(:pid)
       end)
     end)
 
