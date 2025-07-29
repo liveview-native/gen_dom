@@ -47,7 +47,7 @@ defmodule GenDOM.MixProject do
   # Run "mix docs" to generate documentation.
   defp docs do
     [
-      main: "GenDOM",
+      main: "readme",
       source_url: "https://github.com/liveview-native/gen_dom",
       logo: "logo.png",
       extras: ["README.md", "LICENSE.md"],
