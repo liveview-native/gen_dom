@@ -136,7 +136,7 @@ defmodule GenDOM.HTMLButtonElementTest do
 
   describe "method inheritance chain" do
     test "has access to all methods from inheritance chain" do
-      button = HTMLButtonElement.new(tag_name: "button", type: "button")
+      _button = HTMLButtonElement.new(tag_name: "button", type: "button")
       
       # Node methods
       assert function_exported?(HTMLButtonElement, :append_child, 2)

@@ -284,14 +284,14 @@ defmodule GenDOM.Document do
 
   def allowed_fields,
     do: super() ++ [:title, :body, :head]
-
-  def handle_info({:DOWN, ref, :process, pid, :normal}, document) when is_reference(ref) and is_pid(pid) do
-    {:noreply, document}
-  end
-
-  def handle_info(msg, document) do
-    super(msg, document)
-  end
+  #
+  # def handle_info({:DOWN, ref, :process, pid, :normal}, document) when is_reference(ref) and is_pid(pid) do
+  #   {:noreply, document}
+  # end
+  #
+  # def handle_info(msg, document) do
+  #   super(msg, document)
+  # end
 
   def clone_node(document_pid, deep? \\ false) do
     document = get(document_pid)
@@ -1168,4 +1168,14 @@ defmodule GenDOM.Document do
   def writeln(_document_pid, line) when is_binary(line) do
     nil
   end
+
+  def query_selector_all(pid_or_node, selectors) do
+    GenDOM.QuerySelector.query_selector_all(pid_or_node, selectors)
+  end
+  defoverridable query_selector_all: 2
+
+  def query_selector(pid_or_node, selectors) do
+    GenDOM.QuerySelector.query_selector(pid_or_node, selectors)
+  end
+  defoverridable query_selector: 2
 end

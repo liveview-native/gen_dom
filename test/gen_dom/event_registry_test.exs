@@ -321,9 +321,6 @@ defmodule GenDOM.EventRegistryTest do
 
   describe "options_match?/2" do
     test "matches when both have capture: false" do
-      record_options = %{capture: false, once: true}
-      remove_options = %{capture: false, passive: true}
-      
       # Create registry to access private function (using a test helper)
       {:ok, registry} = EventRegistry.start_link([])
       

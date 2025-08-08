@@ -1,7 +1,7 @@
 defmodule GenDOM.DocumentTest do
   use ExUnit.Case, async: true
 
-  alias GenDOM.{Document, Element, Node}
+  alias GenDOM.{Document, Node}
 
   describe "Encoding" do
     test "will inherit form Node and extend" do

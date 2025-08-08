@@ -296,6 +296,24 @@ defmodule GenDOM.Element do
     slot: nil,
   ]
 
+  defmacro __using__(fields) do
+    quote do
+      require Inherit
+      Inherit.setup(unquote(__MODULE__), unquote(fields))
+
+      @impl true
+      def init(opts) do
+        {:ok, element} = super(opts)
+
+        fields = extract_fields_from_attributes(Keyword.get(opts, :attributes, %{}))
+
+        {:ok, struct(element, fields)}
+      end
+      defwithhold init: 1
+      defoverridable init: 1
+    end
+  end
+
   def encode(element) do
     Map.merge(super(element), %{
       class_list: element.class_list,
@@ -313,72 +331,66 @@ defmodule GenDOM.Element do
 
     {:ok, struct(element, fields)}
   end
+  defwithhold init: 1
 
-  def handle_call({:append_child, child, opts} = msg, from, element) do
+  def handle_call({:append_child, child_pid, opts} = msg, from, element) do
     {:reply, element, element} = super(msg, from, element)
-
-    element = do_append_child(element, child, opts)
-
+    element = do_append_child(element, child_pid, opts)
     {:reply, element, element}
   end
 
-  def handle_call({:insert_before, new_element, reference_element, opts} = msg, from, element) do
-    {:reply, element, element} = super(msg, from, element)
-
-    element = do_insert_before(element, new_element, reference_element, opts)
-
-    {:reply, element, element}
+  def handle_call({:insert_before, new_element_pid, reference_element_pid, opts} = msg, from, element) do
+    case super(msg, from, element) do
+      {:reply, :error, element} -> {:reply, :error, element}
+      {:reply, element, element} ->
+        element = do_insert_before(element, new_element_pid, reference_element_pid, opts)
+        {:reply, element, element}
+    end
   end
 
-  def handle_call({:remove_child, child, opts} = msg, from, element) do
-    {:reply, element, element} = super(msg, from, element)
-
-    element = do_remove_child(element, child, opts)
-
-    {:reply, element, element}
+  def handle_call({:remove_child, child_pid, opts} = msg, from, element) do
+    case super(msg, from, element) do
+      {:reply, :error, element} -> {:reply, :error, element}
+      {:reply, element, element} ->
+        element = do_remove_child(element, child_pid, opts)
+        {:reply, element, element}
+    end
   end
 
-  def handle_call({:replace_child, new_child, old_child, opts} = msg, from, element) do
-    {:reply, element, element} = super(msg, from, element)
-
-    element = do_replace_child(element, new_child, old_child, opts)
-
-    {:reply, element, element}
+  def handle_call({:replace_child, new_child_pid, old_child_pid, opts} = msg, from, element) do
+    case super(msg, from, element) do
+      {:reply, :error, element} -> {:reply, :error, element}
+      {:reply, element, element} ->
+        element = do_replace_child(element, new_child_pid, old_child_pid, opts)
+        {:reply, element, element}
+    end
   end
 
   def handle_call(msg, from, element) do
     super(msg, from, element)
   end
 
-  def handle_cast({:append_child, child, opts} = msg, element) do
+  def handle_cast({:append_child, child_pid, opts} = msg, element) do
     {:noreply, element} = super(msg, element)
-
-    element = do_append_child(element, child, opts)
-
+    element = do_append_child(element, child_pid, opts)
     {:noreply, element}
   end
 
-  def handle_cast({:insert_before, new_element, reference_element, opts} = msg, element) do
+  def handle_cast({:insert_before, new_element_pid, reference_element_pid, opts} = msg, element) do
     {:noreply, element} = super(msg, element)
-
-    element = do_insert_before(element, new_element, reference_element, opts)
-
+    element = do_insert_before(element, new_element_pid, reference_element_pid, opts)
     {:noreply, element}
   end
 
-  def handle_cast({:remove_child, child, opts} = msg, element) do
+  def handle_cast({:remove_child, child_pid, opts} = msg, element) do
     {:noreply, element} = super(msg, element)
-
-    element = do_remove_child(element, child, opts)
-
+    element = do_remove_child(element, child_pid, opts)
     {:noreply, element}
   end
 
-  def handle_cast({:replace_child, new_child, old_child, opts} = msg, element) do
+  def handle_cast({:replace_child, new_child_pid, old_child_pid, opts} = msg, element) do
     {:noreply, element} = super(msg, element)
-
-    element = do_replace_child(element, new_child, old_child, opts)
-
+    element = do_replace_child(element, new_child_pid, old_child_pid, opts)
     {:noreply, element}
   end
 
@@ -386,8 +398,8 @@ defmodule GenDOM.Element do
     super(msg, element)
   end
 
-  defp do_append_child(parent, child, opts) do
-    case child do
+  defp do_append_child(parent, child_pid, opts) do
+    case GenServer.call(child_pid, :get) do
       %GenDOM.Node{} -> parent
 
       %GenDOM.Text{} -> parent 
@@ -396,20 +408,19 @@ defmodule GenDOM.Element do
         pos = length(parent.children)
         children = List.insert_at(parent.children, -1, child.pid)
 
-        parent = struct(parent, children: children, child_element_count: parent.child_element_count + 1)
-        parent = struct(parent, children: children)
+        parent = Map.merge(parent, %{children: children, child_element_count: parent.child_element_count + 1})
 
         update_parent_relationships(parent, child, pos, opts)
-        update_element_relationships(child, parent, pos, opts)
+        update_element_relationships(parent, child.pid, pos, opts)
 
         parent
     end
   end
 
-  defp do_insert_before(element, new_element, %{pid: reference_element_pid}, _opts) do
+  defp do_insert_before(element, new_element_pid, reference_element_pid, _opts) do
     children = Enum.reduce(element.children, [], fn
       ^reference_element_pid, children ->
-        case new_element do
+        case GenServer.call(new_element_pid, :get) do
           %GenDOM.Text{} -> children
           new_element -> [reference_element_pid, new_element.pid | children]
         end
@@ -420,23 +431,27 @@ defmodule GenDOM.Element do
     struct(element, children: children, child_element_count: element.child_element_count + 1)
   end
 
-  defp do_remove_child(element, child, _opts) do
-    children = Enum.reject(element.children, &(&1 == child.pid))
-    struct(element, children: children, child_element_count: element.child_element_count - 1)
+  defp do_remove_child(element, child_pid, _opts) do
+    children = Enum.reject(element.children, &(&1 == child_pid))
+    Map.merge(element, %{
+      children: children,
+      child_element_count: element.child_element_count - 1
+    })
   end
 
-  defp do_replace_child(element, new_child, %{pid: old_child_pid}, opts) do
+  defp do_replace_child(element, new_child_pid, old_child_pid, opts) do
     {children, pos} = Enum.reduce(element.children, {[], 0}, fn
       child_pid, {children, pos} when child_pid == old_child_pid ->
+        new_child = GenServer.call(new_child_pid, :get)
         update_parent_relationships(element, new_child, pos, opts)
-        {[new_child.pid | children], pos + 1}
+        {[new_child_pid | children], pos + 1}
 
       child_pid, {children, pos} -> {[child_pid | children], pos + 1}
     end)
 
-    update_element_relationships(new_child, element, pos, opts)
+    update_element_relationships(element, new_child_pid, pos, opts)
 
-    struct(element, children: children)
+    Map.put(element, :childre, children)
   end
 
   def clone_node(node_pid, deep? \\ false) do
@@ -1585,10 +1600,10 @@ defmodule GenDOM.Element do
     false
   end
 
-  defp update_element_relationships(element, parent, pos, _opts) do
+  defp update_element_relationships(parent, child_pid, pos, _opts) do
     previous_element_sibling = if pos != 0 do
       previous_element_sibling = Enum.at(parent.children, pos - 1)
-      GenServer.cast(previous_element_sibling, {:put, :next_element_sibling, element.pid})
+      GenServer.cast(previous_element_sibling, {:put, :next_element_sibling, child_pid})
       previous_element_sibling
     end
 
@@ -1596,32 +1611,32 @@ defmodule GenDOM.Element do
     next_element_sibling = if next_pos < length(parent.children),
       do: Enum.at(parent.children, next_pos)
 
-    GenServer.cast(element.pid, {:merge, %{
+    GenServer.cast(child_pid, {:merge, %{
       previous_element_sibling: previous_element_sibling,
       next_element_sibling: next_element_sibling
     }})
   end
 
-  defp update_parent_relationships(%{children: [element_pid], pid: parent_pid}, %{__struct__: struct, pid: element_pid} = element, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
-    update_owner_document(element)
+  defp update_parent_relationships(%{children: [child_pid], pid: parent_pid}, %{__struct__: struct, pid: child_pid} = child, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(child)
     GenServer.cast(parent_pid, {:merge, %{
-      first_element_child: element_pid,
-      last_element_child: element_pid
+      first_element_child: child_pid,
+      last_element_child: child_pid
     }})
   end
 
-  defp update_parent_relationships(parent, %{__struct__: struct, pid: element_pid} = element, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
-    update_owner_document(element)
-    GenServer.cast(parent.pid, {:put, :first_element_child, element_pid})
+  defp update_parent_relationships(parent, %{__struct__: struct, pid: child_pid} = child, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(child)
+    GenServer.cast(parent.pid, {:put, :first_element_child, child_pid})
   end
 
-  defp update_parent_relationships(%{children: children} = parent, %{__struct__: struct, pid: element_pid} = element, pos, _opts) when pos + 1 >= length(children) and struct not in [GenDOM.Node, GenDOM.Text] do
-    update_owner_document(element)
-    GenServer.cast(parent.pid, {:put, :last_element_child, element_pid})
+  defp update_parent_relationships(%{children: children} = parent, %{__struct__: struct, pid: child_pid} = child, pos, _opts) when pos + 1 >= length(children) and struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(child)
+    GenServer.cast(parent.pid, {:put, :last_element_child, child_pid})
   end
 
-  defp update_parent_relationships(_parent, element, _pos, _opts) do
-    update_owner_document(element)
+  defp update_parent_relationships(_parent, child, _pos, _opts) do
+    update_owner_document(child)
     :ok
   end
 

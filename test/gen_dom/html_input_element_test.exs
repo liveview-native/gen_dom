@@ -148,7 +148,7 @@ defmodule GenDOM.HTMLInputElementTest do
 
   describe "method inheritance chain" do
     test "has access to all methods from inheritance chain" do
-      input = HTMLInputElement.new(tag_name: "input", type: "text")
+      _input = HTMLInputElement.new(tag_name: "input", type: "text")
       
       # Node methods
       assert function_exported?(HTMLInputElement, :append_child, 2)

@@ -20,39 +20,10 @@ defmodule GenDOM.EventTarget do
       end
   """
 
-  defmacro __using__(_opts) do
-    quote do
-      defdelegate add_event_listener(node, type, listener), to: GenDOM.EventTarget
-      defdelegate add_event_listener(node, type, options), to: GenDOM.EventTarget
-      defdelegate add_event_listener(node, type, use_capture?), to: GenDOM.EventTarget
-      defdelegate dispatch_event(node, event), to: GenDOM.EventTarget
-      defdelegate remove_event_listener(node, type, listener), to: GenDOM.EventTarget
-      defdelegate remove_event_listener(node, type, options), to: GenDOM.EventTarget
-      defdelegate remove_event_listener(node, type, use_capture?), to: GenDOM.EventTarget
-    end
-  end
+  use GenObject, []
 
   @doc """
   Registers an event handler of a specific event type on the EventTarget.
-
-  ## Parameters
-
-  - `node` - The EventTarget to register the listener on
-  - `type` - A string representing the event type to listen for
-  - `listener` - The event handler function or module
-
-  ## Examples
-
-      iex> GenDOM.EventTarget.add_event_listener(node, "click", fn event -> IO.puts("Clicked!") end)
-      :ok
-
-  """
-  def add_event_listener(_node, _type, _listener) do
-    nil
-  end
-
-  @doc """
-  Registers an event handler with additional options.
 
   ## Parameters
 
@@ -70,17 +41,20 @@ defmodule GenDOM.EventTarget do
 
   ## Examples
 
-      iex> GenDOM.EventTarget.add_event_listener(node, "click", listener, [capture: true, once: true])
+      iex> GenDOM.EventTarget.add_event_listener(node, "click", fn event -> IO.puts("Clicked!") end)
       :ok
 
   """
-  def add_event_listener(_node, _type, _listener, options) when is_list(options) do
+  def add_event_listener(node, type, listener, opts \\ [])
+  def add_event_listener(_node, _type, _listener, opts) when is_list(opts) do
     nil
   end
 
   def add_event_listener(_node, _type, _listener, use_capture?) when is_boolean(use_capture?) do
     nil
   end
+
+  defoverridable add_event_listener: 3
 
   @doc """
   Dispatches an event to this EventTarget.
@@ -109,6 +83,8 @@ defmodule GenDOM.EventTarget do
     nil
   end
 
+  defoverridable dispatch_event: 2
+
   @doc """
   Removes an event listener with additional options.
 
@@ -129,15 +105,14 @@ defmodule GenDOM.EventTarget do
       :ok
 
   """
-  def remove_event_listener(_node, _type, _listener) do
-    nil
-  end
-
-  def remove_event_listener(_node, _type, _listener, options) when is_list(options) do
+  def remove_event_listener(node, type, listener, opts \\ [])
+  def remove_event_listener(_node, _type, _listener, opts) when is_list(opts) do
     nil
   end
 
   def remove_event_listener(_node, _type, _listener, use_capture?) when is_boolean(use_capture?) do
     nil
   end
+
+  defoverridable remove_event_listener: 4
 end
