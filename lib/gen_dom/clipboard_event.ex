@@ -51,7 +51,7 @@ defmodule GenDOM.ClipboardEvent do
   ## Examples
 
       # Creating a ClipboardEvent
-      {:ok, event} = GenDOM.ClipboardEvent.new("copy", %{
+      event = GenDOM.ClipboardEvent.new("copy", %{
         clipboard_data: data_transfer_object,
         bubbles: true,
         cancelable: true

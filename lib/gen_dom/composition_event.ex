@@ -62,7 +62,7 @@ defmodule GenDOM.CompositionEvent do
   ## Examples
 
       # Creating a CompositionEvent
-      {:ok, event} = GenDOM.CompositionEvent.new("compositionstart", %{
+      event = GenDOM.CompositionEvent.new("compositionstart", %{
         data: "",
         view: window,
         bubbles: true,
@@ -116,7 +116,7 @@ defmodule GenDOM.CompositionEvent do
   and initialize composition events. This method is maintained only for backward compatibility.
 
   ## Parameters
-  - `event_pid` - The PID of the CompositionEvent object to initialize
+  - `event` - The CompositionEvent struct to initialize
   - `type` - Event type ("compositionstart", "compositionupdate", or "compositionend")
   - `can_bubble` - Whether the event can bubble
   - `cancelable` - Whether the event can be canceled
@@ -129,12 +129,12 @@ defmodule GenDOM.CompositionEvent do
 
   ## Examples
       # Legacy code example (deprecated - do not use in new code)
-      event = Document.create_event(document.pid, "CompositionEvent")
-      GenDOM.CompositionEvent.init_composition_event(event.pid,
+      event = Document.create_event(document, "CompositionEvent")
+      GenDOM.CompositionEvent.init_composition_event(event,
         "compositionstart",
         true,              # can_bubble
         false,             # cancelable
-        window.pid,        # view
+        window,            # view
         "",                # data
         "en-US"           # locale
       )
@@ -142,7 +142,7 @@ defmodule GenDOM.CompositionEvent do
   ## Modern Alternative
   Instead of using this deprecated method, create CompositionEvent instances directly:
 
-      event = CompositionEvent.new("compositionstart", %{
+      event = GenDOM.CompositionEvent.new("compositionstart", %{
         bubbles: true,
         cancelable: false,
         view: window,
@@ -152,7 +152,7 @@ defmodule GenDOM.CompositionEvent do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/CompositionEvent/initCompositionEvent
   """
-  def init_composition_event(_event_pid, _type, _can_bubble, _cancelable, _view, _data, _locale) do
+  def init_composition_event(_event, _type, _can_bubble, _cancelable, _view, _data, _locale) do
     :not_implemented
   end
 end

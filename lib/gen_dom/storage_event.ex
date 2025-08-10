@@ -47,7 +47,7 @@ defmodule GenDOM.StorageEvent do
   ## Examples
 
       # Creating a StorageEvent for item modification
-      {:ok, event} = GenDOM.StorageEvent.new("storage", %{
+      event = GenDOM.StorageEvent.new("storage", %{
         key: "user_preference",
         old_value: "dark",
         new_value: "light",
@@ -56,13 +56,13 @@ defmodule GenDOM.StorageEvent do
       })
 
       # Accessing storage change information
-      key = GenDOM.StorageEvent.get(event.pid, :key)
-      old_val = GenDOM.StorageEvent.get(event.pid, :old_value)
-      new_val = GenDOM.StorageEvent.get(event.pid, :new_value)
+      key = event.key
+      old_val = event.old_value
+      new_val = event.new_value
       IO.puts("Storage key '\#{key}' changed from '\#{old_val}' to '\#{new_val}'")
 
       # Creating a StorageEvent for new item
-      {:ok, new_item_event} = GenDOM.StorageEvent.new("storage", %{
+      new_item_event = GenDOM.StorageEvent.new("storage", %{
         key: "session_token",
         old_value: nil,
         new_value: "abc123xyz",
@@ -71,7 +71,7 @@ defmodule GenDOM.StorageEvent do
       })
 
       # Creating a StorageEvent for removed item
-      {:ok, removed_event} = GenDOM.StorageEvent.new("storage", %{
+      removed_event = GenDOM.StorageEvent.new("storage", %{
         key: "temp_data",
         old_value: "temporary_value",
         new_value: nil,
@@ -80,7 +80,7 @@ defmodule GenDOM.StorageEvent do
       })
 
       # Creating a StorageEvent for storage.clear()
-      {:ok, clear_event} = GenDOM.StorageEvent.new("storage", %{
+      clear_event = GenDOM.StorageEvent.new("storage", %{
         key: nil,
         old_value: nil,
         new_value: nil,
@@ -89,7 +89,7 @@ defmodule GenDOM.StorageEvent do
       })
 
       # Cross-document storage synchronization
-      {:ok, sync_event} = GenDOM.StorageEvent.new("storage", %{
+      sync_event = GenDOM.StorageEvent.new("storage", %{
         key: "shared_state",
         old_value: %{count: 5} |> Jason.encode!(),
         new_value: %{count: 6} |> Jason.encode!(),
@@ -127,7 +127,7 @@ defmodule GenDOM.StorageEvent do
   with legacy code.
 
   ## Parameters
-  - `event_pid` - The PID of the StorageEvent object to initialize
+  - `event` - The StorageEvent struct to initialize
   - `type` - A string defining the type of event (typically "storage")
   - `can_bubble` - A boolean indicating whether the event can bubble up through the DOM
   - `cancelable` - A boolean indicating whether the event's default action can be prevented
@@ -142,8 +142,8 @@ defmodule GenDOM.StorageEvent do
 
   ## Examples
       # Legacy code example (deprecated - do not use in new code)
-      event = Document.create_event(document.pid, "StorageEvent")
-      GenDOM.StorageEvent.init_storage_event(event.pid,
+      event = Document.create_event(document, "StorageEvent")
+      GenDOM.StorageEvent.init_storage_event(event,
         "storage",                # type
         false,                    # can_bubble
         false,                    # cancelable
@@ -151,13 +151,13 @@ defmodule GenDOM.StorageEvent do
         "old_value",              # old_value
         "new_value",              # new_value
         "https://example.com",    # url
-        local_storage.pid         # storage_area
+        local_storage             # storage_area
       )
 
   ## Modern Alternative
   Instead of using this deprecated method, create StorageEvent instances directly:
 
-      {:ok, event} = StorageEvent.new("storage", %{
+      event = GenDOM.StorageEvent.new("storage", %{
         bubbles: false,
         cancelable: false,
         key: "user_setting",
@@ -170,7 +170,7 @@ defmodule GenDOM.StorageEvent do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/StorageEvent/initStorageEvent
   """
-  def init_storage_event(_event_pid, _type, _can_bubble, _cancelable, _key, _old_value, _new_value, _url, _storage_area) do
+  def init_storage_event(_event, _type, _can_bubble, _cancelable, _key, _old_value, _new_value, _url, _storage_area) do
     :not_implemented
   end
 end

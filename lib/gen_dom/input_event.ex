@@ -63,7 +63,7 @@ defmodule GenDOM.InputEvent do
   ## Examples
 
       # Creating an InputEvent
-      {:ok, event} = GenDOM.InputEvent.new("input", %{
+      event = GenDOM.InputEvent.new("input", %{
         data: "Hello",
         input_type: "insertText",
         is_composing: false,
@@ -115,14 +115,14 @@ defmodule GenDOM.InputEvent do
   the input operation if it is not canceled.
 
   ## Parameters
-  - `event_pid` - The PID of the InputEvent object
+  - `event` - The InputEvent struct
 
   ## Returns
   An array of StaticRange objects, or an empty array if no ranges are affected
   or if called on an `input` event (only valid for `beforeinput`).
 
   ## Examples
-      ranges = GenDOM.InputEvent.get_target_ranges(event.pid)
+      ranges = GenDOM.InputEvent.get_target_ranges(event)
       Enum.each(ranges, fn range ->
         IO.puts("Affected range: \#{range.start_offset} to \#{range.end_offset}")
       end)
@@ -130,7 +130,7 @@ defmodule GenDOM.InputEvent do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/InputEvent/getTargetRanges
   """
-  def get_target_ranges(_event_pid) do
+  def get_target_ranges(_event) do
     :not_implemented
   end
 end

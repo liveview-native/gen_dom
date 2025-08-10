@@ -45,7 +45,7 @@ defmodule GenDOM.AnimationEvent do
   ## Examples
 
       # Creating an AnimationEvent
-      {:ok, event} = GenDOM.AnimationEvent.new("animationstart", %{
+      event = GenDOM.AnimationEvent.new("animationstart", %{
         animation_name: "slide-in",
         elapsed_time: 0.0,
         pseudo_element: ""

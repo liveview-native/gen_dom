@@ -57,7 +57,7 @@ defmodule GenDOM.TouchEvent do
   ## Examples
 
       # Creating a TouchEvent for touch start
-      {:ok, event} = GenDOM.TouchEvent.new("touchstart", %{
+      event = GenDOM.TouchEvent.new("touchstart", %{
         touches: [touch1, touch2],
         target_touches: [touch1],
         changed_touches: [touch1],
@@ -70,14 +70,14 @@ defmodule GenDOM.TouchEvent do
       })
 
       # Accessing touch information
-      touches = GenDOM.TouchEvent.get(event.pid, :touches)
-      changed = GenDOM.TouchEvent.get(event.pid, :changed_touches)
+      touches = event.touches
+      changed = event.changed_touches
       
       IO.puts("Total touches: \#{length(touches)}")
       IO.puts("Changed touches: \#{length(changed)}")
 
       # Single finger touch
-      {:ok, single_touch} = GenDOM.TouchEvent.new("touchstart", %{
+      single_touch = GenDOM.TouchEvent.new("touchstart", %{
         touches: [touch1],
         target_touches: [touch1],
         changed_touches: [touch1],
@@ -85,7 +85,7 @@ defmodule GenDOM.TouchEvent do
       })
 
       # Multi-touch pinch gesture
-      {:ok, pinch_event} = GenDOM.TouchEvent.new("touchmove", %{
+      pinch_event = GenDOM.TouchEvent.new("touchmove", %{
         touches: [touch1, touch2],
         target_touches: [touch1, touch2],
         changed_touches: [touch1, touch2],
@@ -94,7 +94,7 @@ defmodule GenDOM.TouchEvent do
       })
 
       # Touch end event
-      {:ok, touch_end} = GenDOM.TouchEvent.new("touchend", %{
+      touch_end = GenDOM.TouchEvent.new("touchend", %{
         touches: [],
         target_touches: [],
         changed_touches: [touch1],
@@ -102,7 +102,7 @@ defmodule GenDOM.TouchEvent do
       })
 
       # Touch with modifier keys
-      {:ok, modified_touch} = GenDOM.TouchEvent.new("touchstart", %{
+      modified_touch = GenDOM.TouchEvent.new("touchstart", %{
         touches: [touch1],
         target_touches: [touch1],
         changed_touches: [touch1],
@@ -113,7 +113,7 @@ defmodule GenDOM.TouchEvent do
       })
 
       # Complex multi-touch interaction
-      {:ok, complex_touch} = GenDOM.TouchEvent.new("touchmove", %{
+      complex_touch = GenDOM.TouchEvent.new("touchmove", %{
         touches: [touch1, touch2, touch3],
         target_touches: [touch1, touch2],
         changed_touches: [touch2],
@@ -122,7 +122,7 @@ defmodule GenDOM.TouchEvent do
       })
 
       # Touch cancel event (system interruption)
-      {:ok, cancel_event} = GenDOM.TouchEvent.new("touchcancel", %{
+      cancel_event = GenDOM.TouchEvent.new("touchcancel", %{
         touches: [],
         target_touches: [],
         changed_touches: [touch1, touch2]

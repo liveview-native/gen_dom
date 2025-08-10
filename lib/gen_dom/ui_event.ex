@@ -68,8 +68,8 @@ defmodule GenDOM.UIEvent do
       })
 
       # Accessing UIEvent properties
-      view = GenDOM.UIEvent.get(event.pid, :view)
-      detail = GenDOM.UIEvent.get(event.pid, :detail)
+      view = event.view
+      detail = event.detail
   """
 
   use GenDOM.Event, [
@@ -98,7 +98,7 @@ defmodule GenDOM.UIEvent do
   with legacy code.
 
   ## Parameters
-  - `event_pid` - The PID of the UIEvent object to initialize
+  - `event` - The UIEvent struct to initialize
   - `type` - A string defining the type of event (e.g., "load", "resize", "scroll")
   - `can_bubble` - A boolean indicating whether the event can bubble up through the DOM
   - `cancelable` - A boolean indicating whether the event's default action can be prevented
@@ -110,12 +110,12 @@ defmodule GenDOM.UIEvent do
 
   ## Examples
       # Legacy code example (deprecated - do not use in new code)
-      event = Document.create_event(document.pid, "UIEvent")
-      GenDOM.UIEvent.init_ui_event(event.pid,
+      event = Document.create_event(document, "UIEvent")
+      GenDOM.UIEvent.init_ui_event(event,
         "resize",          # type
         false,             # can_bubble (resize doesn't bubble)
         false,             # cancelable (resize can't be cancelled)
-        window.pid,        # view
+        window,            # view
         0                  # detail
       )
 
@@ -132,7 +132,7 @@ defmodule GenDOM.UIEvent do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/initUIEvent
   """
-  def init_ui_event(_event_pid, _type, _can_bubble, _cancelable, _view, _detail) do
+  def init_ui_event(_event, _type, _can_bubble, _cancelable, _view, _detail) do
     :not_implemented
   end
 end

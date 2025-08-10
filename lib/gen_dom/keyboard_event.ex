@@ -58,7 +58,7 @@ defmodule GenDOM.KeyboardEvent do
   ## Examples
 
       # Creating a KeyboardEvent
-      {:ok, event} = GenDOM.KeyboardEvent.new("keydown", %{
+      event = GenDOM.KeyboardEvent.new("keydown", %{
         key: "Enter",
         code: "Enter",
         ctrl_key: false,
@@ -106,7 +106,7 @@ defmodule GenDOM.KeyboardEvent do
   whether a modifier key was pressed when the keyboard event was created.
 
   ## Parameters
-  - `event_pid` - The PID of the KeyboardEvent object
+  - `event` - The KeyboardEvent struct
   - `key` - A case-sensitive string representing the modifier key to query. Valid values include:
     - "Alt" - The Alt key
     - "AltGraph" - The AltGraph key
@@ -127,18 +127,18 @@ defmodule GenDOM.KeyboardEvent do
 
   ## Examples
       # Check if Control key was pressed
-      is_ctrl = GenDOM.KeyboardEvent.get_modifier_state(event.pid, "Control")
+      is_ctrl = GenDOM.KeyboardEvent.get_modifier_state(event, "Control")
       
       # Check multiple modifiers
-      if GenDOM.KeyboardEvent.get_modifier_state(event.pid, "Control") and
-         GenDOM.KeyboardEvent.get_modifier_state(event.pid, "Shift") do
+      if GenDOM.KeyboardEvent.get_modifier_state(event, "Control") and
+         GenDOM.KeyboardEvent.get_modifier_state(event, "Shift") do
         # Handle Ctrl+Shift combination
       end
 
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/getModifierState
   """
-  def get_modifier_state(_event_pid, _key) do
+  def get_modifier_state(_event, _key) do
     :not_implemented
   end
 end

@@ -46,7 +46,7 @@ defmodule GenDOM.PopStateEvent do
   ## Examples
 
       # Creating a PopStateEvent with state data
-      {:ok, event} = GenDOM.PopStateEvent.new("popstate", %{
+      event = GenDOM.PopStateEvent.new("popstate", %{
         state: %{
           page: "dashboard",
           user_id: 123,
@@ -58,8 +58,8 @@ defmodule GenDOM.PopStateEvent do
       })
 
       # Accessing navigation state
-      state = GenDOM.PopStateEvent.get(event.pid, :state)
-      has_transition = GenDOM.PopStateEvent.get(event.pid, :has_ua_visual_transition)
+      state = event.state
+      has_transition = event.has_ua_visual_transition
       
       case state do
         %{page: page, user_id: user_id} ->
@@ -71,13 +71,13 @@ defmodule GenDOM.PopStateEvent do
       end
 
       # Creating a PopStateEvent for initial page load (state is typically null)
-      {:ok, initial_event} = GenDOM.PopStateEvent.new("popstate", %{
+      initial_event = GenDOM.PopStateEvent.new("popstate", %{
         state: nil,
         has_ua_visual_transition: true
       })
 
       # SPA routing with complex state
-      {:ok, spa_event} = GenDOM.PopStateEvent.new("popstate", %{
+      spa_event = GenDOM.PopStateEvent.new("popstate", %{
         state: %{
           route: "/products/123",
           params: %{category: "electronics", sort: "price"},
@@ -86,7 +86,7 @@ defmodule GenDOM.PopStateEvent do
       })
 
       # Browser navigation event
-      {:ok, nav_event} = GenDOM.PopStateEvent.new("popstate", %{
+      nav_event = GenDOM.PopStateEvent.new("popstate", %{
         state: %{
           component: "ProductDetail",
           id: "prod-456",
@@ -96,7 +96,7 @@ defmodule GenDOM.PopStateEvent do
       })
 
       # History API manipulation result
-      {:ok, history_event} = GenDOM.PopStateEvent.new("popstate", %{
+      history_event = GenDOM.PopStateEvent.new("popstate", %{
         state: %{
           modal: "settings",
           background_route: "/dashboard",

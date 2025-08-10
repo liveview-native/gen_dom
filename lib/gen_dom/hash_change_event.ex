@@ -44,7 +44,7 @@ defmodule GenDOM.HashChangeEvent do
   ## Examples
 
       # Creating a HashChangeEvent for navigation
-      {:ok, event} = GenDOM.HashChangeEvent.new("hashchange", %{
+      event = GenDOM.HashChangeEvent.new("hashchange", %{
         old_url: "https://example.com/page#section1",
         new_url: "https://example.com/page#section2",
         bubbles: true,
@@ -52,33 +52,33 @@ defmodule GenDOM.HashChangeEvent do
       })
 
       # Accessing URL change information
-      old_url = GenDOM.HashChangeEvent.get(event.pid, :old_url)
-      new_url = GenDOM.HashChangeEvent.get(event.pid, :new_url)
+      old_url = event.old_url
+      new_url = event.new_url
       
       old_hash = URI.parse(old_url).fragment || ""
       new_hash = URI.parse(new_url).fragment || ""
       IO.puts("Hash changed from '\#{old_hash}' to '\#{new_hash}'")
 
       # Creating a HashChangeEvent for initial hash
-      {:ok, initial_event} = GenDOM.HashChangeEvent.new("hashchange", %{
+      initial_event = GenDOM.HashChangeEvent.new("hashchange", %{
         old_url: "https://example.com/app",
         new_url: "https://example.com/app#home"
       })
 
       # Single-page application routing
-      {:ok, spa_event} = GenDOM.HashChangeEvent.new("hashchange", %{
+      spa_event = GenDOM.HashChangeEvent.new("hashchange", %{
         old_url: "https://myapp.com/#/dashboard",
         new_url: "https://myapp.com/#/profile"
       })
 
       # Hash removal event
-      {:ok, removal_event} = GenDOM.HashChangeEvent.new("hashchange", %{
+      removal_event = GenDOM.HashChangeEvent.new("hashchange", %{
         old_url: "https://example.com/docs#api",
         new_url: "https://example.com/docs"
       })
 
       # Complex hash with parameters
-      {:ok, complex_event} = GenDOM.HashChangeEvent.new("hashchange", %{
+      complex_event = GenDOM.HashChangeEvent.new("hashchange", %{
         old_url: "https://app.com/#/user/123/edit",
         new_url: "https://app.com/#/user/123/view"
       })

@@ -56,7 +56,7 @@ defmodule GenDOM.ErrorEvent do
   ## Examples
 
       # Creating an ErrorEvent
-      {:ok, event} = GenDOM.ErrorEvent.new("error", %{
+      event = GenDOM.ErrorEvent.new("error", %{
         message: "Uncaught ReferenceError: foo is not defined",
         filename: "/js/app.js",
         lineno: 42,

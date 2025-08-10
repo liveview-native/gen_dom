@@ -7,7 +7,7 @@ defmodule GenDOM.Event do
   of an asynchronous task. It can also be triggered programmatically.
   """
 
-  use GenObject, [
+  use Inherit, [
     # Instance properties
     bubbles: false,
     cancelable: false,
@@ -20,6 +20,25 @@ defmodule GenDOM.Event do
     time_stamp: 0,
     type: ""
   ]
+
+  defmacro __using__(fields) do
+    quote do
+      require Inherit
+      Inherit.setup(unquote(__MODULE__), unquote(fields))
+
+      def new(type, options \\ []) do
+        %__MODULE__{
+          type: type,
+          bubbles: Keyword.get(options, :bubbles, false),
+          cancelable: Keyword.get(options, :cancelable, false),
+          composed: Keyword.get(options, :composed, false),
+          time_stamp: System.system_time(:millisecond)
+        }
+      end
+      defwithhold new: 1, new: 2
+      defoverridable new: 1, new: 2
+    end
+  end
 
   @doc """
   Creates a new Event.
@@ -37,28 +56,29 @@ defmodule GenDOM.Event do
   ## Examples
 
       # Create a simple event
-      {:ok, event} = GenDOM.Event.new("click")
+      event = GenDOM.Event.new("click")
 
       # Create an event that bubbles and can be cancelled
-      {:ok, event} = GenDOM.Event.new("look", bubbles: true, cancelable: false)
+      event = GenDOM.Event.new("look", bubbles: true, cancelable: false)
 
       # Create an event with all options
-      {:ok, event} = GenDOM.Event.new("custom", 
+      event = GenDOM.Event.new("custom", 
         bubbles: true, 
         cancelable: true, 
         composed: true
       )
   """
   def new(type, options \\ []) do
-    event = %__MODULE__{
+    %__MODULE__{
       type: type,
       bubbles: Keyword.get(options, :bubbles, false),
       cancelable: Keyword.get(options, :cancelable, false),
       composed: Keyword.get(options, :composed, false),
       time_stamp: System.system_time(:millisecond)
     }
-    {:ok, event}
   end
+  defwithhold new: 1, new: 2
+  defoverridable new: 1, new: 2
 
   @doc """
   Returns the event's path (objects on which listeners will be invoked).
@@ -66,7 +86,7 @@ defmodule GenDOM.Event do
   The composedPath() method returns an array of the objects on which listeners will be invoked.
   This does not include nodes in shadow trees if the shadow root was created with ShadowRoot.mode closed.
   """
-  def composed_path(%__MODULE__{} = _event) do
+  def composed_path(_event) do
     # Implementation would return event path
     []
   end
@@ -77,11 +97,11 @@ defmodule GenDOM.Event do
   The preventDefault() method tells the user agent that if the event does not get explicitly handled,
   its default action should not be taken as it normally would be.
   """
-  def prevent_default(%__MODULE__{cancelable: true} = event) do
-    %{event | default_prevented: true}
+  def prevent_default(%{cancelable: true} = event) do
+    Map.put(event, :default_prevented, true)
   end
 
-  def prevent_default(%__MODULE__{} = event), do: event
+  def prevent_default(event), do: event
 
   @doc """
   Prevents other listeners of the same event from being called.
@@ -91,7 +111,7 @@ defmodule GenDOM.Event do
   in which they were added. If stopImmediatePropagation() is invoked during one such call,
   no remaining listeners will be called.
   """
-  def stop_immediate_propagation(%__MODULE__{} = event) do
+  def stop_immediate_propagation(event) do
     # Implementation would stop immediate propagation
     event
   end
@@ -102,7 +122,7 @@ defmodule GenDOM.Event do
   The stopPropagation() method prevents further propagation of the current event in the capturing
   and bubbling phases. It does not, however, prevent any default behaviors from occurring.
   """
-  def stop_propagation(%__MODULE__{} = event) do
+  def stop_propagation(event) do
     # Implementation would stop propagation
     event
   end

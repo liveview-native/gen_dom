@@ -61,7 +61,7 @@ defmodule GenDOM.WheelEvent do
   ## Examples
 
       # Creating a WheelEvent
-      {:ok, event} = GenDOM.WheelEvent.new("wheel", %{
+      event = GenDOM.WheelEvent.new("wheel", %{
         delta_x: 0,
         delta_y: 100,
         delta_z: 0,

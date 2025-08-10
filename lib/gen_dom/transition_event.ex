@@ -46,7 +46,7 @@ defmodule GenDOM.TransitionEvent do
   ## Examples
 
       # Creating a TransitionEvent for transition completion
-      {:ok, event} = GenDOM.TransitionEvent.new("transitionend", %{
+      event = GenDOM.TransitionEvent.new("transitionend", %{
         property_name: "opacity",
         elapsed_time: 0.5,
         pseudo_element: "",
@@ -55,33 +55,33 @@ defmodule GenDOM.TransitionEvent do
       })
 
       # Accessing transition information
-      property = GenDOM.TransitionEvent.get(event.pid, :property_name)
-      time = GenDOM.TransitionEvent.get(event.pid, :elapsed_time)
+      property = event.property_name
+      time = event.elapsed_time
       IO.puts("Transition on \#{property} completed in \#{time}s")
 
       # Creating a transition start event
-      {:ok, start_event} = GenDOM.TransitionEvent.new("transitionstart", %{
+      start_event = GenDOM.TransitionEvent.new("transitionstart", %{
         property_name: "transform",
         elapsed_time: 0.0,
         pseudo_element: ""
       })
 
       # Creating a transition event on pseudo-element
-      {:ok, pseudo_event} = GenDOM.TransitionEvent.new("transitionend", %{
+      pseudo_event = GenDOM.TransitionEvent.new("transitionend", %{
         property_name: "background-color",
         elapsed_time: 0.25,
         pseudo_element: "::before"
       })
 
       # Multiple property transition
-      {:ok, multi_event} = GenDOM.TransitionEvent.new("transitionend", %{
+      multi_event = GenDOM.TransitionEvent.new("transitionend", %{
         property_name: "width",
         elapsed_time: 1.0,
         pseudo_element: ""
       })
 
       # Cancelled transition event
-      {:ok, cancel_event} = GenDOM.TransitionEvent.new("transitioncancel", %{
+      cancel_event = GenDOM.TransitionEvent.new("transitioncancel", %{
         property_name: "height",
         elapsed_time: 0.1,
         pseudo_element: ""

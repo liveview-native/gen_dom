@@ -46,7 +46,7 @@ defmodule GenDOM.CustomEvent do
   ## Examples
 
       # Creating a CustomEvent with data
-      {:ok, event} = GenDOM.CustomEvent.new("user-login", %{
+      event = GenDOM.CustomEvent.new("user-login", %{
         detail: %{
           user_id: 123,
           username: "john_doe",
@@ -57,11 +57,11 @@ defmodule GenDOM.CustomEvent do
       })
 
       # Accessing custom data
-      user_data = GenDOM.CustomEvent.get(event.pid, :detail)
+      user_data = event.detail
       IO.puts("User \#{user_data.username} logged in")
 
       # Creating a simple notification event
-      {:ok, notification} = GenDOM.CustomEvent.new("notification", %{
+      notification = GenDOM.CustomEvent.new("notification", %{
         detail: "File saved successfully",
         bubbles: true
       })
@@ -83,7 +83,7 @@ defmodule GenDOM.CustomEvent do
   and initialize custom events. This method is maintained only for backward compatibility.
 
   ## Parameters
-  - `event_pid` - The PID of the CustomEvent object to initialize
+  - `event` - The CustomEvent struct to initialize
   - `type` - A string defining the type of event
   - `can_bubble` - A boolean indicating whether the event can bubble up through the DOM
   - `cancelable` - A boolean indicating whether the event's default action can be prevented
@@ -94,8 +94,8 @@ defmodule GenDOM.CustomEvent do
 
   ## Examples
       # Legacy code example (deprecated - do not use in new code)
-      event = Document.create_event(document.pid, "CustomEvent")
-      GenDOM.CustomEvent.init_custom_event(event.pid,
+      event = Document.create_event(document, "CustomEvent")
+      GenDOM.CustomEvent.init_custom_event(event,
         "user-action",     # type
         true,              # can_bubble
         true,              # cancelable
@@ -105,7 +105,7 @@ defmodule GenDOM.CustomEvent do
   ## Modern Alternative
   Instead of using this deprecated method, create CustomEvent instances directly:
 
-      event = CustomEvent.new("user-action", %{
+      event = GenDOM.CustomEvent.new("user-action", %{
         bubbles: true,
         cancelable: true,
         detail: %{action: "save"}
@@ -114,7 +114,7 @@ defmodule GenDOM.CustomEvent do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/initCustomEvent
   """
-  def init_custom_event(_event_pid, _type, _can_bubble, _cancelable, _detail) do
+  def init_custom_event(_event, _type, _can_bubble, _cancelable, _detail) do
     :not_implemented
   end
 end

@@ -90,11 +90,11 @@ defmodule GenDOM.MouseEvent do
       })
 
       # Checking modifier keys
-      is_ctrl = GenDOM.MouseEvent.get_modifier_state(event.pid, "Control")
+      is_ctrl = GenDOM.MouseEvent.get_modifier_state(event, "Control")
       
       # Getting coordinates
-      x = GenDOM.MouseEvent.get(event.pid, :client_x)
-      y = GenDOM.MouseEvent.get(event.pid, :client_y)
+      x = event.client_x
+      y = event.client_y
   """
 
   use GenDOM.UIEvent, [
@@ -150,7 +150,7 @@ defmodule GenDOM.MouseEvent do
   mouse event was fired.
 
   ## Parameters
-  - `event_pid` - The PID of the MouseEvent object
+  - `event` - The MouseEvent struct
   - `key` - A case-sensitive string representing the modifier key to query. Valid values include:
     - "Alt" - The Alt key (Option on macOS)
     - "Control" - The Control key
@@ -168,21 +168,21 @@ defmodule GenDOM.MouseEvent do
 
   ## Examples
       # Check if Control key was pressed during the mouse event
-      is_ctrl_pressed = GenDOM.MouseEvent.get_modifier_state(event.pid, "Control")
+      is_ctrl_pressed = GenDOM.MouseEvent.get_modifier_state(event, "Control")
       
       # Check if Meta (Command/Windows) key was pressed
-      is_meta_pressed = GenDOM.MouseEvent.get_modifier_state(event.pid, "Meta")
+      is_meta_pressed = GenDOM.MouseEvent.get_modifier_state(event, "Meta")
       
       # Check multiple modifiers
-      if GenDOM.MouseEvent.get_modifier_state(event.pid, "Shift") and
-         GenDOM.MouseEvent.get_modifier_state(event.pid, "Alt") do
+      if GenDOM.MouseEvent.get_modifier_state(event, "Shift") and
+         GenDOM.MouseEvent.get_modifier_state(event, "Alt") do
         # Handle Shift+Alt combination
       end
 
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/getModifierState
   """
-  def get_modifier_state(_event_pid, _key) do
+  def get_modifier_state(_event, _key) do
     :not_implemented
   end
 
@@ -198,7 +198,7 @@ defmodule GenDOM.MouseEvent do
   with legacy code.
 
   ## Parameters
-  - `event_pid` - The PID of the MouseEvent object to initialize
+  - `event` - The MouseEvent struct to initialize
   - `type` - A string defining the type of event (e.g., "click", "mousedown", "mouseup", "mouseover")
   - `can_bubble` - A boolean indicating whether the event can bubble up through the DOM
   - `cancelable` - A boolean indicating whether the event's default action can be prevented
@@ -220,12 +220,12 @@ defmodule GenDOM.MouseEvent do
 
   ## Examples
       # Legacy code example (deprecated - do not use in new code)
-      event = Document.create_event(document.pid, "MouseEvent")
-      GenDOM.MouseEvent.init_mouse_event(event.pid,
+      event = Document.create_event(document, "MouseEvent")
+      GenDOM.MouseEvent.init_mouse_event(event,
         "click",           # type
         true,              # can_bubble
         true,              # cancelable
-        window.pid,        # view
+        window,            # view
         1,                 # detail (click count)
         100,               # screen_x
         200,               # screen_y
@@ -263,7 +263,7 @@ defmodule GenDOM.MouseEvent do
   https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/initMouseEvent
   """
   def init_mouse_event(
-    _event_pid,
+    _event,
     _type,
     _can_bubble,
     _cancelable,

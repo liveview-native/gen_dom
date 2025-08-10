@@ -47,14 +47,14 @@ defmodule GenDOM.FormDataEvent do
       |> FormData.append("username", "john_doe")
       |> FormData.append("email", "john@example.com")
       
-      {:ok, event} = GenDOM.FormDataEvent.new("formdata", %{
+      event = GenDOM.FormDataEvent.new("formdata", %{
         form_data: form_data,
         bubbles: true,
         cancelable: false
       })
 
       # Accessing and modifying form data
-      form_data = GenDOM.FormDataEvent.get(event.pid, :form_data)
+      form_data = event.form_data
       
       # Add CSRF token
       updated_form_data = FormData.append(form_data, "csrf_token", get_csrf_token())
@@ -64,7 +64,7 @@ defmodule GenDOM.FormDataEvent do
         String.downcase(FormData.get(updated_form_data, "username")))
 
       # Event for contact form submission
-      {:ok, contact_event} = GenDOM.FormDataEvent.new("formdata", %{
+      contact_event = GenDOM.FormDataEvent.new("formdata", %{
         form_data: %FormData{}
         |> FormData.append("name", "Jane Smith")
         |> FormData.append("message", "Hello, world!")
@@ -72,7 +72,7 @@ defmodule GenDOM.FormDataEvent do
       })
 
       # File upload form event
-      {:ok, upload_event} = GenDOM.FormDataEvent.new("formdata", %{
+      upload_event = GenDOM.FormDataEvent.new("formdata", %{
         form_data: %FormData{}
         |> FormData.append("title", "My Document")
         |> FormData.append("file", file_blob, "document.pdf")
@@ -80,7 +80,7 @@ defmodule GenDOM.FormDataEvent do
       })
 
       # Dynamic form modification example
-      {:ok, dynamic_event} = GenDOM.FormDataEvent.new("formdata", %{
+      dynamic_event = GenDOM.FormDataEvent.new("formdata", %{
         form_data: %FormData{}
         |> FormData.append("user_id", "123")
         |> FormData.append("preferences", Jason.encode!(%{theme: "dark", lang: "en"}))
@@ -88,7 +88,7 @@ defmodule GenDOM.FormDataEvent do
 
       # Processing form data in event handler
       def handle_form_data_event(event) do
-        form_data = GenDOM.FormDataEvent.get(event.pid, :form_data)
+        form_data = event.form_data
         
         # Add server-side validation token
         enhanced_data = FormData.append(form_data, "validation_token", generate_token())

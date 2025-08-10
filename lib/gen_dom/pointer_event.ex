@@ -90,14 +90,14 @@ defmodule GenDOM.PointerEvent do
       })
 
       # Handling different pointer types
-      case GenDOM.PointerEvent.get(event.pid, :pointer_type) do
+      case event.pointer_type do
         "mouse" -> handle_mouse_input(event)
         "pen" -> handle_pen_input(event)
         "touch" -> handle_touch_input(event)
       end
 
       # Getting coalesced events for smooth drawing
-      coalesced = GenDOM.PointerEvent.get_coalesced_events(event.pid)
+      coalesced = GenDOM.PointerEvent.get_coalesced_events(event)
       Enum.each(coalesced, &draw_point/1)
   """
 
@@ -139,14 +139,14 @@ defmodule GenDOM.PointerEvent do
   using all the intermediate pointer positions that occurred between animation frames.
 
   ## Parameters
-  - `event_pid` - The PID of the PointerEvent object
+  - `event` - The PointerEvent struct
 
   ## Returns
   A list of PointerEvent instances that were coalesced into this event. Returns an empty
   list for non-pointermove events or when no coalescing occurred.
 
   ## Examples
-      coalesced_events = GenDOM.PointerEvent.get_coalesced_events(event.pid)
+      coalesced_events = GenDOM.PointerEvent.get_coalesced_events(event)
       Enum.each(coalesced_events, fn event ->
         # Process each intermediate pointer position
         IO.puts("Pointer at: \#{event.client_x}, \#{event.client_y}")
@@ -158,7 +158,7 @@ defmodule GenDOM.PointerEvent do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/getCoalescedEvents
   """
-  def get_coalesced_events(_event_pid) do
+  def get_coalesced_events(_event) do
     :not_implemented
   end
 
@@ -175,14 +175,14 @@ defmodule GenDOM.PointerEvent do
   cases where predictions don't match actual future events.
 
   ## Parameters
-  - `event_pid` - The PID of the PointerEvent object
+  - `event` - The PointerEvent struct
 
   ## Returns
   A list of predicted PointerEvent instances that may follow this event. Returns an empty
   list for non-pointermove events or when prediction is not available.
 
   ## Examples
-      predicted_events = GenDOM.PointerEvent.get_predicted_events(event.pid)
+      predicted_events = GenDOM.PointerEvent.get_predicted_events(event)
       
       # Use predictions for speculative rendering
       Enum.each(predicted_events, fn predicted_event ->
@@ -197,7 +197,7 @@ defmodule GenDOM.PointerEvent do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/PointerEvent/getPredictedEvents
   """
-  def get_predicted_events(_event_pid) do
+  def get_predicted_events(_event) do
     :not_implemented
   end
 end

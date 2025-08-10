@@ -52,7 +52,7 @@ defmodule GenDOM.MessageEvent do
   ## Examples
 
       # Creating a MessageEvent with data
-      {:ok, event} = GenDOM.MessageEvent.new("message", %{
+      event = GenDOM.MessageEvent.new("message", %{
         data: %{type: "user-action", payload: %{action: "save"}},
         origin: "https://example.com",
         last_event_id: "123",
@@ -60,24 +60,24 @@ defmodule GenDOM.MessageEvent do
       })
 
       # Accessing message data
-      data = GenDOM.MessageEvent.get(event.pid, :data)
-      origin = GenDOM.MessageEvent.get(event.pid, :origin)
+      data = event.data
+      origin = event.origin
       
       # Creating a Server-sent event message
-      {:ok, sse_event} = GenDOM.MessageEvent.new("message", %{
+      sse_event = GenDOM.MessageEvent.new("message", %{
         data: "Hello from server",
         origin: "https://server.com",
         last_event_id: "event-456"
       })
 
       # Creating a WebSocket message event
-      {:ok, ws_event} = GenDOM.MessageEvent.new("message", %{
+      ws_event = GenDOM.MessageEvent.new("message", %{
         data: Jason.encode!(%{command: "ping"}),
         origin: "wss://websocket.example.com"
       })
 
       # Cross-document messaging with ports
-      {:ok, cross_doc} = GenDOM.MessageEvent.new("message", %{
+      cross_doc = GenDOM.MessageEvent.new("message", %{
         data: "Cross-frame communication",
         origin: "https://parent.com",
         ports: [message_port_1, message_port_2]
@@ -113,7 +113,7 @@ defmodule GenDOM.MessageEvent do
   with legacy code.
 
   ## Parameters
-  - `event_pid` - The PID of the MessageEvent object to initialize
+  - `event` - The MessageEvent struct to initialize
   - `type` - A string defining the type of event (typically "message")
   - `can_bubble` - A boolean indicating whether the event can bubble up through the DOM
   - `cancelable` - A boolean indicating whether the event's default action can be prevented
@@ -128,22 +128,22 @@ defmodule GenDOM.MessageEvent do
 
   ## Examples
       # Legacy code example (deprecated - do not use in new code)
-      event = Document.create_event(document.pid, "MessageEvent")
-      GenDOM.MessageEvent.init_message_event(event.pid,
+      event = Document.create_event(document, "MessageEvent")
+      GenDOM.MessageEvent.init_message_event(event,
         "message",                    # type
         false,                        # can_bubble
         false,                        # cancelable
         %{action: "save"},           # data
         "https://example.com",       # origin
         "event-123",                 # last_event_id
-        worker.pid,                  # source
+        worker,                      # source
         [port1, port2]               # ports
       )
 
   ## Modern Alternative
   Instead of using this deprecated method, create MessageEvent instances directly:
 
-      {:ok, event} = MessageEvent.new("message", %{
+      event = GenDOM.MessageEvent.new("message", %{
         bubbles: false,
         cancelable: false,
         data: %{action: "save"},
@@ -156,7 +156,7 @@ defmodule GenDOM.MessageEvent do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent/initMessageEvent
   """
-  def init_message_event(_event_pid, _type, _can_bubble, _cancelable, _data, _origin, _last_event_id, _source, _ports) do
+  def init_message_event(_event, _type, _can_bubble, _cancelable, _data, _origin, _last_event_id, _source, _ports) do
     :not_implemented
   end
 end

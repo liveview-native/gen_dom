@@ -45,13 +45,13 @@ defmodule GenDOM.BeforeUnloadEvent do
   ## Examples
 
       # Creating a BeforeUnloadEvent
-      {:ok, event} = GenDOM.BeforeUnloadEvent.new("beforeunload", %{
+      event = GenDOM.BeforeUnloadEvent.new("beforeunload", %{
         cancelable: true,
         bubbles: false
       })
 
       # Legacy approach using return_value (deprecated)
-      {:ok, legacy_event} = GenDOM.BeforeUnloadEvent.new("beforeunload", %{
+      legacy_event = GenDOM.BeforeUnloadEvent.new("beforeunload", %{
         return_value: "You have unsaved changes. Are you sure you want to leave?",
         cancelable: true
       })
@@ -60,7 +60,7 @@ defmodule GenDOM.BeforeUnloadEvent do
       # (This would be handled in the event listener, not in the event creation)
 
       # Page with unsaved changes warning
-      {:ok, unsaved_event} = GenDOM.BeforeUnloadEvent.new("beforeunload", %{
+      unsaved_event = GenDOM.BeforeUnloadEvent.new("beforeunload", %{
         cancelable: true
       })
       
@@ -72,7 +72,7 @@ defmodule GenDOM.BeforeUnloadEvent do
       # end
 
       # Form with unsaved data protection
-      {:ok, form_event} = GenDOM.BeforeUnloadEvent.new("beforeunload", %{
+      form_event = GenDOM.BeforeUnloadEvent.new("beforeunload", %{
         cancelable: true,
         bubbles: false
       })

@@ -61,7 +61,7 @@ defmodule GenDOM.DragEvent do
   ## Examples
 
       # Creating a DragEvent
-      {:ok, event} = GenDOM.DragEvent.new("dragstart", %{
+      event = GenDOM.DragEvent.new("dragstart", %{
         data_transfer: data_transfer_object,
         bubbles: true,
         cancelable: true,

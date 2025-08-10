@@ -54,7 +54,7 @@ defmodule GenDOM.FocusEvent do
   ## Examples
 
       # Creating a FocusEvent
-      {:ok, event} = GenDOM.FocusEvent.new("focus", %{
+      event = GenDOM.FocusEvent.new("focus", %{
         bubbles: false,
         cancelable: false,
         view: window,

@@ -45,14 +45,14 @@ defmodule GenDOM.SubmitEvent do
   ## Examples
 
       # Creating a SubmitEvent with submitter information
-      {:ok, event} = GenDOM.SubmitEvent.new("submit", %{
+      event = GenDOM.SubmitEvent.new("submit", %{
         submitter: submit_button_element,
         bubbles: true,
         cancelable: true
       })
 
       # Accessing submitter information
-      submitter = GenDOM.SubmitEvent.get(event.pid, :submitter)
+      submitter = event.submitter
       
       case GenDOM.Element.get_attribute(submitter, "name") do
         "save" -> IO.puts("Form submitted with save action")
@@ -62,40 +62,40 @@ defmodule GenDOM.SubmitEvent do
       end
 
       # Form with multiple submit buttons
-      {:ok, multi_button_event} = GenDOM.SubmitEvent.new("submit", %{
+      multi_button_event = GenDOM.SubmitEvent.new("submit", %{
         submitter: save_and_continue_button,
         cancelable: true
       })
 
       # Programmatic form submission (submitter may be null)
-      {:ok, programmatic_event} = GenDOM.SubmitEvent.new("submit", %{
+      programmatic_event = GenDOM.SubmitEvent.new("submit", %{
         submitter: nil,
         bubbles: true,
         cancelable: true
       })
 
       # Image input submission
-      {:ok, image_event} = GenDOM.SubmitEvent.new("submit", %{
+      image_event = GenDOM.SubmitEvent.new("submit", %{
         submitter: image_input_element,
         cancelable: true
       })
 
       # Enter key submission in text field
-      {:ok, enter_event} = GenDOM.SubmitEvent.new("submit", %{
+      enter_event = GenDOM.SubmitEvent.new("submit", %{
         submitter: text_input_element,
         bubbles: true,
         cancelable: true
       })
 
       # AJAX form submission with specific button context
-      {:ok, ajax_event} = GenDOM.SubmitEvent.new("submit", %{
+      ajax_event = GenDOM.SubmitEvent.new("submit", %{
         submitter: ajax_submit_button,
         cancelable: true
       })
       
       # Process based on submitter
       submitter_id = GenDOM.Element.get_attribute(
-        GenDOM.SubmitEvent.get(ajax_event.pid, :submitter), 
+        ajax_event.submitter, 
         "id"
       )
       

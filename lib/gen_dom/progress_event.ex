@@ -49,7 +49,7 @@ defmodule GenDOM.ProgressEvent do
   ## Examples
 
       # Creating a ProgressEvent for file upload
-      {:ok, event} = GenDOM.ProgressEvent.new("progress", %{
+      event = GenDOM.ProgressEvent.new("progress", %{
         length_computable: true,
         loaded: 2048,
         total: 8192,
@@ -57,29 +57,29 @@ defmodule GenDOM.ProgressEvent do
       })
 
       # Accessing progress information
-      if GenDOM.ProgressEvent.get(event.pid, :length_computable) do
-        loaded = GenDOM.ProgressEvent.get(event.pid, :loaded)
-        total = GenDOM.ProgressEvent.get(event.pid, :total)
+      if event.length_computable do
+        loaded = event.loaded
+        total = event.total
         percentage = (loaded / total * 100) |> round()
         IO.puts("Progress: \#{percentage}%")
       end
 
       # Creating a load start event
-      {:ok, start_event} = GenDOM.ProgressEvent.new("loadstart", %{
+      start_event = GenDOM.ProgressEvent.new("loadstart", %{
         length_computable: false,
         loaded: 0,
         total: 0
       })
 
       # Creating a completion event
-      {:ok, load_event} = GenDOM.ProgressEvent.new("load", %{
+      load_event = GenDOM.ProgressEvent.new("load", %{
         length_computable: true,
         loaded: 1024,
         total: 1024
       })
 
       # HTTP request progress event
-      {:ok, http_progress} = GenDOM.ProgressEvent.new("progress", %{
+      http_progress = GenDOM.ProgressEvent.new("progress", %{
         length_computable: true,
         loaded: 51200,  # 50KB loaded
         total: 102400,  # 100KB total
@@ -87,7 +87,7 @@ defmodule GenDOM.ProgressEvent do
       })
 
       # Indeterminate progress (total unknown)
-      {:ok, indeterminate} = GenDOM.ProgressEvent.new("progress", %{
+      indeterminate = GenDOM.ProgressEvent.new("progress", %{
         length_computable: false,
         loaded: 1500,
         total: 0
