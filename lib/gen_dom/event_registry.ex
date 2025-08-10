@@ -5,8 +5,8 @@ defmodule GenDOM.EventRegistry do
 
   defstruct [
     window: nil,
-    listeners: %{}, # %{node_pid => %{event_type => [listener_records]}}
-    cleanup_refs: %{} # %{node_pid => monitor_ref} for cleanup
+    listeners: %{},
+    refs: %{}
   ]
 
   def start_link(opts) do
@@ -30,9 +30,9 @@ defmodule GenDOM.EventRegistry do
     updated_listeners = Map.put(registry.listeners, node_pid, updated_node_listeners)
 
     # Monitor node for cleanup
-    cleanup_refs = maybe_monitor_node(registry.cleanup_refs, node_pid)
+    refs = maybe_monitor_node(registry.refs, node_pid)
 
-    {:noreply, struct(registry, listeners: updated_listeners, cleanup_refs: cleanup_refs)}
+    {:noreply, Map.merge(registry, %{listeners: updated_listeners, refs: refs})}
   end
 
   def handle_cast({:remove_listener, node_pid, type, listener, options}, registry) do
@@ -62,7 +62,7 @@ defmodule GenDOM.EventRegistry do
           Map.put(registry.listeners, node_pid, node_listeners)
         end
 
-        {:noreply, struct(registry, listeners: listeners_map)}
+        {:noreply, Map.put(registry, :listeners, listeners_map)}
     end
   end
 
@@ -70,8 +70,8 @@ defmodule GenDOM.EventRegistry do
   def handle_info({:DOWN, _ref, :process, pid, _reason}, registry) do
     # Node died, clean up its listeners
     listeners = Map.delete(registry.listeners, pid)
-    cleanup_refs = Map.delete(registry.cleanup_refs, pid)
-    {:noreply, struct(registry, listeners: listeners, cleanup_refs: cleanup_refs)}
+    refs = Map.delete(registry.refs, pid)
+    {:noreply, struct(registry, listeners: listeners, refs: refs)}
   end
 
   # Helper to match options based on DOM spec
@@ -84,12 +84,12 @@ defmodule GenDOM.EventRegistry do
     :crypto.strong_rand_bytes(16) |> Base.encode64()
   end
 
-  defp maybe_monitor_node(cleanup_refs, node_pid) do
-    if Map.has_key?(cleanup_refs, node_pid) do
-      cleanup_refs
+  defp maybe_monitor_node(refs, node_pid) do
+    if Map.has_key?(refs, node_pid) do
+      refs
     else
       ref = Process.monitor(node_pid)
-      Map.put(cleanup_refs, node_pid, ref)
+      Map.put(refs, node_pid, ref)
     end
   end
 end

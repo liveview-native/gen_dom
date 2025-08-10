@@ -7,7 +7,7 @@ defmodule GenDOM.Event do
   of an asynchronous task. It can also be triggered programmatically.
   """
 
-  defstruct [
+  use GenObject, [
     # Instance properties
     bubbles: false,
     cancelable: false,
