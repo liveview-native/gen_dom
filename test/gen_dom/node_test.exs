@@ -515,11 +515,12 @@ defmodule GenDOM.NodeTest do
       self_pid = self()
 
       parent_listener = fn(event) ->
-        send(self_pid, :success)
+        send(self_pid, {event.target, event.current_target})
         event
       end
 
       child_listener = fn(event) ->
+        send(self_pid, {event.target, event.current_target})
         event
       end
 
@@ -529,7 +530,11 @@ defmodule GenDOM.NodeTest do
       :timer.sleep(10)
       Node.dispatch_event(child, event)
 
-      assert_receive :success, 100
+      parent_pid = parent.pid
+      child_pid = child.pid
+
+      assert_receive {^child_pid, ^child_pid}, 100
+      assert_receive {^child_pid, ^parent_pid}, 100
     end
 
     test "bubbling events doesn't propogate with stop_propagate set to true", %{pid: registry_pid} do

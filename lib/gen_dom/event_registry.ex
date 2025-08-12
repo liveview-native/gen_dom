@@ -76,6 +76,7 @@ defmodule GenDOM.EventRegistry do
   end
 
   def handle_cast({:dispatch, node_pid, event}, registry) do
+    event = Map.put(event, :target, node_pid)
     do_dispatch(event, node_pid, registry)
     {:noreply, registry}
   end
@@ -85,6 +86,7 @@ defmodule GenDOM.EventRegistry do
   end
 
   defp do_dispatch(event, node_pid, registry) do
+    event = Map.put(event, :current_target, node_pid)
     node = GenServer.call(node_pid, :get)
     with {:ok, node_listeners} <- Map.fetch(registry.listeners, node_pid),
       {:ok, type_listeners} <- Map.fetch(node_listeners, event.type) do
