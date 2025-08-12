@@ -407,8 +407,9 @@ defmodule GenDOM.Node do
 
   defoverridable handle_info: 2
 
-  def handle_default_action(type, _event, node) do
-    Logger.info("unhandled default action #{type} for #{inspect(node.pid)}")
+  def handle_default_action(_type, event, _node) do
+    # Logger.info("unhandled default action #{type} for #{inspect(node.pid)}")
+    event
   end
 
   defoverridable handle_default_action: 3
