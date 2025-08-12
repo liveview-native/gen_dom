@@ -514,17 +514,48 @@ defmodule GenDOM.NodeTest do
 
       self_pid = self()
 
-      listener = fn(event) ->
+      parent_listener = fn(event) ->
         send(self_pid, :success)
         event
       end
 
-      Node.add_event_listener(parent, "click", listener)
+      child_listener = fn(event) ->
+        event
+      end
+
+      Node.add_event_listener(child, "click", child_listener)
+      Node.add_event_listener(parent, "click", parent_listener)
       event = Event.new("click", bubbles: true)
       :timer.sleep(10)
       Node.dispatch_event(child, event)
 
       assert_receive :success, 100
+    end
+
+    test "bubbling events doesn't propogate with stop_propagate set to true", %{pid: registry_pid} do
+      parent = Node.new(event_registry: registry_pid)
+      child = Node.new()
+
+      Node.append_child(parent, child)
+
+      self_pid = self()
+
+      parent_listener = fn(event) ->
+        send(self_pid, :success)
+        event
+      end
+
+      child_listener = fn(event) ->
+        Event.stop_propagation(event)
+      end
+
+      Node.add_event_listener(child, "click", child_listener)
+      Node.add_event_listener(parent, "click", parent_listener)
+      event = Event.new("click", bubbles: true)
+      :timer.sleep(10)
+      Node.dispatch_event(child, event)
+
+      refute_receive :success, 100
     end
   end
 end

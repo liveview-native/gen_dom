@@ -119,12 +119,24 @@ defmodule GenDOM.EventRegistry do
   end
 
   defp capture_phase(event, type_listeners, _registry) do
-    Enum.reduce(type_listeners, event, fn(listener_record, event) ->
-      listener_record.listener.(event)
+    Enum.reduce_while(type_listeners, event, fn(listener_record, event) ->
+      if event.stop_immediate_propagation do
+        {:halt, event}
+      else
+        {:cont, listener_record.listener.(event)}
+      end
     end)
   end
 
   defp target_phase(event, _node, _registry) do
+    event
+  end
+
+  defp bubbling_phase(%Event{stop_propagation: true} = event, _node, _registry) do
+    event
+  end
+
+  defp bubbling_phase(%Event{stop_immediate_propagation: true} = event, _node, _registry) do
     event
   end
 
