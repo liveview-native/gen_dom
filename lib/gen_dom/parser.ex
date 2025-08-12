@@ -15,6 +15,7 @@ defmodule GenDOM.Parser do
 
     document = Document.new([
       content_type: "text/html",
+      receiver: opts[:receiver],
       window: opts[:window],
       event_registry: opts[:event_registry]
     ])
@@ -39,6 +40,7 @@ defmodule GenDOM.Parser do
 
     document = Document.new([
       content_type: content_type,
+      receiver: opts[:receiver],
       window: opts[:window],
       event_registry: opts[:event_registry]
     ])
