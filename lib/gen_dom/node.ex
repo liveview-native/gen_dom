@@ -175,6 +175,8 @@ defmodule GenDOM.Node do
   - **Performance Monitoring**: Built-in telemetry events
   """
 
+  require Logger
+
   use GenGraph.Tree, [
     assigns: %{},
     window: nil,
@@ -296,6 +298,11 @@ defmodule GenDOM.Node do
     {:reply, node, node}
   end
 
+  def handle_call({:default_action, type, event}, _from, node) do
+    event = apply(node.__struct__, :handle_default_action, [type, event, node])
+    {:reply, event, node}
+  end
+
   def handle_call(msg, from, node) do
     super(msg, from, node)
   end
@@ -399,6 +406,12 @@ defmodule GenDOM.Node do
   end
 
   defoverridable handle_info: 2
+
+  def handle_default_action(type, _event, node) do
+    Logger.info("unhandled default action #{type} for #{inspect(node.pid)}")
+  end
+
+  defoverridable handle_default_action: 3
 
   @doc """
   Assigns values to the node's assigns map and returns the node PID.
