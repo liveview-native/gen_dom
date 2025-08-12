@@ -22,8 +22,7 @@ defmodule GenDOM.Parser do
 
     children = create_elements_from_children(children, [], document.pid)
 
-    if receiver = opts[:receiver] do
-      document = Document.put(document.pid, :receiver, receiver)
+    if receiver = document.receiver do
       send(receiver, {:document, Document.encode(document)})
     end
 
@@ -47,9 +46,8 @@ defmodule GenDOM.Parser do
 
     children_pids = create_elements_from_children(children, [], document.pid)
 
-    if receiver = opts[:receiver] do
-      Document.put(document.pid, :receiver, receiver)
-      send(receiver, {:document, Document.encode(document.pid)})
+    if receiver = document.receiver do
+      send(receiver, {:document, Document.encode(document)})
     end
 
     Enum.reduce(children_pids, document.pid, &Document.append_child(&2, &1, receiver: opts[:receiver]))
