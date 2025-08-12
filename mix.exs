@@ -66,7 +66,6 @@ defmodule GenDOM.MixProject do
       {:selector, github: "liveview-native/selector"},
       {:gen_graph, "~> 0.1.1"},
       {:floki, "~> 0.38"},
-      {:deno_rider, "~> 0.2"},
       {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]
   end
