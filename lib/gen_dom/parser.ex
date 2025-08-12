@@ -14,7 +14,9 @@ defmodule GenDOM.Parser do
       )
 
     document = Document.new([
-      content_type: "text/html"
+      content_type: "text/html",
+      window: opts[:window],
+      event_registry: opts[:event_registry]
     ])
 
     children = create_elements_from_children(children, [], document.pid)
@@ -36,7 +38,9 @@ defmodule GenDOM.Parser do
       )
 
     document = Document.new([
-      content_type: content_type
+      content_type: content_type,
+      window: opts[:window],
+      event_registry: opts[:event_registry]
     ])
 
     children_pids = create_elements_from_children(children, [], document.pid)

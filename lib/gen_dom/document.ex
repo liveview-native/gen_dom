@@ -371,8 +371,13 @@ defmodule GenDOM.Document do
       GenDOM.Document.append(document, [new_element, "Some text"])
 
   """
-  def append(_document_pid, nodes) when is_list(nodes) do
-    nil
+  def append(document_pid, nodes) when is_list(nodes) do
+    Enum.each(nodes, fn
+      text when is_binary(text) ->
+        text_node = GenDOM.Text.new(whole_text: text)
+        append_child!(document_pid, text_node.pid)
+      element -> append_child!(document_pid, element.pid)
+    end)
   end
 
   @doc """
