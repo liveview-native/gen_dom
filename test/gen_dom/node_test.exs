@@ -508,7 +508,7 @@ defmodule GenDOM.NodeTest do
 
     test "bubbling events", %{pid: registry_pid} do
       parent = Node.new(event_registry: registry_pid)
-      child = Node.new(event_registry: registry_pid)
+      child = Node.new()
 
       Node.append_child(parent, child)
 

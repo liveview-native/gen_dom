@@ -490,12 +490,26 @@ defmodule GenDOM.Node do
     update_parent_relationships(parent, child_pid, pos, opts)
     update_node_relationships(parent, child_pid, pos, opts)
 
-    if parent.node_type == 10 do
-      Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.pid}))
-    end
+    cond do
+      parent.node_type == 10 ->
+        Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+          owner_document: parent.pid,
+          window: parent.window,
+          event_registry: parent.event_registry
+        }}))
 
-    if parent.owner_document do
-      Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
+    parent.owner_document ->
+      Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+        owner_document: parent.owner_document,
+        window: parent.window,
+        event_registry: parent.event_registry
+      }}))
+
+    true ->
+      Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+        window: parent.window,
+        event_registry: parent.event_registry
+      }}))
     end
 
     send_to_receiver(opts[:receiver], {
