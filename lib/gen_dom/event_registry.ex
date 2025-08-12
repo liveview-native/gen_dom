@@ -3,11 +3,31 @@ defmodule GenDOM.EventRegistry do
 
   use GenServer
 
+  alias GenDOM.Event
+
   defstruct [
     window: nil,
     listeners: %{},
     refs: %{}
   ]
+
+  def add_listener(node_or_pid, type, listener, opts \\ []) when is_function(listener, 1) do
+    node_pid = get_pid(node_or_pid)
+    node = :sys.get_state(node_pid)
+    GenServer.cast(node.event_registry, {:add_listener, node_pid, type, listener, opts})
+  end
+
+  def remove_listener(node_or_pid, type, listener, opts \\ []) when is_function(listener, 1) do
+    node_pid = get_pid(node_or_pid)
+    node = :sys.get_state(node_pid)
+    GenServer.cast(node.event_registry, {:remove_listener, node_pid, type, listener, opts})
+  end
+
+  def dispatch(node_or_pid, event) do
+    node_pid = get_pid(node_or_pid)
+    node = :sys.get_state(node_pid)
+    GenServer.cast(node.event_registry, {:dispatch, node_pid, event})
+  end
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts)
@@ -19,65 +39,109 @@ defmodule GenDOM.EventRegistry do
   end
 
   @impl true
-  def handle_cast({:add_listener, node_pid, type, listener, options}, registry) do
-    # Store listener centrally, monitor node for cleanup
-    existing_listeners = get_in(registry.listeners, [node_pid, type]) || []
-    listener_record = %{listener: listener, options: options, id: generate_id()}
-
-    # Build updated listeners structure
+  def handle_cast({:add_listener, node_pid, type, listener, opts}, registry) do
     node_listeners = Map.get(registry.listeners, node_pid, %{})
-    updated_node_listeners = Map.put(node_listeners, type, [listener_record | existing_listeners])
-    updated_listeners = Map.put(registry.listeners, node_pid, updated_node_listeners)
+    type_listeners = Map.get(node_listeners, type, [])
+    listener_record = %{listener: listener, opts: opts, id: generate_id()}
 
-    # Monitor node for cleanup
+    node_listeners = Map.put(node_listeners, type, List.insert_at(type_listeners, -1, listener_record))
+    listeners = Map.put(registry.listeners, node_pid, node_listeners)
+
     refs = maybe_monitor_node(registry.refs, node_pid)
 
-    {:noreply, Map.merge(registry, %{listeners: updated_listeners, refs: refs})}
+    {:noreply, Map.merge(registry, %{listeners: listeners, refs: refs})}
   end
 
-  def handle_cast({:remove_listener, node_pid, type, listener, options}, registry) do
-    case get_in(registry.listeners, [node_pid, type]) do
-      nil -> 
-        {:noreply, registry}
+  def handle_cast({:remove_listener, node_pid, type, listener, opts}, registry) do
+    node_listeners = Map.get(registry.listeners, node_pid, %{})
+    type_listeners =
+      Map.get(node_listeners, type, [])
+      |> Enum.reject(fn
+        %{listener: ^listener} = listener_record ->
+          opts_match?(opts, Map.get(listener_record, :opts, []))
+        _other -> false
+      end)
 
-      listeners ->
-        # Remove matching listener (same listener and options)
-        updated_listeners = Enum.reject(listeners, fn record ->
-          record.listener == listener and options_match?(record.options, options)
-        end)
-
-        # Update registry
-        listeners_map = if updated_listeners == [] do
-          # Remove empty type key
-          node_listeners = Map.delete(registry.listeners[node_pid] || %{}, type)
-          if node_listeners == %{} do
-            # Remove node entirely if no listeners left
-            Map.delete(registry.listeners, node_pid)
-          else
-            Map.put(registry.listeners, node_pid, node_listeners)
-          end
-        else
-          # Update the listeners for this type
-          node_listeners = Map.put(registry.listeners[node_pid], type, updated_listeners)
-          Map.put(registry.listeners, node_pid, node_listeners)
-        end
-
-        {:noreply, Map.put(registry, :listeners, listeners_map)}
+    node_listeners = case type_listeners do
+      [] -> Map.delete(node_listeners, type)
+      type_listeners -> Map.put(node_listeners, type, type_listeners)
     end
+
+    listeners = case map_size(node_listeners) do
+      0 -> Map.delete(registry.listeners, node_pid)
+      _other -> Map.put(registry.listeners, node_pid, node_listeners)
+    end
+
+    {:noreply, Map.put(registry, :listeners, listeners)}
+  end
+
+  def handle_cast({:dispatch, node_pid, event}, registry) do
+    do_dispatch(event, node_pid, registry)
+    {:noreply, registry}
+  end
+
+  defp do_dispatch(event, nil, _registry) do
+    event
+  end
+
+  defp do_dispatch(event, node_pid, registry) do
+    node = GenServer.call(node_pid, :get)
+    with {:ok, node_listeners} <- Map.fetch(registry.listeners, node_pid),
+      {:ok, type_listeners} <- Map.fetch(node_listeners, event.type) do
+        event
+        |> capture_phase(type_listeners, registry)
+        |> target_phase(node, registry)
+        |> bubbling_phase(node, registry)
+        |> default_actions_phase(node, registry)
+        |> cleanup_phase(node, registry)
+    else
+      _err ->
+        event
+        |> target_phase(node, registry)
+        |> bubbling_phase(node, registry)
+        |> default_actions_phase(node, registry)
+        |> cleanup_phase(node, registry)
+    end
+
+    event
   end
 
   @impl true
-  def handle_info({:DOWN, _ref, :process, pid, _reason}, registry) do
-    # Node died, clean up its listeners
+  def handle_info({:DOWN, ref, :process, pid, _reason}, registry) do
+    Process.demonitor(ref)
     listeners = Map.delete(registry.listeners, pid)
     refs = Map.delete(registry.refs, pid)
     {:noreply, struct(registry, listeners: listeners, refs: refs)}
   end
 
-  # Helper to match options based on DOM spec
-  defp options_match?(record_options, remove_options) do
-    # DOM spec: only 'capture' matters for removal matching
-    Map.get(record_options, :capture, false) == Map.get(remove_options, :capture, false)
+  def opts_match?(opts_left, opts_right) do
+    Keyword.get(opts_left, :capture, false) == Keyword.get(opts_right, :capture, false)
+  end
+
+  defp capture_phase(event, type_listeners, _registry) do
+    Enum.reduce(type_listeners, event, fn(listener_record, event) ->
+      listener_record.listener.(event)
+    end)
+  end
+
+  defp target_phase(event, _node, _registry) do
+    event
+  end
+
+  defp bubbling_phase(%Event{bubbles: true} = event, node, registry) do
+    do_dispatch(event, node.parent_node, registry)
+  end
+
+  defp bubbling_phase(event, _node, _registry) do
+    event
+  end
+
+  defp default_actions_phase(event, _node, _registry) do
+    event
+  end
+
+  defp cleanup_phase(event, _node, _registry) do
+    event
   end
 
   defp generate_id do
@@ -91,5 +155,13 @@ defmodule GenDOM.EventRegistry do
       ref = Process.monitor(node_pid)
       Map.put(refs, node_pid, ref)
     end
+  end
+
+  defp get_pid(pid) when is_pid(pid) do
+    pid
+  end
+
+  defp get_pid(%{pid: pid}) when is_pid(pid) do
+    pid
   end
 end

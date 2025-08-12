@@ -1,11 +1,39 @@
 defmodule GenDOM do
-  def generate_name(prefix) when is_atom(prefix),
-    do: generate_name(Atom.to_string(prefix))
+  @moduledoc """
+  Use this module to alias all of the DOM API GenDOM modules into local scope
 
-  def generate_name(prefix) do
-    prefix <> "-" <>
-    (:crypto.hash(:sha, "#{:erlang.system_time(:nanosecond)}")
-    |> Base.encode32(case: :lower))
-    |> String.to_atom()
+      defmodule MyElement do
+        use GenDOM
+
+        use Element, [
+          name: nil,
+        ]
+      end
+  """
+
+  @disallowed [
+    GenDOM,
+    GenDOM.Application,
+    GenDOM.EventRegistry,
+    GenDOM.Matcher,
+    GenDOM.Matcher.Psuedo,
+    GenDOM.QuerySelector,
+    GenDOM.Task
+  ]
+
+  @doc false
+  defmacro __using__(_) do
+    quoted =
+      Application.spec(:gen_dom)[:modules]
+      |> Enum.reject(&(&1 in @disallowed))
+      |> Enum.map(fn(module) ->
+        quote do
+          alias unquote(module)
+        end
+      end)
+
+    quote do
+      unquote_splicing(quoted)
+    end
   end
 end

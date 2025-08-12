@@ -20,7 +20,6 @@ defmodule GenDOM.ClipboardEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/clipboard_event.ex`
 
   ## Properties
 

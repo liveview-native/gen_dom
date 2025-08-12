@@ -20,7 +20,6 @@ defmodule GenDOM.ProgressEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/progress_event.ex`
 
   ## Properties
 

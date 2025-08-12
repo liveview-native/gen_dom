@@ -21,7 +21,6 @@ defmodule GenDOM.TouchEvent do
   ```
 
   **Inherits from:** `GenDOM.UIEvent`
-  **File:** `lib/gen_dom/touch_event.ex`
 
   ## Properties
 

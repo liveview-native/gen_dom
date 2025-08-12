@@ -3,6 +3,8 @@ defmodule GenDOM.NodeTest do
 
   alias GenDOM.{
     Element,
+    Event,
+    EventRegistry,
     Node
   }
 
@@ -402,6 +404,127 @@ defmodule GenDOM.NodeTest do
           }
         ]
       }
+    end
+  end
+
+  describe "events" do
+    setup do
+      {:ok, pid} = EventRegistry.start_link([])
+
+      {:ok, pid: pid}
+    end
+
+    test "adding an event", %{pid: registry_pid} do
+      node = Node.new(event_registry: registry_pid)
+      registry = :sys.get_state(registry_pid)
+      assert nil == Map.get(registry.listeners, node.pid)
+
+      listener = fn(event) ->
+        event
+      end
+
+      Node.add_event_listener(node, "click", listener)
+      :timer.sleep(10)
+      registry = :sys.get_state(registry_pid)
+      assert listener in (get_in(registry.listeners, [node.pid, "click"]) |> Enum.map(&(&1.listener)))
+    end
+
+    test "removing an event", %{pid: registry_pid} do
+      node = Node.new(event_registry: registry_pid)
+      registry = :sys.get_state(registry_pid)
+      assert nil == Map.get(registry.listeners, node.pid)
+
+      listener = fn(event) ->
+        event
+      end
+
+      Node.add_event_listener(node, "click", listener)
+      :timer.sleep(10)
+      Node.remove_event_listener(node, "click", listener)
+      registry = :sys.get_state(registry_pid)
+      assert node.pid not in Map.keys(registry.listeners) 
+    end
+
+    test "dispatch event", %{pid: registry_pid} do
+      node = Node.new(event_registry: registry_pid)
+
+      self_pid = self()
+
+      listener = fn(event) ->
+        send(self_pid, :success)
+        event
+      end
+
+      Node.add_event_listener(node, "click", listener)
+      event = Event.new("click")
+      Node.dispatch_event(node, event)
+
+      assert_receive :success, 100
+    end
+
+    test "dispatch event with multiple listeners", %{pid: registry_pid} do
+      node = Node.new(event_registry: registry_pid)
+
+      self_pid = self()
+
+      listener1 = fn(event) ->
+        send(self_pid, :success1)
+        event
+      end
+
+      listener2 = fn(event) ->
+        send(self_pid, :success2)
+        event
+      end
+
+      Node.add_event_listener(node, "click", listener1)
+      Node.add_event_listener(node, "click", listener2)
+      event = Event.new("click")
+      Node.dispatch_event(node, event)
+
+      assert_receive :success1, 100
+      assert_receive :success2, 100
+    end
+
+    test "dispatch multiple events", %{pid: registry_pid} do
+      node = Node.new(event_registry: registry_pid)
+
+      self_pid = self()
+
+      listener = fn(event) ->
+        send(self_pid, :success)
+        event
+      end
+
+      Node.add_event_listener(node, "click", listener)
+      Node.add_event_listener(node, "blur", listener)
+      event1 = Event.new("click")
+      event2 = Event.new("blur")
+      Node.dispatch_event(node, event1)
+      Node.dispatch_event(node, event2)
+
+      assert_receive :success, 100
+    end
+
+    test "bubbling events", %{pid: registry_pid} do
+      parent = Node.new(event_registry: registry_pid)
+      child = Node.new(event_registry: registry_pid)
+
+      Node.append_child(parent, child)
+
+      self_pid = self()
+
+      listener = fn(event) ->
+        send(self_pid, :success)
+        event
+      end
+
+      Node.add_event_listener(parent, "click", listener)
+      event = Event.new("click", bubbles: true)
+      :timer.sleep(10)
+      Node.dispatch_event(child, event)
+
+      assert_receive :success, 100
     end
   end
 end

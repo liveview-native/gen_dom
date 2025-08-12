@@ -46,12 +46,12 @@ defmodule GenDOM.EventTarget do
 
   """
   def add_event_listener(node, type, listener, opts \\ [])
-  def add_event_listener(_node, _type, listener, opts) when is_list(opts) and is_function(listener) do
-    :not_implemented
+  def add_event_listener(node, type, listener, opts) when is_list(opts) and is_function(listener) do
+    GenDOM.EventRegistry.add_listener(node, type, listener, opts)
   end
 
-  def add_event_listener(_node, _type, listener, use_capture?) when is_boolean(use_capture?) and is_function(listener) do
-    :not_implemented
+  def add_event_listener(node, type, listener, use_capture?) when is_boolean(use_capture?) and is_function(listener) do
+    GenDOM.EventRegistry.add_listener(node, type, listener, capture: use_capture?)
   end
 
   defoverridable add_event_listener: 3
@@ -79,8 +79,8 @@ defmodule GenDOM.EventTarget do
       true
 
   """
-  def dispatch_event(_node, _event) do
-    nil
+  def dispatch_event(node, event) do
+    GenDOM.EventRegistry.dispatch(node, event)
   end
 
   defoverridable dispatch_event: 2
@@ -106,12 +106,12 @@ defmodule GenDOM.EventTarget do
 
   """
   def remove_event_listener(node, type, listener, opts \\ [])
-  def remove_event_listener(_node, _type, _listener, opts) when is_list(opts) do
-    nil
+  def remove_event_listener(node, type, listener, opts) when is_list(opts) do
+    GenDOM.EventRegistry.remove_listener(node, type, listener, opts)
   end
 
-  def remove_event_listener(_node, _type, _listener, use_capture?) when is_boolean(use_capture?) do
-    nil
+  def remove_event_listener(node, type, listener, use_capture?) when is_boolean(use_capture?) do
+    GenDOM.EventRegistry.remove_listener(node, type, listener, capture: use_capture?)
   end
 
   defoverridable remove_event_listener: 4

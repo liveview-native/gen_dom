@@ -20,7 +20,6 @@ defmodule GenDOM.SubmitEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/submit_event.ex`
 
   ## Properties
 

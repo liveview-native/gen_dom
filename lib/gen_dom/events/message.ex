@@ -21,7 +21,6 @@ defmodule GenDOM.MessageEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/message_event.ex`
 
   ## Properties
 

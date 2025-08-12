@@ -20,7 +20,6 @@ defmodule GenDOM.ErrorEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/error_event.ex`
 
   ## Properties
 

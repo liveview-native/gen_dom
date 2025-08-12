@@ -20,7 +20,6 @@ defmodule GenDOM.FormDataEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/form_data_event.ex`
 
   ## Properties
 

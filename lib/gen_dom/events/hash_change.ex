@@ -20,7 +20,6 @@ defmodule GenDOM.HashChangeEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/hash_change_event.ex`
 
   ## Properties
 

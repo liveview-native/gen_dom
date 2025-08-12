@@ -21,7 +21,6 @@ defmodule GenDOM.BeforeUnloadEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/before_unload_event.ex`
 
   ## Properties
 

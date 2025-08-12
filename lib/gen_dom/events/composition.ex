@@ -21,7 +21,6 @@ defmodule GenDOM.CompositionEvent do
   ```
 
   **Inherits from:** `GenDOM.UIEvent`
-  **File:** `lib/gen_dom/composition_event.ex`
 
   ## Properties
 

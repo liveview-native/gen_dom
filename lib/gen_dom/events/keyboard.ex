@@ -21,7 +21,6 @@ defmodule GenDOM.KeyboardEvent do
   ```
 
   **Inherits from:** `GenDOM.UIEvent`
-  **File:** `lib/gen_dom/keyboard_event.ex`
 
   ## Properties
 

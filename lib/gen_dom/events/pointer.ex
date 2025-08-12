@@ -27,7 +27,6 @@ defmodule GenDOM.PointerEvent do
   ```
 
   **Inherits from:** `GenDOM.MouseEvent`
-  **File:** `lib/gen_dom/pointer_event.ex`
 
   ## Properties
 

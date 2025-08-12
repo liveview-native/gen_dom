@@ -22,7 +22,6 @@ defmodule GenDOM.InputEvent do
   ```
 
   **Inherits from:** `GenDOM.UIEvent`
-  **File:** `lib/gen_dom/input_event.ex`
 
   ## Properties
 

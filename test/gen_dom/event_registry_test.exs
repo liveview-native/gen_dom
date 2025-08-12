@@ -11,7 +11,7 @@ defmodule GenDOM.EventRegistryTest do
       state = :sys.get_state(registry)
       assert state.window == window_pid
       assert state.listeners == %{}
-      assert state.cleanup_refs == %{}
+      assert state.refs == %{}
     end
 
     test "starts with default nil window" do
@@ -20,7 +20,7 @@ defmodule GenDOM.EventRegistryTest do
       state = :sys.get_state(registry)
       assert state.window == nil
       assert state.listeners == %{}
-      assert state.cleanup_refs == %{}
+      assert state.refs == %{}
     end
   end
 
@@ -33,10 +33,10 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "adds first listener for node and event type", %{registry: registry, node_pid: node_pid} do
-      listener = fn -> :ok end
-      options = %{capture: false}
+      listener =fn(_e) -> :ok end
+      opts = [capture: false]
       
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
       
       # Allow cast to process
       :timer.sleep(10)
@@ -47,17 +47,17 @@ defmodule GenDOM.EventRegistryTest do
       
       [listener_record] = state.listeners[node_pid]["click"]
       assert listener_record.listener == listener
-      assert listener_record.options == options
+      assert listener_record.opts == opts
       assert is_binary(listener_record.id)
     end
 
     test "adds multiple listeners for same event type", %{registry: registry, node_pid: node_pid} do
-      listener1 = fn -> :ok end
-      listener2 = fn -> :ok end
-      options = %{capture: false}
+      listener1 =fn(_e) -> :ok end
+      listener2 =fn(_e) -> :ok end
+      opts = [capture: false]
       
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, options})
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener2, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, opts})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener2, opts})
       
       :timer.sleep(10)
       
@@ -71,12 +71,12 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "adds listeners for different event types", %{registry: registry, node_pid: node_pid} do
-      listener1 = fn -> :ok end
-      listener2 = fn -> :ok end
-      options = %{capture: false}
+      listener1 =fn(_e) -> :ok end
+      listener2 =fn(_e) -> :ok end
+      opts = [capture: false]
       
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, options})
-      GenServer.cast(registry, {:add_listener, node_pid, "keydown", listener2, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, opts})
+      GenServer.cast(registry, {:add_listener, node_pid, "keydown", listener2, opts})
       
       :timer.sleep(10)
       
@@ -89,32 +89,32 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "monitors node process for cleanup", %{registry: registry, node_pid: node_pid} do
-      listener = fn -> :ok end
-      options = %{capture: false}
+      listener =fn(_e) -> :ok end
+      opts = [capture: false]
       
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
       
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
-      assert Map.has_key?(state.cleanup_refs, node_pid)
-      assert is_reference(state.cleanup_refs[node_pid])
+      assert Map.has_key?(state.refs, node_pid)
+      assert is_reference(state.refs[node_pid])
     end
 
     test "only monitors node process once", %{registry: registry, node_pid: node_pid} do
-      listener1 = fn -> :ok end
-      listener2 = fn -> :ok end
-      options = %{capture: false}
+      listener1 =fn(_e) -> :ok end
+      listener2 =fn(_e) -> :ok end
+      opts = [capture: false]
       
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, options})
-      GenServer.cast(registry, {:add_listener, node_pid, "keydown", listener2, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, opts})
+      GenServer.cast(registry, {:add_listener, node_pid, "keydown", listener2, opts})
       
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
       # Should only have one monitor ref per node
-      assert map_size(state.cleanup_refs) == 1
-      assert Map.has_key?(state.cleanup_refs, node_pid)
+      assert map_size(state.refs) == 1
+      assert Map.has_key?(state.refs, node_pid)
     end
   end
 
@@ -127,15 +127,15 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "removes existing listener", %{registry: registry, node_pid: node_pid} do
-      listener = fn -> :ok end
-      options = %{capture: false}
+      listener =fn(_e) -> :ok end
+      opts = [capture: false]
       
       # Add listener
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
       :timer.sleep(10)
       
       # Remove listener
-      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, opts})
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
@@ -143,17 +143,17 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "removes only matching listener", %{registry: registry, node_pid: node_pid} do
-      listener1 = fn -> :ok end
-      listener2 = fn -> :ok end
-      options = %{capture: false}
+      listener1 =fn(_e) -> :ok end
+      listener2 =fn(_e) -> :ok end
+      opts = [capture: false]
       
       # Add two listeners
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, options})
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener2, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, opts})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener2, opts})
       :timer.sleep(10)
       
       # Remove one listener
-      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener1, options})
+      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener1, opts})
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
@@ -163,30 +163,30 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "does not remove listener with different capture option", %{registry: registry, node_pid: node_pid} do
-      listener = fn -> :ok end
-      add_options = %{capture: true}
-      remove_options = %{capture: false}
+      listener = fn(_e) -> :ok end
+      add_opts = [capture: true]
+      remove_opts = [capture: false]
       
       # Add listener with capture: true
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, add_options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, add_opts})
       :timer.sleep(10)
-      
+
       # Try to remove with capture: false
-      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, remove_options})
+      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, remove_opts})
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
-      listeners = state.listeners[node_pid]["click"]
+      listeners = Map.get(state.listeners[node_pid], "click")
       assert length(listeners) == 1
       assert hd(listeners).listener == listener
     end
 
     test "handles removing non-existent listener", %{registry: registry, node_pid: node_pid} do
-      listener = fn -> :ok end
-      options = %{capture: false}
+      listener = fn(_e) -> :ok end
+      opts = [capture: false]
       
       # Try to remove listener that doesn't exist
-      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, opts})
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
@@ -194,15 +194,15 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "handles removing from non-existent event type", %{registry: registry, node_pid: node_pid} do
-      listener = fn -> :ok end
-      options = %{capture: false}
+      listener = fn(_e) -> :ok end
+      opts = [capture: false]
       
       # Add listener for "click"
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
       :timer.sleep(10)
       
       # Try to remove from "keydown"
-      GenServer.cast(registry, {:remove_listener, node_pid, "keydown", listener, options})
+      GenServer.cast(registry, {:remove_listener, node_pid, "keydown", listener, opts})
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
@@ -211,15 +211,15 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "cleans up empty event type maps", %{registry: registry, node_pid: node_pid} do
-      listener = fn -> :ok end
-      options = %{capture: false}
+      listener = fn(_e) -> :ok end
+      opts = [capture: false]
       
       # Add listener
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
       :timer.sleep(10)
       
       # Remove listener
-      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, opts})
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
@@ -228,17 +228,17 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "preserves other event types when removing one", %{registry: registry, node_pid: node_pid} do
-      listener1 = fn -> :ok end
-      listener2 = fn -> :ok end
-      options = %{capture: false}
+      listener1 = fn(_e) -> :ok end
+      listener2 = fn(_e) -> :ok end
+      opts = [capture: false]
       
       # Add listeners for different event types
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, options})
-      GenServer.cast(registry, {:add_listener, node_pid, "keydown", listener2, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, opts})
+      GenServer.cast(registry, {:add_listener, node_pid, "keydown", listener2, opts})
       :timer.sleep(10)
       
       # Remove one event type
-      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener1, options})
+      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener1, opts})
       :timer.sleep(10)
       
       state = :sys.get_state(registry)
@@ -260,17 +260,17 @@ defmodule GenDOM.EventRegistryTest do
         end
       end)
       
-      listener = fn -> :ok end
-      options = %{capture: false}
+      listener =fn(_e) -> :ok end
+      opts = [capture: false]
       
       # Add listener
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, options})
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
       :timer.sleep(10)
       
       # Verify listener was added
       state = :sys.get_state(registry)
       assert Map.has_key?(state.listeners, node_pid)
-      assert Map.has_key?(state.cleanup_refs, node_pid)
+      assert Map.has_key?(state.refs, node_pid)
       
       # Kill the node process
       send(node_pid, :die)
@@ -279,7 +279,7 @@ defmodule GenDOM.EventRegistryTest do
       # Verify cleanup happened
       state = :sys.get_state(registry)
       assert state.listeners == %{}
-      assert state.cleanup_refs == %{}
+      assert state.refs == %{}
     end
 
     test "only cleans up listeners for specific node that died" do
@@ -298,12 +298,12 @@ defmodule GenDOM.EventRegistryTest do
         end
       end)
       
-      listener = fn -> :ok end
-      options = %{capture: false}
+      listener = fn(_e) -> :ok end
+      opts = [capture: false]
       
       # Add listeners for both nodes
-      GenServer.cast(registry, {:add_listener, node_pid1, "click", listener, options})
-      GenServer.cast(registry, {:add_listener, node_pid2, "keydown", listener, options})
+      GenServer.cast(registry, {:add_listener, node_pid1, "click", listener, opts})
+      GenServer.cast(registry, {:add_listener, node_pid2, "keydown", listener, opts})
       :timer.sleep(10)
       
       # Kill only the first node
@@ -314,19 +314,8 @@ defmodule GenDOM.EventRegistryTest do
       state = :sys.get_state(registry)
       refute Map.has_key?(state.listeners, node_pid1)
       assert Map.has_key?(state.listeners, node_pid2)
-      refute Map.has_key?(state.cleanup_refs, node_pid1)
-      assert Map.has_key?(state.cleanup_refs, node_pid2)
-    end
-  end
-
-  describe "options_match?/2" do
-    test "matches when both have capture: false" do
-      # Create registry to access private function (using a test helper)
-      {:ok, registry} = EventRegistry.start_link([])
-      
-      # Test via state inspection (we'll test the actual matching through integration)
-      # For now, we verify the behavior through the remove_listener tests above
-      assert registry != nil
+      refute Map.has_key?(state.refs, node_pid1)
+      assert Map.has_key?(state.refs, node_pid2)
     end
   end
 end

@@ -20,7 +20,6 @@ defmodule GenDOM.TransitionEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/transition_event.ex`
 
   ## Properties
 

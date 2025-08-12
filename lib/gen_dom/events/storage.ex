@@ -20,7 +20,6 @@ defmodule GenDOM.StorageEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/storage_event.ex`
 
   ## Properties
 

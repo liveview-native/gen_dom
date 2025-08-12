@@ -29,7 +29,6 @@ defmodule GenDOM.MouseEvent do
   ```
 
   **Inherits from:** `GenDOM.UIEvent`
-  **File:** `lib/gen_dom/mouse_event.ex`
 
   ## Properties
 

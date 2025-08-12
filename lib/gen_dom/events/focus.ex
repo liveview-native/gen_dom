@@ -21,7 +21,6 @@ defmodule GenDOM.FocusEvent do
   ```
 
   **Inherits from:** `GenDOM.UIEvent`
-  **File:** `lib/gen_dom/focus_event.ex`
 
   ## Properties
 

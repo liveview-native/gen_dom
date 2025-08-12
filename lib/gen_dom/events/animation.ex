@@ -20,7 +20,6 @@ defmodule GenDOM.AnimationEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/animation_event.ex`
 
   ## Properties
 

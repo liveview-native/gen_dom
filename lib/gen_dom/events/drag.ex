@@ -22,7 +22,6 @@ defmodule GenDOM.DragEvent do
   ```
 
   **Inherits from:** `GenDOM.MouseEvent`
-  **File:** `lib/gen_dom/drag_event.ex`
 
   ## Properties
 

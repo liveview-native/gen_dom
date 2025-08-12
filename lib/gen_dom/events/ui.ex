@@ -30,7 +30,6 @@ defmodule GenDOM.UIEvent do
   ```
 
   **Inherits from:** `GenDOM.Event`
-  **File:** `lib/gen_dom/ui_event.ex`
 
   ## Properties
 

@@ -177,6 +177,8 @@ defmodule GenDOM.Node do
 
   use GenGraph.Tree, [
     assigns: %{},
+    window: nil,
+    event_registry: nil,
     receiver: nil,
     is_element?: false,
 
@@ -941,15 +943,15 @@ defmodule GenDOM.Node do
   end
   defoverridable add_event_listener: 3, add_event_listener: 4
 
-  def dispatch_event(node, event) do
-    GenDOM.EventTarget.dispatch_event(node, event)
-  end
-  defoverridable dispatch_event: 2
-
   def remove_event_listener(node, type, listener, opts \\ []) do
     GenDOM.EventTarget.remove_event_listener(node, type, listener, opts)
   end
   defoverridable remove_event_listener: 3, remove_event_listener: 4
+
+  def dispatch_event(node, event) do
+    GenDOM.EventTarget.dispatch_event(node, event)
+  end
+  defoverridable dispatch_event: 2
 
   def query_selector_all(pid_or_node, selectors) do
     GenDOM.QuerySelector.query_selector_all(pid_or_node, selectors)
@@ -960,4 +962,9 @@ defmodule GenDOM.Node do
     GenDOM.QuerySelector.query_selector(pid_or_node, selectors)
   end
   defoverridable query_selector: 2
+
+  def default_actions(_pid, event) do
+    event
+  end
+  defoverridable default_actions: 2
 end

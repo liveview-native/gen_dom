@@ -22,7 +22,6 @@ defmodule GenDOM.WheelEvent do
   ```
 
   **Inherits from:** `GenDOM.MouseEvent`
-  **File:** `lib/gen_dom/wheel_event.ex`
 
   ## Properties
 
