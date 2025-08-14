@@ -224,6 +224,11 @@ defmodule GenDOM.Document do
     node_type: 10,
     active_element: nil,
     adopted_style_sheets: nil,
+    a_link_color: nil,
+    all: [],
+    anchors: [],
+    applets: [],
+    bg_color: nil,
     body: nil,
     character_set: nil,
     child_element_count: 0,
@@ -238,11 +243,15 @@ defmodule GenDOM.Document do
     doctype: nil,
     document_element: nil,
     document_uri: nil,
+    domain: nil,
     embeds: nil,
+    feature_policy: nil,
+    fg_color: nil,
     first_element_child: nil,
     fonts: [],
     forms: [],
     fragment_directive: nil,
+    fullscreen: nil,
     fullscreen_element: nil,
     fullscreen_enabled: nil,
     head: nil,
@@ -251,22 +260,31 @@ defmodule GenDOM.Document do
     implementation: nil,
     last_element_child: nil,
     last_modified: nil,
+    last_style_sheet_set: nil,
+    link_color: nil,
     links: [],
     location: nil,
     picture_in_picture_element: nil,
     picture_in_picture_enabled?: nil,
     plugins: [],
     pointer_lock_element: nil,
-    prerendering?: false,
+    preferred_style_sheet_set: nil,
+    prerendering: false,
     ready_state: nil,
     referrer: nil,
+    root_element: nil,
     scripts: [],
+    selected_style_sheet_set: nil,
     scrolling_element: nil,
     style_sheets: [],
+    style_sheet_sets: nil,
     timeline: nil,
     title: nil,
     url: nil,
-    visibility_state: nil
+    visibility_state: nil,
+    vlink_color: nil,
+    xml_encoding: nil,
+    xml_version: nil
   ]
 
   import GenDOM.Task
@@ -284,14 +302,179 @@ defmodule GenDOM.Document do
 
   def allowed_fields,
     do: super() ++ [:title, :body, :head]
-  #
-  # def handle_info({:DOWN, ref, :process, pid, :normal}, document) when is_reference(ref) and is_pid(pid) do
-  #   {:noreply, document}
-  # end
-  #
-  # def handle_info(msg, document) do
-  #   super(msg, document)
-  # end
+
+  def handle_call({:append_child, child_pid, opts} = msg, from, element) do
+    {:reply, element, element} = super(msg, from, element)
+    element = do_append_child(element, child_pid, opts)
+    {:reply, element, element}
+  end
+
+  def handle_call({:insert_before, new_element_pid, reference_element_pid, opts} = msg, from, element) do
+    case super(msg, from, element) do
+      {:reply, :error, element} -> {:reply, :error, element}
+      {:reply, element, element} ->
+        element = do_insert_before(element, new_element_pid, reference_element_pid, opts)
+        {:reply, element, element}
+    end
+  end
+
+  def handle_call({:remove_child, child_pid, opts} = msg, from, element) do
+    case super(msg, from, element) do
+      {:reply, :error, element} -> {:reply, :error, element}
+      {:reply, element, element} ->
+        element = do_remove_child(element, child_pid, opts)
+        {:reply, element, element}
+    end
+  end
+
+  def handle_call({:replace_child, new_child_pid, old_child_pid, opts} = msg, from, element) do
+    case super(msg, from, element) do
+      {:reply, :error, element} -> {:reply, :error, element}
+      {:reply, element, element} ->
+        element = do_replace_child(element, new_child_pid, old_child_pid, opts)
+        {:reply, element, element}
+    end
+  end
+
+  def handle_call(msg, from, element) do
+    super(msg, from, element)
+  end
+
+  def handle_cast({:append_child, child_pid, opts} = msg, element) do
+    {:noreply, element} = super(msg, element)
+    element = do_append_child(element, child_pid, opts)
+    {:noreply, element}
+  end
+
+  def handle_cast({:insert_before, new_element_pid, reference_element_pid, opts} = msg, element) do
+    {:noreply, element} = super(msg, element)
+    element = do_insert_before(element, new_element_pid, reference_element_pid, opts)
+    {:noreply, element}
+  end
+
+  def handle_cast({:remove_child, child_pid, opts} = msg, element) do
+    {:noreply, element} = super(msg, element)
+    element = do_remove_child(element, child_pid, opts)
+    {:noreply, element}
+  end
+
+  def handle_cast({:replace_child, new_child_pid, old_child_pid, opts} = msg, element) do
+    {:noreply, element} = super(msg, element)
+    element = do_replace_child(element, new_child_pid, old_child_pid, opts)
+    {:noreply, element}
+  end
+
+  def handle_cast(msg, element) do
+    super(msg, element)
+  end
+
+  defp do_append_child(document, child_pid, opts) do
+    case GenServer.call(child_pid, :get) do
+      %GenDOM.Node{} -> document
+
+      %GenDOM.Text{} -> document
+
+      child ->
+        pos = length(document.children)
+        children = List.insert_at(document.children, -1, child.pid)
+
+        document = Map.merge(document, %{children: children, child_element_count: document.child_element_count + 1})
+
+        update_parent_relationships(document, child, pos, opts)
+        update_element_relationships(document, child.pid, pos, opts)
+
+        document 
+    end
+  end
+
+  defp do_insert_before(document, new_element_pid, reference_element_pid, _opts) do
+    children = Enum.reduce(document.children, [], fn
+      ^reference_element_pid, children ->
+        case GenServer.call(new_element_pid, :get) do
+          %GenDOM.Text{} -> children
+          new_element -> [reference_element_pid, new_element.pid | children]
+        end
+
+      child_pid, children -> [child_pid | children]
+    end)
+
+    struct(document, children: children, child_element_count: document.child_element_count + 1)
+  end
+
+  defp do_remove_child(document, child_pid, _opts) do
+    children = Enum.reject(document.children, &(&1 == child_pid))
+    Map.merge(document, %{
+      children: children,
+      child_element_count: document.child_element_count - 1
+    })
+  end
+
+  defp do_replace_child(document, new_child_pid, old_child_pid, opts) do
+    {children, pos} = Enum.reduce(document.children, {[], 0}, fn
+      child_pid, {children, pos} when child_pid == old_child_pid ->
+        new_child = GenServer.call(new_child_pid, :get)
+        update_parent_relationships(document, new_child, pos, opts)
+        {[new_child_pid | children], pos + 1}
+
+      child_pid, {children, pos} -> {[child_pid | children], pos + 1}
+    end)
+
+    update_element_relationships(document, new_child_pid, pos, opts)
+
+    Map.put(document, :childre, children)
+  end
+
+  defp update_element_relationships(parent, child_pid, pos, _opts) do
+    previous_element_sibling = if pos != 0 do
+      previous_element_sibling = Enum.at(parent.children, pos - 1)
+      GenServer.cast(previous_element_sibling, {:put, :next_element_sibling, child_pid})
+      previous_element_sibling
+    end
+
+    next_pos = pos + 1
+    next_element_sibling = if next_pos < length(parent.children),
+      do: Enum.at(parent.children, next_pos)
+
+    GenServer.cast(child_pid, {:merge, %{
+      previous_element_sibling: previous_element_sibling,
+      next_element_sibling: next_element_sibling
+    }})
+  end
+
+  defp update_parent_relationships(%{children: [child_pid], pid: parent_pid}, %{__struct__: struct, pid: child_pid} = child, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(child)
+    GenServer.cast(parent_pid, {:merge, %{
+      first_element_child: child_pid,
+      last_element_child: child_pid
+    }})
+  end
+
+  defp update_parent_relationships(parent, %{__struct__: struct, pid: child_pid} = child, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(child)
+    GenServer.cast(parent.pid, {:put, :first_element_child, child_pid})
+  end
+
+  defp update_parent_relationships(%{children: children} = parent, %{__struct__: struct, pid: child_pid} = child, pos, _opts) when pos + 1 >= length(children) and struct not in [GenDOM.Node, GenDOM.Text] do
+    update_owner_document(child)
+    GenServer.cast(parent.pid, {:put, :last_element_child, child_pid})
+  end
+
+  defp update_parent_relationships(_parent, child, _pos, _opts) do
+    update_owner_document(child)
+    :ok
+  end
+
+  defp update_owner_document(%{tag_name: "body", owner_document: owner_document, pid: element_pid}) when not is_nil(owner_document) do
+    GenServer.cast(owner_document, {:put, :body, element_pid})
+  end
+
+  defp update_owner_document(%{tag_name: "head", owner_document: owner_document, pid: element_pid}) when not is_nil(owner_document) do
+    GenServer.cast(owner_document, {:put, :head, element_pid})
+  end
+
+  defp update_owner_document(_element),
+    do: :ok
+
 
   def clone_node(document_pid, deep? \\ false) do
     document = get(document_pid)

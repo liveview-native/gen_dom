@@ -725,7 +725,27 @@ defmodule GenDOM.Node do
 
       update_node_relationships(parent, new_node_pid, pos, opts)
 
-      Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
+      cond do
+        parent.node_type == 10 ->
+          Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+            owner_document: parent.pid,
+            window: parent.window,
+            event_registry: parent.event_registry
+          }}))
+
+      parent.owner_document ->
+        Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+          owner_document: parent.owner_document,
+          window: parent.window,
+          event_registry: parent.event_registry
+        }}))
+
+      true ->
+        Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+          window: parent.window,
+          event_registry: parent.event_registry
+        }}))
+      end
 
       send_to_receiver(opts[:receiver], {
         :insert_before,
@@ -840,8 +860,33 @@ defmodule GenDOM.Node do
   end
 
   defp do_remove_child(parent, child_pid, opts) do
-    all_descendants = [child_pid | :pg.get_members(child_pid)]
+    child_descendants = :pg.get_members(child_pid)
+    all_descendants = [child_pid | child_descendants]
+
     do_untrack(parent, all_descendants)
+
+    cond do
+      parent.node_type == 10 ->
+        Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+          owner_document: parent.pid,
+          window: parent.window,
+          event_registry: parent.event_registry
+        }}))
+
+    parent.owner_document ->
+      Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+        owner_document: parent.owner_document,
+        window: parent.window,
+        event_registry: parent.event_registry
+      }}))
+
+    true ->
+      Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+        window: parent.window,
+        event_registry: parent.event_registry
+      }}))
+    end
+
 
     if opts[:receiver] do
       send(opts[:receiver], {:remove_child, parent.pid, child_pid})
@@ -878,7 +923,28 @@ defmodule GenDOM.Node do
       update_node_relationships(parent, new_child_pid, pos, opts)
 
       GenServer.cast(new_child.pid, {:put, :parent_element, parent.pid})
-      Enum.each(all_descendants, &GenServer.cast(&1, {:put, :owner_document, parent.owner_document}))
+
+      cond do
+        parent.node_type == 10 ->
+          Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+            owner_document: parent.pid,
+            window: parent.window,
+            event_registry: parent.event_registry
+          }}))
+
+      parent.owner_document ->
+        Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+          owner_document: parent.owner_document,
+          window: parent.window,
+          event_registry: parent.event_registry
+        }}))
+
+      true ->
+        Enum.each(all_descendants, &GenServer.cast(&1, {:merge, %{
+          window: parent.window,
+          event_registry: parent.event_registry
+        }}))
+      end
 
       send_to_receiver(opts[:receiver], {
         :replace_child,
