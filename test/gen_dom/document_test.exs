@@ -27,4 +27,8 @@ defmodule GenDOM.DocumentTest do
       }
     end
   end
+
+  describe "create_element/3" do
+
+  end
 end

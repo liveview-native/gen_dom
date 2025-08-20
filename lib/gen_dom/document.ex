@@ -718,8 +718,15 @@ defmodule GenDOM.Document do
       "div"
 
   """
-  def create_element(_document_pid, _local_name, _options \\ []) do
-    nil
+  def create_element(document_pid, local_name, _options \\ []) do
+    case local_name do
+      "template" ->
+        element = GenDOM.Element.new(tag_name: local_name, owner_document: document_pid)
+        content = GenDOM.Element.new(tag_name: "document-fragment")
+        GenDOM.Element.append_child(element, content)
+      local_name ->
+        GenDOM.Element.new(tag_name: local_name, owner_document: document_pid)
+    end
   end
 
   @doc """

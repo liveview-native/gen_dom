@@ -15,7 +15,8 @@ defmodule GenDOM.NodeTest do
     ]
 
     def encode(test_node) do
-      Map.merge(super(test_node), %{
+      node = super(test_node)
+      Map.merge(node, %{
         test_property: test_node.test_property
       })
     end

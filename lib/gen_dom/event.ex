@@ -23,25 +23,6 @@ defmodule GenDOM.Event do
     type: ""
   ]
 
-  defmacro __using__(fields) do
-    quote do
-      require Inherit
-      Inherit.setup(unquote(__MODULE__), unquote(fields))
-
-      def new(type, options \\ []) do
-        %__MODULE__{
-          type: type,
-          bubbles: Keyword.get(options, :bubbles, false),
-          cancelable: Keyword.get(options, :cancelable, false),
-          composed: Keyword.get(options, :composed, false),
-          time_stamp: System.system_time(:millisecond)
-        }
-      end
-      defwithhold new: 1, new: 2
-      defoverridable new: 1, new: 2
-    end
-  end
-
   @doc """
   Creates a new Event.
 
@@ -79,7 +60,6 @@ defmodule GenDOM.Event do
       time_stamp: System.system_time(:millisecond)
     }
   end
-  defwithhold new: 1, new: 2
   defoverridable new: 1, new: 2
 
   @doc """

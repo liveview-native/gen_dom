@@ -200,24 +200,6 @@ defmodule GenDOM.Node do
     text_content: ""
   ]
 
-  defmacro __using__(fields) do
-    quote do
-      require Inherit
-      Inherit.setup(unquote(__MODULE__), unquote(fields))
-
-      @impl true
-      def init(opts) do
-        {:ok, node} = super(opts)
-        :pg.start_link()
-        :pg.monitor(node.pid)
-
-        {:ok, node}
-      end
-      defwithhold init: 1
-      defoverridable init: 1
-    end
-  end
-
   @impl true
   def init(opts) do
     {:ok, node} = super(opts)
@@ -226,7 +208,7 @@ defmodule GenDOM.Node do
 
     {:ok, node}
   end
-  defwithhold init: 1
+  defoverridable init: 1
 
   @impl true
   def handle_call({:put, field, value} = msg, from, object) do
@@ -537,7 +519,16 @@ defmodule GenDOM.Node do
 
   def encode(pid) when is_pid(pid) do
     node = GenServer.call(pid, :get)
-    apply(node.__struct__, :encode, [node])
+    %{
+      pid: node.pid,
+      node_type: node.node_type,
+      parent_element: node.parent_element,
+      owner_document: node.owner_document,
+      child_nodes: Enum.map(node.child_nodes, fn(child_node) ->
+        child_node = GenServer.call(child_node, :get)
+        apply(child_node.__struct__, :encode, [child_node])
+      end),
+    }
   end
 
   def encode(%{pid: pid} = _node) when is_pid(pid) do
@@ -548,7 +539,10 @@ defmodule GenDOM.Node do
       node_type: node.node_type,
       parent_element: node.parent_element,
       owner_document: node.owner_document,
-      child_nodes: Enum.map(node.child_nodes, &encode(&1)),
+      child_nodes: Enum.map(node.child_nodes, fn(child_node) ->
+        child_node = GenServer.call(child_node, :get)
+        apply(child_node.__struct__, :encode, [child_node])
+      end),
     }
   end
   defoverridable encode: 1

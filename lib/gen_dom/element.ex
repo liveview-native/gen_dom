@@ -296,26 +296,10 @@ defmodule GenDOM.Element do
     slot: nil,
   ]
 
-  defmacro __using__(fields) do
-    quote do
-      require Inherit
-      Inherit.setup(unquote(__MODULE__), unquote(fields))
-
-      @impl true
-      def init(opts) do
-        {:ok, element} = super(opts)
-
-        fields = extract_fields_from_attributes(Keyword.get(opts, :attributes, %{}))
-
-        {:ok, struct(element, fields)}
-      end
-      defwithhold init: 1
-      defoverridable init: 1
-    end
-  end
-
   def encode(element) do
-    Map.merge(super(element), %{
+    node = super(element)
+    
+    Map.merge(node, %{
       class_list: element.class_list,
       id: element.id,
       attributes: element.attributes,
@@ -331,7 +315,7 @@ defmodule GenDOM.Element do
 
     {:ok, struct(element, fields)}
   end
-  defwithhold init: 1
+  defoverridable init: 1
 
   def handle_call({:append_child, child_pid, opts} = msg, from, element) do
     {:reply, element, element} = super(msg, from, element)
