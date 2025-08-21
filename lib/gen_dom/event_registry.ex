@@ -77,7 +77,7 @@ defmodule GenDOM.EventRegistry do
   end
 
   def handle_cast({:dispatch, node_pid, event}, registry) do
-    event = Map.put(event, :target, node_pid)
+    event = GenDOM.Event.put(event, :target, node_pid)
     do_dispatch(event, node_pid, registry)
     {:noreply, registry}
   end
@@ -87,7 +87,7 @@ defmodule GenDOM.EventRegistry do
   end
 
   defp do_dispatch(event, node_pid, registry) do
-    event = Map.put(event, :current_target, node_pid)
+    event = GenDOM.Event.put(event, :current_target, node_pid)
     node = GenServer.call(node_pid, :get)
     with {:ok, node_listeners} <- Map.fetch(registry.listeners, node_pid),
       {:ok, type_listeners} <- Map.fetch(node_listeners, event.type) do
@@ -122,13 +122,15 @@ defmodule GenDOM.EventRegistry do
   end
 
   defp capture_phase(event, type_listeners, _registry) do
-    Enum.reduce_while(type_listeners, event, fn(listener_record, event) ->
-      if event.stop_immediate_propagation do
-        {:halt, event}
+    Enum.reduce_while(type_listeners, nil, fn(listener_record, _listener_return) ->
+      if GenDOM.Event.get(event, :stop_immediate_propagation) do
+        {:halt, nil}
       else
         {:cont, listener_record.listener.(event)}
       end
     end)
+
+    GenDOM.Event.get(event)
   end
 
   defp target_phase(event, _node, _registry) do
