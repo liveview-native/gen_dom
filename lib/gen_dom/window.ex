@@ -458,8 +458,8 @@ defmodule GenDOM.Window do
   ## MDN Reference
   https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch
   """
-  def fetch(_window_pid, _resource, _opts \\ []) do
-    :not_implemented
+  def fetch(window_pid, resource, opts \\ []) do
+    GenServer.call(window_pid, {:fetch, resource, opts})
   end
 
   @doc """

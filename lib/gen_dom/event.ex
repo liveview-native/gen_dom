@@ -7,7 +7,7 @@ defmodule GenDOM.Event do
   of an asynchronous task. It can also be triggered programmatically.
   """
 
-  use Inherit, [
+  use GenObject, [
     # Instance properties
     bubbles: false,
     cancelable: false,
@@ -52,13 +52,16 @@ defmodule GenDOM.Event do
       )
   """
   def new(type, options \\ []) do
-    %__MODULE__{
+    case start([
       type: type,
       bubbles: Keyword.get(options, :bubbles, false),
       cancelable: Keyword.get(options, :cancelable, false),
       composed: Keyword.get(options, :composed, false),
       time_stamp: System.system_time(:millisecond)
-    }
+    ]) do
+      {:ok, pid} -> GenServer.call(pid, :get)
+      _other -> {:error, "could not start"}
+    end
   end
   defoverridable new: 1, new: 2
 
@@ -80,7 +83,7 @@ defmodule GenDOM.Event do
   its default action should not be taken as it normally would be.
   """
   def prevent_default(%{cancelable: true} = event) do
-    Map.put(event, :default_prevented, true)
+    put(event, :default_prevented, true)
   end
 
   def prevent_default(event), do: event
@@ -94,7 +97,7 @@ defmodule GenDOM.Event do
   no remaining listeners will be called.
   """
   def stop_immediate_propagation(event) do
-    Map.put(event, :stop_immediate_propagation, true)
+    put(event, :stop_immediate_propagation, true)
   end
 
   @doc """
@@ -104,6 +107,6 @@ defmodule GenDOM.Event do
   and bubbling phases. It does not, however, prevent any default behaviors from occurring.
   """
   def stop_propagation(event) do
-    Map.put(event, :stop_propagation, true)
+    put(event, :stop_propagation, true)
   end
 end
