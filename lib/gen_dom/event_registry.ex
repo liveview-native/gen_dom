@@ -156,7 +156,12 @@ defmodule GenDOM.EventRegistry do
 
   defp default_actions_phase(event, node, _registry) do
     event = GenDOM.Event.get(event)
-    GenServer.call(node.pid, {:default_action, event.type, event})
+
+    if !event.default_prevented  do
+      GenServer.call(node.pid, {:default_action, event.type, event})
+    else
+      event
+    end
   end
 
   defp cleanup_phase(event, _node, _registry) do

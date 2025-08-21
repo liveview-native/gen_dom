@@ -562,5 +562,21 @@ defmodule GenDOM.NodeTest do
 
       refute_receive :success, 100
     end
+
+    test "calling preventDefault within the listener will update the default_prevented flag", %{pid: registry_pid} do
+      node = Node.new(event_registry: registry_pid)
+
+      listener = fn(event) ->
+        GenDOM.Event.prevent_default(event)
+      end
+
+      Node.add_event_listener(node, "click", listener)
+      event = Event.new("click", bubbles: true, cancelable: true)
+      Node.dispatch_event(node, event)
+
+      :timer.sleep(10)
+
+      assert Event.get(event, :default_prevented)
+    end
   end
 end
