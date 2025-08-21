@@ -24,6 +24,7 @@ defmodule GenDOM.EventRegistry do
   end
 
   def dispatch(node_or_pid, event) do
+    event = GenDOM.Event.get(event)
     node_pid = get_pid(node_or_pid)
     node = :sys.get_state(node_pid)
     GenServer.cast(node.event_registry, {:dispatch, node_pid, event})
