@@ -147,6 +147,7 @@ defmodule GenDOM.EventRegistry do
 
   defp bubbling_phase(%Event{bubbles: true} = event, node, registry) do
     do_dispatch(event, node.parent_node, registry)
+    GenDOM.Event.get(event)
   end
 
   defp bubbling_phase(event, _node, _registry) do
@@ -154,6 +155,7 @@ defmodule GenDOM.EventRegistry do
   end
 
   defp default_actions_phase(event, node, _registry) do
+    event = GenDOM.Event.get(event)
     GenServer.call(node.pid, {:default_action, event.type, event})
   end
 

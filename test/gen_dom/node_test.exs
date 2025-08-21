@@ -473,14 +473,12 @@ defmodule GenDOM.NodeTest do
         if is_struct(event) do
           send(self_pid, :success1)
         end
-        event
       end
 
       listener2 = fn(event) ->
         if is_struct(event) do
           send(self_pid, :success2)
         end
-        event
       end
 
       Node.add_event_listener(node, "click", listener1)
@@ -497,9 +495,8 @@ defmodule GenDOM.NodeTest do
 
       self_pid = self()
 
-      listener = fn(event) ->
+      listener = fn(_event) ->
         send(self_pid, :success)
-        event
       end
 
       Node.add_event_listener(node, "click", listener)
@@ -522,12 +519,10 @@ defmodule GenDOM.NodeTest do
 
       parent_listener = fn(event) ->
         send(self_pid, {event.target, event.current_target})
-        event
       end
 
       child_listener = fn(event) ->
         send(self_pid, {event.target, event.current_target})
-        event
       end
 
       Node.add_event_listener(child, "click", child_listener)
@@ -551,9 +546,8 @@ defmodule GenDOM.NodeTest do
 
       self_pid = self()
 
-      parent_listener = fn(event) ->
+      parent_listener = fn(_event) ->
         send(self_pid, :success)
-        event
       end
 
       child_listener = fn(event) ->
