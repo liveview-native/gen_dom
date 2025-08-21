@@ -82,11 +82,17 @@ defmodule GenDOM.Event do
   The preventDefault() method tells the user agent that if the event does not get explicitly handled,
   its default action should not be taken as it normally would be.
   """
-  def prevent_default(%{cancelable: true} = event) do
-    put(event, :default_prevented, true)
+  def prevent_default(event) do
+    merge_lazy(event, fn(event) ->
+      if event.cancelable do
+        %{
+          default_prevented: true
+        }
+      else
+        %{}
+      end
+    end)
   end
-
-  def prevent_default(event), do: event
 
   @doc """
   Prevents other listeners of the same event from being called.
