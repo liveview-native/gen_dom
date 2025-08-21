@@ -27,13 +27,15 @@ defmodule GenDOM.EventRegistryTest do
   describe "add_listener/4" do
     setup do
       {:ok, registry} = EventRegistry.start_link([])
-      node_pid = spawn(fn -> receive do _ -> :ok end end)
+      node = GenDOM.Node.new([
+        event_registry: registry
+      ])
       
-      %{registry: registry, node_pid: node_pid}
+      %{registry: registry, node_pid: node.pid}
     end
 
     test "adds first listener for node and event type", %{registry: registry, node_pid: node_pid} do
-      listener =fn(_e) -> :ok end
+      listener = fn(_e) -> :ok end
       opts = [capture: false]
       
       GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
@@ -48,21 +50,25 @@ defmodule GenDOM.EventRegistryTest do
       [listener_record] = state.listeners[node_pid]["click"]
       assert listener_record.listener == listener
       assert listener_record.opts == opts
-      assert is_binary(listener_record.id)
+      assert is_reference(listener_record.ref)
     end
 
     test "adds multiple listeners for same event type", %{registry: registry, node_pid: node_pid} do
-      listener1 =fn(_e) -> :ok end
-      listener2 =fn(_e) -> :ok end
+      listener1 = fn(_e) -> :ok end
+      listener2 = fn(_e) -> :ok end
       opts = [capture: false]
       
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, opts})
-      GenServer.cast(registry, {:add_listener, node_pid, "click", listener2, opts})
+      ref1 = EventRegistry.add_listener(node_pid, "click", listener1, opts)
+      ref2 = EventRegistry.add_listener(node_pid, "click", listener2, opts)
+
+      assert is_reference(ref1)
+      assert is_reference(ref2)
       
-      :timer.sleep(10)
+      :timer.sleep(100)
       
       state = :sys.get_state(registry)
       listeners = state.listeners[node_pid]["click"]
+
       assert length(listeners) == 2
       
       listener_fns = Enum.map(listeners, & &1.listener)
@@ -71,8 +77,8 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "adds listeners for different event types", %{registry: registry, node_pid: node_pid} do
-      listener1 =fn(_e) -> :ok end
-      listener2 =fn(_e) -> :ok end
+      listener1 = fn(_e) -> :ok end
+      listener2 = fn(_e) -> :ok end
       opts = [capture: false]
       
       GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, opts})
@@ -89,7 +95,7 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "monitors node process for cleanup", %{registry: registry, node_pid: node_pid} do
-      listener =fn(_e) -> :ok end
+      listener = fn(_e) -> :ok end
       opts = [capture: false]
       
       GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
@@ -102,8 +108,8 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "only monitors node process once", %{registry: registry, node_pid: node_pid} do
-      listener1 =fn(_e) -> :ok end
-      listener2 =fn(_e) -> :ok end
+      listener1 = fn(_e) -> :ok end
+      listener2 = fn(_e) -> :ok end
       opts = [capture: false]
       
       GenServer.cast(registry, {:add_listener, node_pid, "click", listener1, opts})
@@ -127,7 +133,23 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "removes existing listener", %{registry: registry, node_pid: node_pid} do
-      listener =fn(_e) -> :ok end
+      listener = fn(_e) -> :ok end
+      opts = [capture: false]
+      
+      # Add listener
+      GenServer.cast(registry, {:add_listener, node_pid, "click", listener, opts})
+      :timer.sleep(10)
+      
+      # Remove listener
+      GenServer.cast(registry, {:remove_listener, node_pid, "click", listener, opts})
+      :timer.sleep(10)
+      
+      state = :sys.get_state(registry)
+      assert state.listeners == %{}
+    end
+
+    test "removes listener from reference", %{registry: registry, node_pid: node_pid} do
+      listener = fn(_e) -> :ok end
       opts = [capture: false]
       
       # Add listener
@@ -143,8 +165,8 @@ defmodule GenDOM.EventRegistryTest do
     end
 
     test "removes only matching listener", %{registry: registry, node_pid: node_pid} do
-      listener1 =fn(_e) -> :ok end
-      listener2 =fn(_e) -> :ok end
+      listener1 = fn(_e) -> :ok end
+      listener2 = fn(_e) -> :ok end
       opts = [capture: false]
       
       # Add two listeners
@@ -260,7 +282,7 @@ defmodule GenDOM.EventRegistryTest do
         end
       end)
       
-      listener =fn(_e) -> :ok end
+      listener = fn(_e) -> :ok end
       opts = [capture: false]
       
       # Add listener

@@ -14,7 +14,11 @@ defmodule GenDOM.EventRegistry do
   def add_listener(node_or_pid, type, listener, opts \\ []) when is_function(listener, 1) do
     node_pid = get_pid(node_or_pid)
     node = :sys.get_state(node_pid)
-    GenServer.cast(node.event_registry, {:add_listener, node_pid, type, listener, opts})
+    ref = make_ref()
+
+    GenServer.cast(node.event_registry, {:add_listener, node_pid, type, listener, Keyword.put_new(opts, :ref, ref)})
+
+    ref
   end
 
   def remove_listener(node_or_pid, type, listener, opts \\ []) when is_function(listener, 1) do
@@ -43,7 +47,7 @@ defmodule GenDOM.EventRegistry do
   def handle_cast({:add_listener, node_pid, type, listener, opts}, registry) do
     node_listeners = Map.get(registry.listeners, node_pid, %{})
     type_listeners = Map.get(node_listeners, type, [])
-    listener_record = %{listener: listener, opts: opts, id: generate_id()}
+    listener_record = %{listener: listener, opts: opts, ref: Keyword.get_lazy(opts, :ref, &make_ref/0)}
 
     node_listeners = Map.put(node_listeners, type, List.insert_at(type_listeners, -1, listener_record))
     listeners = Map.put(registry.listeners, node_pid, node_listeners)
@@ -54,10 +58,13 @@ defmodule GenDOM.EventRegistry do
   end
 
   def handle_cast({:remove_listener, node_pid, type, listener, opts}, registry) do
+    ref = Keyword.get(opts, :ref)
     node_listeners = Map.get(registry.listeners, node_pid, %{})
     type_listeners =
       Map.get(node_listeners, type, [])
       |> Enum.reject(fn
+        %{ref: ^ref} = listener_record ->
+          opts_match?(opts, Map.get(listener_record, :opts, []))
         %{listener: ^listener} = listener_record ->
           opts_match?(opts, Map.get(listener_record, :opts, []))
         _other -> false
@@ -166,10 +173,6 @@ defmodule GenDOM.EventRegistry do
 
   defp cleanup_phase(event, _node, _registry) do
     event
-  end
-
-  defp generate_id do
-    :crypto.strong_rand_bytes(16) |> Base.encode64()
   end
 
   defp maybe_monitor_node(refs, node_pid) do
