@@ -597,7 +597,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_custom_validity(textarea.pid, "")
   """
   def set_custom_validity(textarea_pid, message) when is_binary(message) do
-    GenDOM.Node.put(textarea_pid, :validation_message, message)
+    GenDOM.Node.set(textarea_pid, :validation_message, message)
     # In real implementation would update validity state
   end
 
@@ -717,7 +717,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_rows(textarea.pid, 10)
   """
   def set_rows(textarea_pid, rows) when is_integer(rows) and rows > 0 do
-    GenDOM.Node.put(textarea_pid, :rows, rows)
+    GenDOM.Node.set(textarea_pid, :rows, rows)
   end
 
   @doc """
@@ -736,7 +736,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_cols(textarea.pid, 80)
   """
   def set_cols(textarea_pid, cols) when is_integer(cols) and cols > 0 do
-    GenDOM.Node.put(textarea_pid, :cols, cols)
+    GenDOM.Node.set(textarea_pid, :cols, cols)
   end
 
   @doc """
@@ -755,7 +755,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_wrap(textarea.pid, "hard")
   """
   def set_wrap(textarea_pid, wrap_mode) when wrap_mode in ["soft", "hard", "off"] do
-    GenDOM.Node.put(textarea_pid, :wrap, wrap_mode)
+    GenDOM.Node.set(textarea_pid, :wrap, wrap_mode)
   end
 
   @doc """
@@ -774,7 +774,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_disabled(textarea.pid, true)
   """
   def set_disabled(textarea_pid, is_disabled) when is_boolean(is_disabled) do
-    GenDOM.Node.put(textarea_pid, :disabled, is_disabled)
+    GenDOM.Node.set(textarea_pid, :disabled, is_disabled)
   end
 
   @doc """
@@ -793,7 +793,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_readonly(textarea.pid, true)
   """
   def set_readonly(textarea_pid, is_readonly) when is_boolean(is_readonly) do
-    GenDOM.Node.put(textarea_pid, :readonly, is_readonly)
+    GenDOM.Node.set(textarea_pid, :readonly, is_readonly)
   end
 
   @doc """
@@ -812,7 +812,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_required(textarea.pid, true)
   """
   def set_required(textarea_pid, is_required) when is_boolean(is_required) do
-    GenDOM.Node.put(textarea_pid, :required, is_required)
+    GenDOM.Node.set(textarea_pid, :required, is_required)
   end
 
   @doc """
@@ -831,7 +831,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_name(textarea.pid, "user_message")
   """
   def set_name(textarea_pid, name) when is_binary(name) do
-    GenDOM.Node.put(textarea_pid, :name, name)
+    GenDOM.Node.set(textarea_pid, :name, name)
   end
 
   @doc """
@@ -850,7 +850,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_placeholder(textarea.pid, "Enter your message...")
   """
   def set_placeholder(textarea_pid, placeholder_text) when is_binary(placeholder_text) do
-    GenDOM.Node.put(textarea_pid, :placeholder, placeholder_text)
+    GenDOM.Node.set(textarea_pid, :placeholder, placeholder_text)
   end
 
   @doc """
@@ -869,7 +869,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_min_length(textarea.pid, 50)
   """
   def set_min_length(textarea_pid, min_length) when is_integer(min_length) or is_nil(min_length) do
-    GenDOM.Node.put(textarea_pid, :min_length, min_length)
+    GenDOM.Node.set(textarea_pid, :min_length, min_length)
   end
 
   @doc """
@@ -888,7 +888,7 @@ defmodule GenDOM.HTMLTextAreaElement do
       GenDOM.HTMLTextAreaElement.set_max_length(textarea.pid, 500)
   """
   def set_max_length(textarea_pid, max_length) when is_integer(max_length) or is_nil(max_length) do
-    GenDOM.Node.put(textarea_pid, :max_length, max_length)
+    GenDOM.Node.set(textarea_pid, :max_length, max_length)
   end
 
   @doc """

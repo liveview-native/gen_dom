@@ -211,15 +211,15 @@ defmodule GenDOM.Node do
   defoverridable init: 1
 
   @impl true
-  def handle_call({:put, field, value} = msg, from, object) do
+  def handle_call({:set, field, value} = msg, from, object) do
     {:reply, object, object} = super(msg, from, object)
-    object = do_put(object, field, value)
+    object = do_set(object, field, value)
     {:reply, object, object}
   end
 
-  def handle_call({:put_lazy, field, func}, from, object) do
+  def handle_call({:set_lazy, field, func}, from, object) do
     value = func.(object)
-    handle_call({:put, field, value}, from, object)
+    handle_call({:set, field, value}, from, object)
   end
 
   def handle_call({:merge, fields} = msg, from, object) do
@@ -292,15 +292,15 @@ defmodule GenDOM.Node do
   defoverridable handle_call: 3
 
   @impl true
-  def handle_cast({:put, field, value} = msg, object) do
+  def handle_cast({:set, field, value} = msg, object) do
     {:noreply, object} = super(msg, object)
-    object = do_put(object, field, value)
+    object = do_set(object, field, value)
     {:noreply, object}
   end
 
-  def handle_cast({:put_lazy, field, func}, object) do
+  def handle_cast({:set_lazy, field, func}, object) do
     value = func.(object)
-    handle_cast({:put, field, value}, object)
+    handle_cast({:set, field, value}, object)
   end
 
   def handle_cast({:merge, fields} = msg, object) do
@@ -451,13 +451,13 @@ defmodule GenDOM.Node do
     GenServer.cast(node_pid, {:assign, assigns})
   end
 
-  defp do_put(node, field, value) do
+  defp do_set(node, field, value) do
     node = struct(node, %{field => value})
 
     allowed_fields = apply(node.__struct__, :allowed_fields, [])
 
     if field in allowed_fields  && node.owner_document do
-      GenServer.cast(node.owner_document, {:send_to_receiver, {:put, self(), field, value}})
+      GenServer.cast(node.owner_document, {:send_to_receiver, {:set, self(), field, value}})
     end
 
     node
@@ -888,7 +888,7 @@ defmodule GenDOM.Node do
   end
 
   defp do_replace_child(parent, new_child_pid, old_child_pid, opts) do
-    GenServer.cast(old_child_pid, {:put_lazy, :parent_pid, fn(child) ->
+    GenServer.cast(old_child_pid, {:set_lazy, :parent_pid, fn(child) ->
       if child.parent_pid == parent.pid do
         nil
       else
@@ -916,7 +916,7 @@ defmodule GenDOM.Node do
 
       update_node_relationships(parent, new_child_pid, pos, opts)
 
-      GenServer.cast(new_child.pid, {:put, :parent_element, parent.pid})
+      GenServer.cast(new_child.pid, {:set, :parent_element, parent.pid})
 
       cond do
         parent.node_type == 10 ->
@@ -980,7 +980,7 @@ defmodule GenDOM.Node do
 
     previous_sibling = if pos != 0 do
       previous_sibling = Enum.at(parent.child_nodes, pos - 1)
-      GenServer.cast(previous_sibling, {:put, :next_sibling, node_pid})
+      GenServer.cast(previous_sibling, {:set, :next_sibling, node_pid})
       previous_sibling
     end
 
@@ -1004,11 +1004,11 @@ defmodule GenDOM.Node do
   end
 
   defp update_parent_relationships(parent, node_pid, 0, _opts) do
-    GenServer.cast(parent.pid, {:put, :first_child, node_pid})
+    GenServer.cast(parent.pid, {:set, :first_child, node_pid})
   end
 
   defp update_parent_relationships(%{children: children} = parent, node_pid, pos, _opts) when pos + 1 >= length(children) do
-    GenServer.cast(parent.pid, {:put, :last_child, node_pid})
+    GenServer.cast(parent.pid, {:set, :last_child, node_pid})
   end
 
   defp update_parent_relationships(_parent, _node, _pos, _opts) do

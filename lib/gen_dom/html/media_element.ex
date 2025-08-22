@@ -407,7 +407,7 @@ defmodule GenDOM.HTMLMediaElement do
     # 2. Start/resume playback
     # 3. Update paused state
     # 4. Fire appropriate events
-    GenDOM.Node.put(media_pid, :paused, false)
+    GenDOM.Node.set(media_pid, :paused, false)
     :ok
   end
 
@@ -434,7 +434,7 @@ defmodule GenDOM.HTMLMediaElement do
   - Fires 'pause' event when playback pauses
   """
   def pause(media_pid) do
-    GenDOM.Node.put(media_pid, :paused, true)
+    GenDOM.Node.set(media_pid, :paused, true)
     # Implementation would fire pause event
   end
 
@@ -560,7 +560,7 @@ defmodule GenDOM.HTMLMediaElement do
 
     media = GenDOM.Node.get(media_pid)
     updated_tracks = [track | media.text_tracks]
-    GenDOM.Node.put(media_pid, :text_tracks, updated_tracks)
+    GenDOM.Node.set(media_pid, :text_tracks, updated_tracks)
 
     track
   end
@@ -636,7 +636,7 @@ defmodule GenDOM.HTMLMediaElement do
     duration = media.duration || 0.0
     clamped_time = max(0.0, min(time, duration))
 
-    GenDOM.Node.put(media_pid, :current_time, clamped_time)
+    GenDOM.Node.set(media_pid, :current_time, clamped_time)
     # Implementation would trigger seeking and fire events
   end
 
@@ -661,7 +661,7 @@ defmodule GenDOM.HTMLMediaElement do
   def set_volume(media_pid, volume) when is_number(volume) do
     # Clamp volume to valid range
     clamped_volume = max(0.0, min(volume, 1.0))
-    GenDOM.Node.put(media_pid, :volume, clamped_volume)
+    GenDOM.Node.set(media_pid, :volume, clamped_volume)
     # Implementation would fire volumechange event
   end
 
@@ -684,7 +684,7 @@ defmodule GenDOM.HTMLMediaElement do
       GenDOM.HTMLMediaElement.set_muted(media.pid, false)
   """
   def set_muted(media_pid, muted) when is_boolean(muted) do
-    GenDOM.Node.put(media_pid, :muted, muted)
+    GenDOM.Node.set(media_pid, :muted, muted)
     # Implementation would fire volumechange event
   end
 
@@ -711,7 +711,7 @@ defmodule GenDOM.HTMLMediaElement do
       GenDOM.HTMLMediaElement.set_playback_rate(media.pid, -1.0)
   """
   def set_playback_rate(media_pid, rate) when is_number(rate) do
-    GenDOM.Node.put(media_pid, :playback_rate, rate)
+    GenDOM.Node.set(media_pid, :playback_rate, rate)
     # Implementation would fire ratechange event
   end
 
@@ -735,7 +735,7 @@ defmodule GenDOM.HTMLMediaElement do
       GenDOM.HTMLMediaElement.set_preserves_pitch(media.pid, false)
   """
   def set_preserves_pitch(media_pid, preserve) when is_boolean(preserve) do
-    GenDOM.Node.put(media_pid, :preserves_pitch, preserve)
+    GenDOM.Node.set(media_pid, :preserves_pitch, preserve)
   end
 
   @doc """
@@ -753,7 +753,7 @@ defmodule GenDOM.HTMLMediaElement do
       GenDOM.HTMLMediaElement.set_src(media.pid, "https://example.com/video.mp4")
   """
   def set_src(media_pid, url) when is_binary(url) do
-    GenDOM.Node.put(media_pid, :src, url)
+    GenDOM.Node.set(media_pid, :src, url)
     # Implementation would trigger load() automatically
     load(media_pid)
   end

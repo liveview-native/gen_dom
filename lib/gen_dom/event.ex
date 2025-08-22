@@ -103,7 +103,7 @@ defmodule GenDOM.Event do
   no remaining listeners will be called.
   """
   def stop_immediate_propagation(event) do
-    put(event, :stop_immediate_propagation, true)
+    set(event, :stop_immediate_propagation, true)
   end
 
   @doc """
@@ -113,6 +113,6 @@ defmodule GenDOM.Event do
   and bubbling phases. It does not, however, prevent any default behaviors from occurring.
   """
   def stop_propagation(event) do
-    put(event, :stop_propagation, true)
+    set(event, :stop_propagation, true)
   end
 end

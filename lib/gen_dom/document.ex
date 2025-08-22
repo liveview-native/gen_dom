@@ -427,7 +427,7 @@ defmodule GenDOM.Document do
   defp update_element_relationships(parent, child_pid, pos, _opts) do
     previous_element_sibling = if pos != 0 do
       previous_element_sibling = Enum.at(parent.children, pos - 1)
-      GenServer.cast(previous_element_sibling, {:put, :next_element_sibling, child_pid})
+      GenServer.cast(previous_element_sibling, {:set, :next_element_sibling, child_pid})
       previous_element_sibling
     end
 
@@ -451,12 +451,12 @@ defmodule GenDOM.Document do
 
   defp update_parent_relationships(parent, %{__struct__: struct, pid: child_pid} = child, 0, _opts) when struct not in [GenDOM.Node, GenDOM.Text] do
     update_owner_document(child)
-    GenServer.cast(parent.pid, {:put, :first_element_child, child_pid})
+    GenServer.cast(parent.pid, {:set, :first_element_child, child_pid})
   end
 
   defp update_parent_relationships(%{children: children} = parent, %{__struct__: struct, pid: child_pid} = child, pos, _opts) when pos + 1 >= length(children) and struct not in [GenDOM.Node, GenDOM.Text] do
     update_owner_document(child)
-    GenServer.cast(parent.pid, {:put, :last_element_child, child_pid})
+    GenServer.cast(parent.pid, {:set, :last_element_child, child_pid})
   end
 
   defp update_parent_relationships(_parent, child, _pos, _opts) do
@@ -465,11 +465,11 @@ defmodule GenDOM.Document do
   end
 
   defp update_owner_document(%{tag_name: "body", owner_document: owner_document, pid: element_pid}) when not is_nil(owner_document) do
-    GenServer.cast(owner_document, {:put, :body, element_pid})
+    GenServer.cast(owner_document, {:set, :body, element_pid})
   end
 
   defp update_owner_document(%{tag_name: "head", owner_document: owner_document, pid: element_pid}) when not is_nil(owner_document) do
-    GenServer.cast(owner_document, {:put, :head, element_pid})
+    GenServer.cast(owner_document, {:set, :head, element_pid})
   end
 
   defp update_owner_document(_element),

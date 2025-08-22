@@ -603,7 +603,7 @@ defmodule GenDOM.HTMLVideoElement do
       GenDOM.HTMLVideoElement.set_poster(video.pid, "https://example.com/poster.jpg")
   """
   def set_poster(video_pid, poster_url) when is_binary(poster_url) do
-    GenDOM.Node.put(video_pid, :poster, poster_url)
+    GenDOM.Node.set(video_pid, :poster, poster_url)
   end
 
   @doc """
@@ -653,7 +653,7 @@ defmodule GenDOM.HTMLVideoElement do
       GenDOM.HTMLVideoElement.set_picture_in_picture_disabled(video.pid, false)
   """
   def set_picture_in_picture_disabled(video_pid, disabled) when is_boolean(disabled) do
-    GenDOM.Node.put(video_pid, :disable_picture_in_picture, disabled)
+    GenDOM.Node.set(video_pid, :disable_picture_in_picture, disabled)
   end
 
   @doc """
@@ -675,7 +675,7 @@ defmodule GenDOM.HTMLVideoElement do
       GenDOM.HTMLVideoElement.set_auto_picture_in_picture(video.pid, true)
   """
   def set_auto_picture_in_picture(video_pid, auto_pip) when is_boolean(auto_pip) do
-    GenDOM.Node.put(video_pid, :autopictureinpicture, auto_pip)
+    GenDOM.Node.set(video_pid, :autopictureinpicture, auto_pip)
   end
 
   @doc """

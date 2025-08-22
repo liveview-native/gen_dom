@@ -208,13 +208,13 @@ defmodule GenDOM.Text do
   # Find and replace text content
   text_content = GenDOM.Node.get(text.pid).text_content
   new_content = String.replace(text_content, "old", "new")
-  GenDOM.Node.put(text.pid, :text_content, new_content)
+  GenDOM.Node.set(text.pid, :text_content, new_content)
   ```
 
   ### Dynamic Text Updates
   ```elixir
   # Update text content dynamically
-  GenDOM.Node.put(text.pid, :text_content, "Updated content")
+  GenDOM.Node.set(text.pid, :text_content, "Updated content")
   # Automatically updates node_value and triggers events
   ```
   """

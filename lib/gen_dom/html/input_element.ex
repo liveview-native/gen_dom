@@ -456,7 +456,7 @@ defmodule GenDOM.HTMLInputElement do
       GenDOM.HTMLInputElement.set_custom_validity(input.pid, "This field is required")
   """
   def set_custom_validity(input_pid, message) when is_binary(message) do
-    GenDOM.Node.put(input_pid, :validation_message, message)
+    GenDOM.Node.set(input_pid, :validation_message, message)
   end
 
   @doc """
@@ -536,7 +536,7 @@ defmodule GenDOM.HTMLInputElement do
       end
 
       formatted_value = format_numeric_value(final_value, input.type)
-      GenDOM.Node.put(input_pid, :value, formatted_value)
+      GenDOM.Node.set(input_pid, :value, formatted_value)
     end
   end
 
@@ -596,7 +596,7 @@ defmodule GenDOM.HTMLInputElement do
       GenDOM.HTMLInputElement.set_value(input.pid, "Hello World")
   """
   def set_value(input_pid, new_value) when is_binary(new_value) do
-    GenDOM.Node.put(input_pid, :value, new_value)
+    GenDOM.Node.set(input_pid, :value, new_value)
   end
 
   @doc """
@@ -613,7 +613,7 @@ defmodule GenDOM.HTMLInputElement do
       GenDOM.HTMLInputElement.set_checked(checkbox.pid, true)
   """
   def set_checked(input_pid, is_checked) when is_boolean(is_checked) do
-    GenDOM.Node.put(input_pid, :checked, is_checked)
+    GenDOM.Node.set(input_pid, :checked, is_checked)
   end
 
   @doc """
@@ -630,7 +630,7 @@ defmodule GenDOM.HTMLInputElement do
       GenDOM.HTMLInputElement.set_type(input.pid, "email")
   """
   def set_type(input_pid, input_type) when is_binary(input_type) do
-    GenDOM.Node.put(input_pid, :type, input_type)
+    GenDOM.Node.set(input_pid, :type, input_type)
   end
 
   @doc """

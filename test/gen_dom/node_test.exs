@@ -52,7 +52,7 @@ defmodule GenDOM.NodeTest do
     test "put" do
       node = Node.new([])
 
-      Node.put(node.pid, :text_content, "Hello, world!")
+      Node.set(node.pid, :text_content, "Hello, world!")
       updated_node = Node.get(node.pid)
       assert updated_node.text_content == "Hello, world!"
     end
@@ -60,7 +60,7 @@ defmodule GenDOM.NodeTest do
     test "put!" do
       node = Node.new([])
 
-      Node.put!(node.pid, :text_content, "Hello, world!")
+      Node.set!(node.pid, :text_content, "Hello, world!")
       updated_node = Node.get(node.pid)
       assert updated_node.text_content == "Hello, world!"
     end
@@ -70,7 +70,7 @@ defmodule GenDOM.NodeTest do
         text_content: "Hello, world!"
       ])
 
-      Node.put_lazy(node.pid, :text_content, fn(node) ->
+      Node.set_lazy(node.pid, :text_content, fn(node) ->
         node.text_content <> "!"
       end)
       updated_node = Node.get(node.pid)
@@ -82,7 +82,7 @@ defmodule GenDOM.NodeTest do
         text_content: "Hello, world!"
       ])
 
-      Node.put_lazy!(node.pid, :text_content, fn(node) ->
+      Node.set_lazy!(node.pid, :text_content, fn(node) ->
         node.text_content <> "!"
       end)
       updated_node = Node.get(node.pid)

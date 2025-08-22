@@ -421,7 +421,7 @@ defmodule GenDOM.HTMLImageElement do
       GenDOM.HTMLImageElement.set_src(image.pid, "https://example.com/photo.jpg")
   """
   def set_src(image_pid, url) when is_binary(url) do
-    GenDOM.Node.put(image_pid, :src, url)
+    GenDOM.Node.set(image_pid, :src, url)
     # In real implementation, would trigger image loading
   end
 
@@ -442,7 +442,7 @@ defmodule GenDOM.HTMLImageElement do
       GenDOM.HTMLImageElement.set_alt(image.pid, "Sales chart showing 15% growth")
   """
   def set_alt(image_pid, alt_text) when is_binary(alt_text) do
-    GenDOM.Node.put(image_pid, :alt, alt_text)
+    GenDOM.Node.set(image_pid, :alt, alt_text)
   end
 
   @doc """
@@ -506,7 +506,7 @@ defmodule GenDOM.HTMLImageElement do
       GenDOM.HTMLImageElement.set_loading_strategy(image.pid, "lazy")
   """
   def set_loading_strategy(image_pid, loading_strategy) when loading_strategy in ["eager", "lazy"] do
-    GenDOM.Node.put(image_pid, :loading, loading_strategy)
+    GenDOM.Node.set(image_pid, :loading, loading_strategy)
   end
 
   @doc """
@@ -526,6 +526,6 @@ defmodule GenDOM.HTMLImageElement do
       GenDOM.HTMLImageElement.set_cross_origin(image.pid, "anonymous")
   """
   def set_cross_origin(image_pid, cors_setting) when cors_setting in [nil, "anonymous", "use-credentials"] do
-    GenDOM.Node.put(image_pid, :cross_origin, cors_setting)
+    GenDOM.Node.set(image_pid, :cross_origin, cors_setting)
   end
 end

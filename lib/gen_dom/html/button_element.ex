@@ -384,7 +384,7 @@ defmodule GenDOM.HTMLButtonElement do
       GenDOM.HTMLButtonElement.set_custom_validity(button.pid, "")
   """
   def set_custom_validity(button_pid, message) when is_binary(message) do
-    GenDOM.Node.put(button_pid, :validation_message, message)
+    GenDOM.Node.set(button_pid, :validation_message, message)
     # In real implementation would update validity state
   end
 
@@ -451,7 +451,7 @@ defmodule GenDOM.HTMLButtonElement do
       GenDOM.HTMLButtonElement.set_type(button.pid, "button")
   """
   def set_type(button_pid, button_type) when button_type in ["submit", "reset", "button", "menu"] do
-    GenDOM.Node.put(button_pid, :type, button_type)
+    GenDOM.Node.set(button_pid, :type, button_type)
   end
 
   @doc """
@@ -470,7 +470,7 @@ defmodule GenDOM.HTMLButtonElement do
       GenDOM.HTMLButtonElement.set_disabled(button.pid, true)
   """
   def set_disabled(button_pid, is_disabled) when is_boolean(is_disabled) do
-    GenDOM.Node.put(button_pid, :disabled, is_disabled)
+    GenDOM.Node.set(button_pid, :disabled, is_disabled)
   end
 
   @doc """
@@ -489,7 +489,7 @@ defmodule GenDOM.HTMLButtonElement do
       GenDOM.HTMLButtonElement.set_value(button.pid, "save_draft")
   """
   def set_value(button_pid, value) when is_binary(value) do
-    GenDOM.Node.put(button_pid, :value, value)
+    GenDOM.Node.set(button_pid, :value, value)
   end
 
   @doc """
@@ -508,7 +508,7 @@ defmodule GenDOM.HTMLButtonElement do
       GenDOM.HTMLButtonElement.set_name(button.pid, "submit_action")
   """
   def set_name(button_pid, name) when is_binary(name) do
-    GenDOM.Node.put(button_pid, :name, name)
+    GenDOM.Node.set(button_pid, :name, name)
   end
 
   @doc """
@@ -527,7 +527,7 @@ defmodule GenDOM.HTMLButtonElement do
       GenDOM.HTMLButtonElement.set_form_action(button.pid, "/api/quick-save")
   """
   def set_form_action(button_pid, action_url) when is_binary(action_url) do
-    GenDOM.Node.put(button_pid, :form_action, action_url)
+    GenDOM.Node.set(button_pid, :form_action, action_url)
   end
 
   @doc """
@@ -546,7 +546,7 @@ defmodule GenDOM.HTMLButtonElement do
       GenDOM.HTMLButtonElement.set_form_method(button.pid, "DELETE")
   """
   def set_form_method(button_pid, method) when is_binary(method) do
-    GenDOM.Node.put(button_pid, :form_method, method)
+    GenDOM.Node.set(button_pid, :form_method, method)
   end
 
   @doc """

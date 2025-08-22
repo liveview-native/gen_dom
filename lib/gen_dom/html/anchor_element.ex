@@ -511,7 +511,7 @@ defmodule GenDOM.HTMLAnchorElement do
       GenDOM.HTMLAnchorElement.set_target(anchor.pid, "_blank")
   """
   def set_target(anchor_pid, target) when is_binary(target) do
-    GenDOM.Node.put(anchor_pid, :target, target)
+    GenDOM.Node.set(anchor_pid, :target, target)
   end
 
   @doc """
@@ -528,7 +528,7 @@ defmodule GenDOM.HTMLAnchorElement do
       GenDOM.HTMLAnchorElement.set_rel(anchor.pid, "external noopener noreferrer")
   """
   def set_rel(anchor_pid, relationship) when is_binary(relationship) do
-    GenDOM.Node.put(anchor_pid, :rel, relationship)
+    GenDOM.Node.set(anchor_pid, :rel, relationship)
   end
 
   @doc """
@@ -547,7 +547,7 @@ defmodule GenDOM.HTMLAnchorElement do
       GenDOM.HTMLAnchorElement.set_download(anchor.pid, "annual-report.pdf")
   """
   def set_download(anchor_pid, filename) when is_binary(filename) do
-    GenDOM.Node.put(anchor_pid, :download, filename)
+    GenDOM.Node.set(anchor_pid, :download, filename)
   end
 
   @doc """

@@ -584,7 +584,7 @@ defmodule GenDOM.HTMLFormElement do
       GenDOM.HTMLFormElement.set_action(form.pid, "/api/submit")
   """
   def set_action(form_pid, action_url) when is_binary(action_url) do
-    GenDOM.Node.put(form_pid, :action, action_url)
+    GenDOM.Node.set(form_pid, :action, action_url)
   end
 
   @doc """
@@ -603,7 +603,7 @@ defmodule GenDOM.HTMLFormElement do
       GenDOM.HTMLFormElement.set_method(form.pid, "post")
   """
   def set_method(form_pid, http_method) when http_method in ["get", "post", "dialog"] do
-    GenDOM.Node.put(form_pid, :method, http_method)
+    GenDOM.Node.set(form_pid, :method, http_method)
   end
 
   @doc """
@@ -622,7 +622,7 @@ defmodule GenDOM.HTMLFormElement do
       GenDOM.HTMLFormElement.set_enctype(form.pid, "multipart/form-data")
   """
   def set_enctype(form_pid, encoding_type) when is_binary(encoding_type) do
-    GenDOM.Node.put(form_pid, :enctype, encoding_type)
+    GenDOM.Node.set(form_pid, :enctype, encoding_type)
   end
 
   @doc """
@@ -641,7 +641,7 @@ defmodule GenDOM.HTMLFormElement do
       GenDOM.HTMLFormElement.set_target(form.pid, "_blank")
   """
   def set_target(form_pid, target_name) when is_binary(target_name) do
-    GenDOM.Node.put(form_pid, :target, target_name)
+    GenDOM.Node.set(form_pid, :target, target_name)
   end
 
   @doc """
@@ -660,7 +660,7 @@ defmodule GenDOM.HTMLFormElement do
       GenDOM.HTMLFormElement.set_name(form.pid, "contact_form")
   """
   def set_name(form_pid, form_name) when is_binary(form_name) do
-    GenDOM.Node.put(form_pid, :name, form_name)
+    GenDOM.Node.set(form_pid, :name, form_name)
   end
 
   @doc """
@@ -679,7 +679,7 @@ defmodule GenDOM.HTMLFormElement do
       GenDOM.HTMLFormElement.set_accept_charset(form.pid, "UTF-8")
   """
   def set_accept_charset(form_pid, charset) when is_binary(charset) do
-    GenDOM.Node.put(form_pid, :accept_charset, charset)
+    GenDOM.Node.set(form_pid, :accept_charset, charset)
   end
 
   @doc """
@@ -698,7 +698,7 @@ defmodule GenDOM.HTMLFormElement do
       GenDOM.HTMLFormElement.set_autocomplete(form.pid, "off")
   """
   def set_autocomplete(form_pid, autocomplete_value) when autocomplete_value in ["on", "off"] do
-    GenDOM.Node.put(form_pid, :autocomplete, autocomplete_value)
+    GenDOM.Node.set(form_pid, :autocomplete, autocomplete_value)
   end
 
   @doc """
@@ -717,7 +717,7 @@ defmodule GenDOM.HTMLFormElement do
       GenDOM.HTMLFormElement.set_no_validate(form.pid, true)
   """
   def set_no_validate(form_pid, skip_validation) when is_boolean(skip_validation) do
-    GenDOM.Node.put(form_pid, :no_validate, skip_validation)
+    GenDOM.Node.set(form_pid, :no_validate, skip_validation)
   end
 
   @doc """

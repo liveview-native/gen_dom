@@ -170,7 +170,7 @@ body_pid = GenDOM.Node.remove_child(body_element.pid, div_element.pid)
 text_node = GenDOM.Text.new(data: "Hello, World!")
 
 # Work with text content using PIDs
-GenDOM.Node.put(div_element.pid, :text_content, "New content")
+GenDOM.Node.set(div_element.pid, :text_content, "New content")
 
 # Get text content by retrieving the node
 updated_div = GenDOM.Node.get(div_element.pid)

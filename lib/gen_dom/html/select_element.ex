@@ -513,7 +513,7 @@ defmodule GenDOM.HTMLSelectElement do
       GenDOM.HTMLSelectElement.set_custom_validity(select.pid, "")
   """
   def set_custom_validity(select_pid, message) when is_binary(message) do
-    GenDOM.Node.put(select_pid, :validation_message, message)
+    GenDOM.Node.set(select_pid, :validation_message, message)
     # In real implementation would update validity state
   end
 
@@ -569,7 +569,7 @@ defmodule GenDOM.HTMLSelectElement do
       -1
     end
 
-    GenDOM.Node.put(select_pid, :selected_index, valid_index)
+    GenDOM.Node.set(select_pid, :selected_index, valid_index)
     update_value_from_selection(select_pid)
     update_selected_options(select_pid)
   end
@@ -598,10 +598,10 @@ defmodule GenDOM.HTMLSelectElement do
       false # Simplified for now
     end)
 
-    GenDOM.Node.put(select_pid, :value, new_value)
+    GenDOM.Node.set(select_pid, :value, new_value)
 
     if index do
-      GenDOM.Node.put(select_pid, :selected_index, index)
+      GenDOM.Node.set(select_pid, :selected_index, index)
     end
 
     update_selected_options(select_pid)
@@ -623,7 +623,7 @@ defmodule GenDOM.HTMLSelectElement do
       GenDOM.HTMLSelectElement.set_disabled(select.pid, true)
   """
   def set_disabled(select_pid, is_disabled) when is_boolean(is_disabled) do
-    GenDOM.Node.put(select_pid, :disabled, is_disabled)
+    GenDOM.Node.set(select_pid, :disabled, is_disabled)
   end
 
   @doc """
@@ -642,7 +642,7 @@ defmodule GenDOM.HTMLSelectElement do
       GenDOM.HTMLSelectElement.set_multiple(select.pid, true)
   """
   def set_multiple(select_pid, is_multiple) when is_boolean(is_multiple) do
-    GenDOM.Node.put(select_pid, :multiple, is_multiple)
+    GenDOM.Node.set(select_pid, :multiple, is_multiple)
     update_type(select_pid)
   end
 
@@ -662,7 +662,7 @@ defmodule GenDOM.HTMLSelectElement do
       GenDOM.HTMLSelectElement.set_required(select.pid, true)
   """
   def set_required(select_pid, is_required) when is_boolean(is_required) do
-    GenDOM.Node.put(select_pid, :required, is_required)
+    GenDOM.Node.set(select_pid, :required, is_required)
   end
 
   @doc """
@@ -681,7 +681,7 @@ defmodule GenDOM.HTMLSelectElement do
       GenDOM.HTMLSelectElement.set_name(select.pid, "user_preferences")
   """
   def set_name(select_pid, name) when is_binary(name) do
-    GenDOM.Node.put(select_pid, :name, name)
+    GenDOM.Node.set(select_pid, :name, name)
   end
 
   @doc """
@@ -700,7 +700,7 @@ defmodule GenDOM.HTMLSelectElement do
       GenDOM.HTMLSelectElement.set_size(select.pid, 5)
   """
   def set_size(select_pid, size) when is_integer(size) and size >= 0 do
-    GenDOM.Node.put(select_pid, :size, size)
+    GenDOM.Node.set(select_pid, :size, size)
   end
 
   @doc """
@@ -892,7 +892,7 @@ defmodule GenDOM.HTMLSelectElement do
   defp update_type(select_pid) do
     select = GenDOM.Node.get(select_pid)
     new_type = if select.multiple, do: "select-multiple", else: "select-one"
-    GenDOM.Node.put(select_pid, :type, new_type)
+    GenDOM.Node.set(select_pid, :type, new_type)
   end
 
   defp update_value_from_selection(select_pid) do
@@ -906,7 +906,7 @@ defmodule GenDOM.HTMLSelectElement do
       ""
     end
 
-    GenDOM.Node.put(select_pid, :value, new_value)
+    GenDOM.Node.set(select_pid, :value, new_value)
   end
 
   defp update_selected_options(select_pid) do
@@ -916,6 +916,6 @@ defmodule GenDOM.HTMLSelectElement do
     # For now, simplified to empty list
     selected = []
 
-    GenDOM.Node.put(select_pid, :selected_options, selected)
+    GenDOM.Node.set(select_pid, :selected_options, selected)
   end
 end
