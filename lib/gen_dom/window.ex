@@ -70,6 +70,10 @@ defmodule GenDOM.Window do
   - **Events**: `addEventListener()`, `removeEventListener()`, `dispatchEvent()`
   """
 
+  alias GenDOM.{
+    Request
+  }
+
   use GenObject, [
     # Core browser objects and storage
     caches: nil,                    # CacheStorage object
@@ -153,6 +157,47 @@ defmodule GenDOM.Window do
     orientation: 0,                 # Orientation in degrees
     status: ""                      # Statusbar text
   ]
+
+  @impl true
+  def handle_call({:fetch, %GenDOM.Request{} = request, opts}, _from, window) do
+  end
+
+  def handle_call({:fetch, resource, opts}, _from, window) do
+    opts
+    |> Keyword.validate([url: nil, method: "GET", headers: [], body: nil])
+    |> case do
+      {:ok, options} ->
+        nil
+        # {:ok, %{} = browser} = Browser.get(window.browser_name)
+        # {_request, response} =
+        #   options
+        #   |> Keyword.update(:url, nil, &String.trim(&1))
+        #   |> Keyword.put(:headers, browser.headers ++ options[:headers])
+        #   |> Keyword.merge(Application.get_env(:crane, :fetch_req_options, []))
+        #   |> Req.new()
+        #   |> HttpCookie.ReqPlugin.attach()
+        #   |> Req.Request.merge_options([cookie_jar: browser.cookie_jar])
+        #   |> Req.run!()
+        #
+        # %{private: %{cookie_jar: cookie_jar}} = response
+        #
+        # :ok = Browser.update_cookie_jar(browser, cookie_jar)
+
+        # {:reply, {:ok, response, window}, window}
+
+      {:error, invalid_options} ->
+        {:reply, {:invalid_options, invalid_options}, window}
+    end
+
+  rescue
+    error ->
+      response = %Req.Response{
+        status: 400,
+        body: Exception.message(error)
+      }
+
+      {:reply, {:ok, response, window}, window}
+  end
 
   @doc """
   Decodes a string of data which has been encoded using base-64 encoding.

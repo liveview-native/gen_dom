@@ -15,10 +15,11 @@ defmodule GenDOM do
     GenDOM,
     GenDOM.Application,
     GenDOM.EventRegistry,
+    GenDOM.Iterator,
     GenDOM.Matcher,
     GenDOM.Matcher.Psuedo,
     GenDOM.QuerySelector,
-    GenDOM.Task
+    GenDOM.Task,
   ]
 
   @doc false
